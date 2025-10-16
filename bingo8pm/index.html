@@ -133,23 +133,19 @@
 
   /* Cartones */
   .carton {
-    padding: 16px;
-    background: var(--carton);
-    border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.4);
-    
-    /* --- INICIO DE LAS LÍNEAS NUEVAS --- */
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    /* --- FIN DE LAS LÍNEAS NUEVAS --- */
+  padding: 16px;
+  background: var(--carton);
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+  /* ¡No necesita más! Ni 'width', ni 'margin', ni 'display' */
 }
   
   #cartonesContainer {
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr; /* <-- Esta línea es la clave */
-  gap: 10px; /* Reducimos el espacio para que quepan mejor */
-  padding: 10px;
+  display: flex;          /* Activa el modo flexible */
+  flex-wrap: wrap;        /* Permite que bajen a la siguiente línea si no caben */
+  justify-content: center;/* Centra los cartones horizontalmente */
+  gap: 24px;              /* Define el espacio entre cada cartón */
+  padding: 16px;          /* Añade un poco de aire en los bordes */
 }
   
   .carton h3 { margin:0 0 10px; color:#00d4ff; }
@@ -511,6 +507,7 @@ function restaurarGuia(){
 </script>
 </body>
 </html>
+
 
 
 
