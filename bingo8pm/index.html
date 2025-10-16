@@ -133,13 +133,21 @@
 
   /* Cartones */
   .carton {
-    display:inline-block;
-    margin:20px;
     padding:16px;
     background:var(--carton);
     border-radius:12px;
     box-shadow:0 4px 12px rgba(0,0,0,0.4);
+    width: 100%;
+    max-width: 340px;
   }
+  
+  #cartonesContainer {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 24px;
+  justify-items: center;
+}
+  
   .carton h3 { margin:0 0 10px; color:#00d4ff; }
 
   table { border-collapse:collapse; margin:auto; }
@@ -499,6 +507,7 @@ function restaurarGuia(){
 </script>
 </body>
 </html>
+
 
 
 
