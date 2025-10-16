@@ -2,18 +2,25 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<title>Imagen a pantalla completa</title>
+<title>Imagen en tamaño original</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <style>
-  /* Ocupa toda la ventana y coloca la imagen de fondo */
-  html, body {
-    height: 100%;
-    margin: 0;
-  }
   body {
-    background: url('dedomono.jpg') center center / cover no-repeat fixed;
+    margin: 0;
+    height: 100vh;
+    display: flex;
+    justify-content: center; /* centra horizontal */
+    align-items: center;     /* centra vertical */
+    background: #000;        /* fondo negro para contraste */
+  }
+  img {
+    display: block;
+    max-width: 100%;   /* evita que se desborde en pantallas pequeñas */
+    height: auto;      /* mantiene proporción */
   }
 </style>
 </head>
-<body></body>
+<body>
+  <img src="dedomono.jpg" alt="Imagen en tamaño original">
+</body>
 </html>
