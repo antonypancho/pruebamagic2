@@ -285,6 +285,7 @@ function agregarCarton(){
   renderCarton(numero);
   guardarEstado();
   aplicarGuiaBordes(); // aplicar bordes guía al nuevo cartón
+  document.getElementById("cartonInput").value = ''; // ¡Línea nueva!
 }
 
 function renderCarton(numero){
@@ -488,4 +489,5 @@ function restaurarGuia(){
 </script>
 </body>
 </html>
+
 
