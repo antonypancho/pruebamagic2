@@ -166,7 +166,6 @@
   }
   td.free { background: var(--free-bg); color:#000; cursor:default; }
   td.marcado1 { background:var(--marcado); color:#fff; }
-  td.bordeGuia { outline: 3px solid #0542b4; outline-offset: -3px; }
 
   #status { margin-top:10px; font-size:0.9em; color:#ccc; }
 
@@ -466,9 +465,8 @@ function crearGuia(){
 
 /* Aplica bordes guía en todos los cartones mostrados según la guía rellena */
 function aplicarGuiaBordes() {
-  // Limpiar clases anteriores
+  // Limpiar visibilidad anterior
   document.querySelectorAll('#cartonesContainer td').forEach(td => {
-    td.classList.remove('bordeGuia');
     td.classList.remove('invisibleNumero');
   });
 
@@ -476,12 +474,10 @@ function aplicarGuiaBordes() {
   const posicionesGuia = Array.from(document.querySelectorAll('#tablaGuia td.relleno'))
     .map(celda => celda.dataset.pos);
 
-  // Aplicar clases según la figura
+  // Ocultar números que no están en la figura
   document.querySelectorAll('#cartonesContainer td').forEach(td => {
     const pos = td.dataset.pos;
-    if (posicionesGuia.includes(pos)) {
-      td.classList.add('bordeGuia');
-    } else {
+    if (!posicionesGuia.includes(pos)) {
       td.classList.add('invisibleNumero');
     }
   });
@@ -511,4 +507,5 @@ function restaurarGuia(){
 </script>
 </body>
 </html>
+
 
