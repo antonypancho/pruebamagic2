@@ -490,20 +490,6 @@ function aplicarGuiaBordes() {
   });
 }
 
-  // Obtener posiciones marcadas en la guía
-  const posicionesGuia = Array.from(document.querySelectorAll('#tablaGuia td.relleno'))
-    .map(celda => celda.dataset.pos);
-
-  // Aplicar bordeGuia e invisibilidad
-  document.querySelectorAll('#cartonesContainer td').forEach(td => {
-    const pos = td.dataset.pos;
-    if (posicionesGuia.includes(pos)) {
-      td.classList.add('bordeGuia');
-    } else {
-      td.classList.add('invisibleNumero');
-    }
-  });
-}
   // Agregar bordes según guía
   document.querySelectorAll('#tablaGuia td.relleno').forEach(celda => {
     const pos = celda.dataset.pos;
@@ -537,6 +523,7 @@ function restaurarGuia(){
 </script>
 </body>
 </html>
+
 
 
 
