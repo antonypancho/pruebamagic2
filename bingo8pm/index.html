@@ -302,6 +302,11 @@ function agregarCarton(){
   document.getElementById("cartonInput").value = ''; // ¡Línea nueva!
 }
 
+function guiaEstaVacia() {
+  return document.querySelectorAll('#tablaGuia td.relleno').length === 0;
+}
+
+
 function renderCarton(numero){
   const carton = cartonesData[numero - 1];
   if (!carton) return;
@@ -454,7 +459,7 @@ function crearGuia(){
         celda.addEventListener('click', () => {
           celda.classList.toggle('relleno');  // guía se rellena
           guardarGuia();
-          aplicarGuiaBordes();                 // cartones solo borde
+          ();                 // cartones solo borde
         });
       }
       fila.appendChild(celda);
@@ -465,17 +470,15 @@ function crearGuia(){
 
 /* Aplica bordes guía en todos los cartones mostrados según la guía rellena */
 function aplicarGuiaBordes() {
-  // Limpiar visibilidad anterior
-  document.querySelectorAll('#cartonesContainer td').forEach(td => {
-    td.classList.remove('invisibleNumero');
-  });
+  const celdas = document.querySelectorAll('#cartonesContainer td');
+  celdas.forEach(td => td.classList.remove('invisibleNumero'));
 
-  // Obtener posiciones activas en la guía
+  if (guiaEstaVacia()) return; // Si no hay figura, no ocultamos nada
+
   const posicionesGuia = Array.from(document.querySelectorAll('#tablaGuia td.relleno'))
     .map(celda => celda.dataset.pos);
 
-  // Ocultar números que no están en la figura
-  document.querySelectorAll('#cartonesContainer td').forEach(td => {
+  celdas.forEach(td => {
     const pos = td.dataset.pos;
     if (!posicionesGuia.includes(pos)) {
       td.classList.add('invisibleNumero');
@@ -507,5 +510,6 @@ function restaurarGuia(){
 </script>
 </body>
 </html>
+
 
 
