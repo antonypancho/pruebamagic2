@@ -462,24 +462,25 @@ function crearGuia(){
     tabla.appendChild(fila);
   }
 }
-
-function guiaEstaVacia() {
-  return document.querySelectorAll('#tablaGuia td.relleno').length === 0;
-}
   
 /* Aplica bordes guía en todos los cartones mostrados según la guía rellena */
 function aplicarGuiaBordes() {
-  const celdas = document.querySelectorAll('#cartonesContainer td');
-  celdas.forEach(td => td.classList.remove('invisibleNumero'));
+  // Limpiar clases anteriores
+  document.querySelectorAll('#cartonesContainer td').forEach(td => {
+    td.classList.remove('bordeGuia');
+    td.classList.remove('invisibleNumero');
+  });
 
-  if (guiaEstaVacia()) return; // Si no hay figura, no ocultamos nada
-
+  // Obtener posiciones activas en la guía
   const posicionesGuia = Array.from(document.querySelectorAll('#tablaGuia td.relleno'))
     .map(celda => celda.dataset.pos);
 
-  celdas.forEach(td => {
+  // Aplicar clases según la figura
+  document.querySelectorAll('#cartonesContainer td').forEach(td => {
     const pos = td.dataset.pos;
-    if (!posicionesGuia.includes(pos)) {
+    if (posicionesGuia.includes(pos)) {
+      td.classList.add('bordeGuia');
+    } else {
       td.classList.add('invisibleNumero');
     }
   });
@@ -509,6 +510,7 @@ function restaurarGuia(){
 </script>
 </body>
 </html>
+
 
 
 
