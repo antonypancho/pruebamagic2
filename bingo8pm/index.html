@@ -251,7 +251,7 @@ document.addEventListener('DOMContentLoaded', () => {
     agregarBtn.disabled = false;
     restaurarEstado();
     // Aplicar guías a cartones ya renderizados
-    aplicarGuiaBordes();
+    ();
   });
 
   agregarBtn.addEventListener('click', agregarCarton);
@@ -298,7 +298,7 @@ function agregarCarton(){
 
   renderCarton(numero);
   guardarEstado();
-  aplicarGuiaBordes(); // aplicar bordes guía al nuevo cartón
+  (); // aplicar bordes guía al nuevo cartón
   document.getElementById("cartonInput").value = ''; // ¡Línea nueva!
 }
 
@@ -463,6 +463,10 @@ function crearGuia(){
   }
 }
 
+function guiaEstaVacia() {
+  return document.querySelectorAll('#tablaGuia td.relleno').length === 0;
+}
+  
 /* Aplica bordes guía en todos los cartones mostrados según la guía rellena */
 function aplicarGuiaBordes() {
   const celdas = document.querySelectorAll('#cartonesContainer td');
@@ -505,6 +509,7 @@ function restaurarGuia(){
 </script>
 </body>
 </html>
+
 
 
 
