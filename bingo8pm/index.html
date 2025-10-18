@@ -290,16 +290,19 @@ function parseCSV(text){
   return cartones;
 }
 
-function agregarCarton(){
-  const numero = parseInt(document.getElementById("cartonInput").value, 10);
-  if (isNaN(numero)) { alert("Ingresa un número."); return; }
-  if (numero < 1 || numero > cartonesData.length) { alert("Número inválido."); return; }
-  if (cartonesMostrados.includes(numero)) { alert("Ese cartón ya está en pantalla."); return; }
+function guiaEstaVacia() {
+  return document.querySelectorAll('#tablaGuia td.relleno').length === 0;
+}
 
-  renderCarton(numero);
-  guardarEstado();
-  aplicarGuiaBordes(); // aplicar bordes guía al nuevo cartón
-  document.getElementById("cartonInput").value = ''; // ¡Línea nueva!
+function agregarCarton(carton) {
+  // Renderiza el cartón normalmente
+  const html = generarHTMLCarton(carton);
+  document.querySelector('#cartonesContainer').insertAdjacentHTML('beforeend', html);
+
+  // Aplica guía solo si hay figura dibujada
+  if (!guiaEstaVacia()) {
+    aplicarGuiaBordes();
+  }
 }
 
 function renderCarton(numero){
@@ -507,3 +510,4 @@ function restaurarGuia(){
 </script>
 </body>
 </html>
+
