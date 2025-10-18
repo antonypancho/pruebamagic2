@@ -302,11 +302,6 @@ function agregarCarton(){
   document.getElementById("cartonInput").value = ''; // ¡Línea nueva!
 }
 
-function guiaEstaVacia() {
-  return document.querySelectorAll('#tablaGuia td.relleno').length === 0;
-}
-
-
 function renderCarton(numero){
   const carton = cartonesData[numero - 1];
   if (!carton) return;
@@ -510,6 +505,7 @@ function restaurarGuia(){
 </script>
 </body>
 </html>
+
 
 
 
