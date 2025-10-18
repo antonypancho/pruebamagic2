@@ -92,10 +92,6 @@
     cursor:pointer;
     border:2px solid #fff;
   }
-  .invisibleNumero {
-  color: transparent;
-  pointer-events: none;
-}
 
   h1 { margin:20px 0 10px; }
   h2 { margin:10px 0 20px; color:#ffeb3b; }
@@ -356,11 +352,6 @@ function limpiarMarcas(){
   // Reiniciar la guía de dinámicas
   localStorage.removeItem("guiaFigura");
   crearGuia();
-
-  document.querySelectorAll('#cartonesContainer td.invisibleNumero').forEach(td => {
-  td.classList.remove('invisibleNumero');
-});
-  
 }
 
 function quitarCartones(){
@@ -490,15 +481,6 @@ function aplicarGuiaBordes() {
   });
 }
 
-  // Agregar bordes según guía
-  document.querySelectorAll('#tablaGuia td.relleno').forEach(celda => {
-    const pos = celda.dataset.pos;
-    document.querySelectorAll(`#cartonesContainer td[data-pos="${pos}"]`).forEach(td => {
-      td.classList.add('bordeGuia');
-    });
-  });
-}
-
 /* Persistencia de la figura guía */
 function guardarGuia(){
   const rellenos = [];
@@ -523,17 +505,3 @@ function restaurarGuia(){
 </script>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
