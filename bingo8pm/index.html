@@ -94,8 +94,9 @@
   }
   .invisibleNumero {
   color: transparent;
-  transition: color 0.3s ease;
+  pointer-events: none;
 }
+
   h1 { margin:20px 0 10px; }
   h2 { margin:10px 0 20px; color:#ffeb3b; }
 
@@ -355,6 +356,11 @@ function limpiarMarcas(){
   // Reiniciar la guía de dinámicas
   localStorage.removeItem("guiaFigura");
   crearGuia();
+
+  document.querySelectorAll('#cartonesContainer td.invisibleNumero').forEach(td => {
+  td.classList.remove('invisibleNumero');
+});
+  
 }
 
 function quitarCartones(){
@@ -462,12 +468,27 @@ function crearGuia(){
 }
 
 /* Aplica bordes guía en todos los cartones mostrados según la guía rellena */
-function aplicarGuiaBordes(){
-  // Limpiar bordes y visibilidad anteriores
+function aplicarGuiaBordes() {
+  // Limpiar clases anteriores
   document.querySelectorAll('#cartonesContainer td').forEach(td => {
     td.classList.remove('bordeGuia');
     td.classList.remove('invisibleNumero');
   });
+
+  // Obtener posiciones activas en la guía
+  const posicionesGuia = Array.from(document.querySelectorAll('#tablaGuia td.relleno'))
+    .map(celda => celda.dataset.pos);
+
+  // Aplicar clases según la figura
+  document.querySelectorAll('#cartonesContainer td').forEach(td => {
+    const pos = td.dataset.pos;
+    if (posicionesGuia.includes(pos)) {
+      td.classList.add('bordeGuia');
+    } else {
+      td.classList.add('invisibleNumero');
+    }
+  });
+}
 
   // Obtener posiciones marcadas en la guía
   const posicionesGuia = Array.from(document.querySelectorAll('#tablaGuia td.relleno'))
@@ -516,6 +537,7 @@ function restaurarGuia(){
 </script>
 </body>
 </html>
+
 
 
 
