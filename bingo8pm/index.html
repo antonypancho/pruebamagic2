@@ -166,6 +166,7 @@
   }
   td.free { background: var(--free-bg); color:#000; cursor:default; }
   td.marcado1 { background:var(--marcado); color:#fff; }
+  td.bordeGuia { outline: 3px solid #0542b4; outline-offset: -3px; }
 
   #status { margin-top:10px; font-size:0.9em; color:#ccc; }
 
@@ -177,7 +178,6 @@
     color:#aaa;
     background:#191d34;
   }
-
   .invisibleNumero {
     color: transparent;
     pointer-events: none;
@@ -251,7 +251,7 @@ document.addEventListener('DOMContentLoaded', () => {
     agregarBtn.disabled = false;
     restaurarEstado();
     // Aplicar guías a cartones ya renderizados
-    ();
+    aplicarGuiaBordes();
   });
 
   agregarBtn.addEventListener('click', agregarCarton);
@@ -298,7 +298,7 @@ function agregarCarton(){
 
   renderCarton(numero);
   guardarEstado();
-  (); // aplicar bordes guía al nuevo cartón
+  aplicarGuiaBordes(); // aplicar bordes guía al nuevo cartón
   document.getElementById("cartonInput").value = ''; // ¡Línea nueva!
 }
 
@@ -454,7 +454,7 @@ function crearGuia(){
         celda.addEventListener('click', () => {
           celda.classList.toggle('relleno');  // guía se rellena
           guardarGuia();
-          ();                 // cartones solo borde
+          aplicarGuiaBordes();                 // cartones solo borde
         });
       }
       fila.appendChild(celda);
@@ -462,12 +462,11 @@ function crearGuia(){
     tabla.appendChild(fila);
   }
 }
-  
+
 /* Aplica bordes guía en todos los cartones mostrados según la guía rellena */
 function aplicarGuiaBordes() {
-  // Limpiar clases anteriores
+  // Limpiar visibilidad anterior
   document.querySelectorAll('#cartonesContainer td').forEach(td => {
-    td.classList.remove('bordeGuia');
     td.classList.remove('invisibleNumero');
   });
 
@@ -475,12 +474,10 @@ function aplicarGuiaBordes() {
   const posicionesGuia = Array.from(document.querySelectorAll('#tablaGuia td.relleno'))
     .map(celda => celda.dataset.pos);
 
-  // Aplicar clases según la figura
+  // Ocultar números que no están en la figura
   document.querySelectorAll('#cartonesContainer td').forEach(td => {
     const pos = td.dataset.pos;
-    if (posicionesGuia.includes(pos)) {
-      td.classList.add('bordeGuia');
-    } else {
+    if (!posicionesGuia.includes(pos)) {
       td.classList.add('invisibleNumero');
     }
   });
@@ -510,9 +507,3 @@ function restaurarGuia(){
 </script>
 </body>
 </html>
-
-
-
-
-
-
