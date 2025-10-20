@@ -1,13 +1,15 @@
+### index.html
+
+```html
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<title>BingoMagic 8:00pm — Juega tu Cartón</title>
+<meta charset="utf-8">
+<title>Bingo Magic 8:00pm — Juega tu Cartón</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="icon" href="logo.png">
 <style>
   :root{
-    /* Fondo uniforme */
     --fondo:#2b0f4d;
     --texto:#ffffff;
     --carton:#1b1b1b;
@@ -15,30 +17,29 @@
     --borde:#ffffff;
     --free-bg:#444444;
 
-    /* Tamaños base (se ajustan con --escalaCarton) */
-    --escalaCarton:1;
-    --tamanoCelda:50px;
-    --tamanoFuente:28px;
-    --tamanoFuenteHeader:24px;
+    /* Tamaños y zoom */
+    --escalaCarton: 1;
+    --tamanoCelda: 50px;
+    --tamanoFuente: 28px;
+    --tamanoFuenteHeader: 24px;
 
-    /* Alto topbar (header + toolbar) */
-    --altoTop:132px;
-    --gap:12px;
+    /* Topbar (header + toolbar) altura combinada aproximada */
+    --altoTop: 132px;
 
-    /* Título del cartón según tema */
-    --titulo-carton:#00d4ff;
+    /* Grid/cartón sizing */
+    --carton-max-width: 420px;
+    --carton-min-width: 160px;
+    --carton-max-height: 360px;
 
-    /* Límites para grid/card sizing */
-    --carton-max-width: 420px;  /* desktop */
-    --carton-min-width: 160px;  /* mobile: smallest card width */
-    --carton-max-height: 360px; /* evita que el cartón crezca demasiado en altura */
+    --titulo-carton: #00d4ff;
+    --gap: 12px;
   }
 
   *,*::before,*::after{box-sizing:border-box;}
   html,body{height:100%;}
   body{
     margin:0;
-    font-family:'Segoe UI',Arial,sans-serif;
+    font-family:'Segoe UI', Arial, sans-serif;
     background:var(--fondo);
     color:var(--texto);
     text-align:center;
@@ -47,7 +48,7 @@
     padding-top:var(--altoTop);
   }
 
-  /* Topbar (header + toolbar) fijada arriba */
+  /* Topbar fijo (header + toolbar) */
   .topbar{
     position:fixed;
     top:0;
@@ -84,32 +85,36 @@
     box-shadow:0 2px 6px rgba(0,0,0,0.25);
     border-bottom:1px solid rgba(255,255,255,0.08);
   }
-  .toolbar input,.toolbar button{ padding:10px 14px; font-size:15px; border-radius:8px; border:none; }
+  .toolbar input, .toolbar button {
+    padding:10px 14px;
+    font-size:15px;
+    border-radius:8px;
+    border:none;
+  }
   .toolbar button{ background:linear-gradient(135deg,#00d4ff,#6c5ce7); color:#fff; cursor:pointer; transition:transform .15s, box-shadow .15s; }
   .toolbar button:hover{ transform:translateY(-2px); box-shadow:0 4px 10px rgba(0,0,0,.25); }
+
+  .temas{ display:flex; gap:8px; margin-left:6px; }
+  .tema{ width:24px; height:24px; border-radius:50%; cursor:pointer; border:2px solid #fff; }
 
   main{ padding:16px; max-width:1200px; margin:0 auto; }
 
   h1{ margin:20px 0 10px; font-size:1.4rem; }
   h2{ margin:10px 0 18px; color:#ffeb3b; font-size:1rem; }
 
-  #guiaFigura{ margin:8px auto 18px; display:inline-block; background:#f5f5f5; padding:10px; border-radius:10px; border:1px solid #ddd; box-shadow:0 4px 10px rgba(0,0,0,.12); color:#000; }
+  #guiaFigura{ margin:8px auto 18px; display:inline-block; background:#f5f5f5; padding:10px; border-radius:10px; border:1px solid #ddd; box-shadow:0 4px 10px rgba(0,0,0,0.12); color:#000; }
   #tablaGuia{ border-collapse:collapse; }
   #tablaGuia td{ width:40px; height:40px; border:1px solid #bbb; text-align:center; font-size:18px; cursor:pointer; transition:all .16s ease; font-weight:bold; background:#fff; }
   #tablaGuia td.relleno{ background:#ff9800; color:#fff; }
   #tablaGuia td.centro{ font-weight:bold; cursor:default; background:#eaeaea; color:#000; }
 
-  /*
-    Grid responsive: permite que en móvil entren 1,2 o 3 columnas según ancho.
-    Cada "cartón" estará en una celda que respeta un min-width para evitar expandirse.
-  */
+  /* Grid responsivo para cartones */
   #cartonesContainer{
     display:grid;
     gap:12px;
     justify-items:center;
     align-items:start;
     padding:8px 6px 24px;
-    /* auto-fit con minmax permite 1..n columnas adaptativas */
     grid-template-columns: repeat(auto-fit, minmax(var(--carton-min-width), 1fr));
   }
 
@@ -118,30 +123,29 @@
     display:flex;
     flex-direction:column;
     align-items:center;
-    margin:6px;
+    margin:15px;
     padding:10px;
     background:var(--carton);
     border-radius:8px;
     width:100%;
-    max-width:var(--carton-max-width); /* evita estiramiento en desktop */
-    min-width: var(--carton-min-width);
-    max-height: var(--carton-max-height); /* evita cubrir toda la pantalla verticalmente */
+    max-width:var(--carton-max-width);
+    min-width:var(--carton-min-width);
+    max-height:var(--carton-max-height);
     box-shadow:0 6px 18px rgba(0,0,0,.25);
-    overflow:hidden; /* si la tabla es muy alta, evitar empujar layout */
+    overflow:hidden;
   }
 
-  /* Pequeño contenedor que mantiene la tabla con overflow auto si excede altura */
+  /* wrapper para controlar overflow interno de la tabla */
   .carton .tabla-wrapper{
     width:100%;
     display:block;
     overflow:auto;
     -webkit-overflow-scrolling:touch;
-    max-height: calc(var(--carton-max-height) - 48px); /* deja espacio para el h3 y la X */
+    max-height: calc(var(--carton-max-height) - 48px);
   }
 
   .carton h3{ margin:0 0 8px; color:var(--titulo-carton); font-size:1rem; }
 
-  /* Botón X (cerrar) */
   .carton .close-btn{ position:absolute; top:6px; right:6px; width:28px; height:28px; border-radius:6px; border:none; background:rgba(0,0,0,0.45); color:#fff; font-weight:bold; display:flex; align-items:center; justify-content:center; cursor:pointer; transition:background .15s, transform .08s; box-shadow:0 2px 6px rgba(0,0,0,.4); }
   .carton .close-btn:hover{ background:rgba(255,0,0,.85); transform:translateY(-1px); }
 
@@ -154,24 +158,21 @@
   td.free{ background:var(--free-bg); color:#000; cursor:default; }
   td.marcado1{ background:var(--marcado); color:#fff; }
 
+  /* Si ocultas números por guía */
   .invisibleNumero{ color:transparent; transition:color .22s ease; }
 
   #status{ margin-top:8px; font-size:.9em; color:#ccc; min-height:1.2em; }
 
   footer{ margin-top:28px; padding:16px; text-align:center; font-size:.9rem; color:#aaa; background:#191d34; }
 
-  /* MEDIA: ajustar columnas y tamaños para móvil */
+  /* Responsivo: ajustar mínimos para móvil/tablet */
   @media (max-width: 880px){
-    /* 2 columnas preferidas en tablets / landscape phones */
-    :root{ --carton-min-width:180px; --carton-max-height:320px; --tamanoCelda:44px; --tamanoFuente:22px; --tamanoFuenteHeader:20px; }
+    :root{ --carton-min-width:140px; --carton-max-height:320px; --tamanoCelda:44px; --tamanoFuente:22px; --tamanoFuenteHeader:20px; }
   }
   @media (max-width: 520px){
-    /* 2 o 3 columnas en móviles según ancho; auto-fit hará el trabajo.
-       Ajusta min-width para que entren 2-3 por columna verticalmente. */
-    :root{ --carton-min-width:140px; --carton-max-height:280px; --tamanoCelda:40px; --tamanoFuente:18px; --tamanoFuenteHeader:16px; }
+    :root{ --carton-min-width:120px; --carton-max-height:280px; --tamanoCelda:40px; --tamanoFuente:18px; --tamanoFuenteHeader:16px; }
   }
   @media (orientation:landscape) and (max-height:500px){
-    /* En landscape con poca altura, permitir celdas más pequeñas */
     :root{ --carton-min-width:120px; --tamanoCelda:36px; --tamanoFuente:16px; --tamanoFuenteHeader:14px; --carton-max-height:260px; }
   }
 </style>
@@ -219,14 +220,7 @@
 </footer>
 
 <script>
-/* -------------------------
-   Mantengo todas tus funciones
-   solo hago pequeños ajustes:
-   - zoomIn ahora ACHICA (llama ajustarZoom(-0.1))
-   - zoomOut agranda (ajustarZoom(0.1))
-   - renderCarton envuelve la tabla en .tabla-wrapper para overflow controlado
-   -------------------------*/
-
+/* Estado y elementos */
 let cartonesData = [];
 let cartonesMostrados = [];
 
@@ -258,7 +252,7 @@ document.addEventListener('DOMContentLoaded', () => {
   limpiarBtn.addEventListener('click', limpiarMarcas);
   quitarBtn.addEventListener('click', quitarCartones);
 
-  /* IMPORTANTE: + achica, - agranda (cambia el comportamiento anterior según tu pedido) */
+  /* + achica (para poder ver más cartones), - agranda */
   zoomInBtn.addEventListener('click', () => ajustarZoom(-0.1));
   zoomOutBtn.addEventListener('click', () => ajustarZoom(0.1));
 });
@@ -315,11 +309,11 @@ function renderCarton(numero){
   div.className = "carton";
   div.dataset.numero = numero;
 
-  // Encabezado + tabla envuelta para controlar overflow/alto
+  // Encabezado + wrapper para controlar altura/overflow
   const tablaHTML = `<h3>Cartón ${numero}</h3><div class="tabla-wrapper"><table>${crearTabla(carton, numero)}</table></div>`;
   div.innerHTML = tablaHTML;
 
-  // Botón X en esquina superior derecha
+  // Botón X pequeño (eliminación individual)
   const closeBtn = document.createElement('button');
   closeBtn.className = 'close-btn';
   closeBtn.type = 'button';
@@ -330,10 +324,10 @@ function renderCarton(numero){
     if (!ok) return;
 
     div.remove();
-
     const idx = cartonesMostrados.indexOf(numero);
     if (idx > -1) cartonesMostrados.splice(idx, 1);
 
+    // Actualizar estado guardado filtrando marcados de cartones eliminados
     const estadoStr = localStorage.getItem('estadoCartones');
     if (estadoStr) {
       try {
@@ -381,7 +375,7 @@ function crearTabla(carton, numero){
   return html;
 }
 
-/* Delegación de eventos para celdas */
+/* Eventos para celdas */
 function attachCellListeners(root){
   root.querySelectorAll('td').forEach(td => {
     if (!td.classList.contains('free')) {
@@ -442,11 +436,11 @@ function restaurarEstado(){
   }
 }
 
-/* Zoom: ahora con + ACHICA y - AGRANDA */
+/* Zoom: + achica (más cartones visibles), - agranda */
 function ajustarZoom(delta){
   let escala = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--escalaCarton')) || 1;
   escala = Math.round((escala + delta) * 100) / 100;
-  if (escala < 0.4) escala = 0.4; /* permitir aún más achicado si quieres */
+  if (escala < 0.4) escala = 0.4;
   if (escala > 2) escala = 2;
   document.documentElement.style.setProperty('--escalaCarton', escala);
   localStorage.setItem("zoomCarton", escala);
@@ -490,14 +484,17 @@ function crearGuia(){
     for(let c=0;c<5;c++){
       const celda = document.createElement("td");
       celda.dataset.pos = `${r},${c}`;
-      if(r===2&&c===2){
+      if(r===2 && c===2){
         celda.textContent='X';
         celda.classList.add('centro');
-        celda.setAttribute('aria-hidden','true');
       } else {
         celda.tabIndex = 0;
-        celda.addEventListener('click', () => { celda.classList.toggle('relleno'); guardarGuia(); aplicarGuiaBordes(); });
-        celda.addEventListener('keydown', (e)=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); celda.click(); }});
+        celda.addEventListener('click', () => {
+          celda.classList.toggle('relleno');
+          guardarGuia();
+          aplicarGuiaBordes();
+        });
+        celda.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); celda.click(); }});
       }
       fila.appendChild(celda);
     }
@@ -506,38 +503,39 @@ function crearGuia(){
 }
 
 function aplicarGuiaBordes(){
-  document.querySelectorAll('#cartonesContainer td').forEach(td => td.classList.remove('invisibleNumero'));
-  const posicionesGuia = Array.from(document.querySelectorAll('#tablaGuia td.relleno')).map(c=>c.dataset.pos);
-  if(posicionesGuia.length===0) return;
-  document.querySelectorAll('#cartonesContainer td').forEach(td=>{
-    const pos = td.dataset.pos;
-    if(!posicionesGuia.includes(pos)) td.classList.add('invisibleNumero');
-    else td.classList.remove('invisibleNumero');
+  // limpiar bordes previos
+  document.querySelectorAll('#cartonesContainer td.bordeGuia').forEach(td => td.classList.remove('bordeGuia'));
+
+  // añadir bordes según guía
+  document.querySelectorAll('#tablaGuia td.relleno').forEach(celda => {
+    const pos = celda.dataset.pos;
+    document.querySelectorAll(`#cartonesContainer td[data-pos="${pos}"]`).forEach(td => td.classList.add('bordeGuia'));
   });
 }
 
-/* Persistencia guia */
+/* Guardar / restaurar guía */
 function guardarGuia(){
-  const rellenos=[];
-  document.querySelectorAll('#tablaGuia td.relleno').forEach(celda=> rellenos.push(celda.dataset.pos));
+  const rellenos = [];
+  document.querySelectorAll('#tablaGuia td.relleno').forEach(celda => rellenos.push(celda.dataset.pos));
   localStorage.setItem('guiaFigura', JSON.stringify(rellenos));
 }
 function restaurarGuia(){
   const data = localStorage.getItem('guiaFigura');
-  if(!data) return;
+  if (!data) return;
   let rellenos;
-  try{ rellenos = JSON.parse(data); } catch { return; }
-  rellenos.forEach(pos=>{
+  try { rellenos = JSON.parse(data); } catch { return; }
+  rellenos.forEach(pos => {
     const celda = document.querySelector(`#tablaGuia td[data-pos="${pos}"]`);
-    if(celda) celda.classList.add('relleno');
+    if (celda) celda.classList.add('relleno');
   });
 }
 
-/* Observers / listeners */
+/* Observers para reaplicar listeners cuando se agregan cartones */
 function attachAllCellListeners(){ document.querySelectorAll('#cartonesContainer .carton').forEach(div => attachCellListeners(div)); }
-const observer = new MutationObserver(()=>{ attachAllCellListeners(); aplicarGuiaBordes(); });
+const observer = new MutationObserver(() => { attachAllCellListeners(); aplicarGuiaBordes(); });
 observer.observe(document.getElementById('cartonesContainer'), { childList: true, subtree: true });
 
 </script>
 </body>
 </html>
+```
