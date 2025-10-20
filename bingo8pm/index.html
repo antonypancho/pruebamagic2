@@ -127,7 +127,7 @@
     padding: 8px 0 24px;
   }
   .carton {
-    position: relative; /* para posicionar la X */
+    position: relative;
     display: inline-block;
     margin: 6px;
     padding: 10px;
@@ -138,7 +138,7 @@
   }
   .carton h3 { margin:0 0 10px; color:#00d4ff; font-size:1rem; }
 
-  /* Botón pequeño X (cerrar) en la esquina superior derecha */
+  /* Botón pequeño X en la esquina superior derecha */
   .carton .close-btn {
     position: absolute;
     top: 6px;
@@ -159,7 +159,6 @@
   }
   .carton .close-btn:hover { background: rgba(255,0,0,0.85); transform: translateY(-1px); }
 
-  /* Controls individual cartón (mantener en caso de que quieras usarlo) */
   .carton .carton-controls {
     display:flex;
     gap:8px;
@@ -202,7 +201,8 @@
   }
   td.free { background: var(--free-bg); color:#000; cursor:default; }
   td.marcado1 { background:var(--marcado); color:#fff; }
-  td.bordeGuia { outline: 3px solid #0542b4; outline-offset: -3px; }
+
+  /* bordes de guía removidos: ya no existe td.bordeGuia ni estilos asociados */
 
   .invisibleNumero { color: transparent; transition: color 0.22s ease; }
 
@@ -494,18 +494,21 @@ function ajustarZoom(delta){
 /* Temas */
 function cambiarTema(color){
   if (color === 'azul'){
+    document.documentElement.style.setProperty('--fondo', 'radial-gradient(circle at top, #6c5ce7, #0e1020)');
     document.documentElement.style.setProperty('--carton', '#1b1b1b');
     document.documentElement.style.setProperty('--texto', '#ffffff');
     document.documentElement.style.setProperty('--marcado', '#2196f3');
     document.documentElement.style.setProperty('--borde', '#ada8a8');
     document.documentElement.style.setProperty('--free-bg', '#444444');
   } else if (color === 'verde'){
+    document.documentElement.style.setProperty('--fondo', 'linear-gradient(180deg,#ffffff,#dde7dd)');
     document.documentElement.style.setProperty('--carton', '#f5f5f5');
     document.documentElement.style.setProperty('--texto', '#000000');
     document.documentElement.style.setProperty('--marcado', '#4caf50');
     document.documentElement.style.setProperty('--borde', '#333333');
     document.documentElement.style.setProperty('--free-bg', '#e0e0e0');
   } else if (color === 'morado'){
+    document.documentElement.style.setProperty('--fondo', 'radial-gradient(circle at top, #7b1fa2, #2c0b2f)');
     document.documentElement.style.setProperty('--carton', '#f8bbd0');
     document.documentElement.style.setProperty('--texto', '#000000');
     document.documentElement.style.setProperty('--marcado', '#e91e63');
@@ -543,23 +546,25 @@ function crearGuia(){
 }
 
 function aplicarGuiaBordes() {
+  // limpiar visual previo (solo elimina la clase que oculta números)
   document.querySelectorAll('#cartonesContainer td').forEach(td => {
     td.classList.remove('invisibleNumero');
-    td.classList.remove('bordeGuia');
   });
 
+  // posiciones activas en la guía
   const posicionesGuia = Array.from(document.querySelectorAll('#tablaGuia td.relleno'))
     .map(celda => celda.dataset.pos);
 
   if (posicionesGuia.length === 0) return;
 
+  // aplicar solo la visibilidad (sin añadir bordes)
   document.querySelectorAll('#cartonesContainer td').forEach(td => {
     const pos = td.dataset.pos;
     if (!posicionesGuia.includes(pos)) {
       td.classList.add('invisibleNumero');
     } else {
       td.classList.remove('invisibleNumero');
-      td.classList.add('bordeGuia');
+      // Nota: ya no se añade ni se usa la clase 'bordeGuia'
     }
   });
 }
@@ -596,4 +601,3 @@ observer.observe(document.getElementById('cartonesContainer'), { childList: true
 </script>
 </body>
 </html>
-
