@@ -19,9 +19,8 @@
     --tamanoFuente:28px;
     --tamanoFuenteHeader:24px;
 
-    --altoTop: 132px;
+    --altoTop: 132px; /* ajustar si cambian header+toolbar */
     --gap:12px;
-
     --titulo-carton: #00d4ff;
   }
 
@@ -35,11 +34,12 @@
     text-align:center;
     -webkit-font-smoothing:antialiased;
     -moz-osx-font-smoothing:grayscale;
-    padding-top:var(--altoTop);
+    padding-top:var(--altoTop); /* espacio para topbar fijo */
   }
 
+  /* Topbar fijo: header + toolbar */
   .topbar{
-    position: fixed !important;
+    position: fixed;
     top: 0;
     left: 0;
     right: 0;
@@ -47,11 +47,10 @@
     display:flex;
     flex-direction:column;
     background: transparent;
-    pointer-events: none;
+    pointer-events: auto;
   }
 
   header{
-    pointer-events: auto;
     background:#191d34;
     padding:12px 20px;
     display:flex;
@@ -63,7 +62,6 @@
   header h1{ margin:0; font-size:1.6rem; color:#ffeb3b; line-height:1; }
 
   .toolbar{
-    pointer-events: auto;
     background:#121528;
     color:#fff;
     padding:10px 12px;
@@ -75,15 +73,14 @@
     box-shadow:0 2px 6px rgba(0,0,0,0.25);
     border-bottom:1px solid rgba(255,255,255,0.08);
   }
-
-  main{ padding:16px; max-width:1200px; margin:0 auto; }
-
   .toolbar input,.toolbar button{ padding:10px 14px; font-size:15px; border-radius:8px; border:none; }
   .toolbar button{ background:linear-gradient(135deg,#00d4ff,#6c5ce7); color:#fff; cursor:pointer; transition:transform .15s, box-shadow .15s; }
   .toolbar button:hover{ transform:translateY(-2px); box-shadow:0 4px 10px rgba(0,0,0,.25); }
 
   .temas{ display:flex; gap:8px; margin-left:6px; }
   .tema{ width:24px; height:24px; border-radius:50%; cursor:pointer; border:2px solid #fff; }
+
+  main{ padding:16px; max-width:1200px; margin:0 auto; }
 
   h1{ margin:20px 0 10px; font-size:1.4rem; }
   h2{ margin:10px 0 18px; color:#ffeb3b; font-size:1rem; }
@@ -199,13 +196,14 @@ document.addEventListener('DOMContentLoaded', () => {
   zoomInBtn.addEventListener('click', () => ajustarZoom(0.1));
   zoomOutBtn.addEventListener('click', () => ajustarZoom(-0.1));
 
-  // Delegación: asegurar que cualquier <td> (nuevo o existente) responda a clic y teclado
+  // Delegación: cualquier <td> dentro de cartonesContainer responde al clic (nuevo o existente)
   cartonesContainer.addEventListener('click', (e) => {
     const td = e.target.closest('td');
     if (!td || !cartonesContainer.contains(td)) return;
     if (td.classList.contains('free')) return;
     cambiarColor(td);
   });
+  // Teclado delegación (Enter / Space)
   cartonesContainer.addEventListener('keydown', (e) => {
     if (e.key !== 'Enter' && e.key !== ' ') return;
     const td = e.target.closest('td');
@@ -271,7 +269,7 @@ function renderCarton(numero){
   // Encabezado + tabla
   div.innerHTML = `<h3>Cartón ${numero}</h3><table>${crearTabla(carton, numero)}</table>`;
 
-  // Botón X
+  // Botón X en esquina superior derecha
   const closeBtn = document.createElement('button');
   closeBtn.className = 'close-btn';
   closeBtn.type = 'button';
@@ -285,7 +283,6 @@ function renderCarton(numero){
     const idx = cartonesMostrados.indexOf(numero);
     if (idx > -1) cartonesMostrados.splice(idx, 1);
 
-    // actualizar estado guardado
     const estadoStr = localStorage.getItem('estadoCartones');
     if (estadoStr) {
       try {
@@ -311,9 +308,7 @@ function renderCarton(numero){
   cartonesContainer.appendChild(div);
   cartonesMostrados.push(numero);
   aplicarGuiaBordes();
-  // attachCellListeners not required because delegation handles clicks,
-  // but keep for keyboard tabindex support on newly added cells
-  attachCellListeners(div);
+  attachCellListeners(div); // keyboard/tab accessibility for new cells
 }
 
 function crearTabla(carton, numero){
@@ -335,7 +330,7 @@ function crearTabla(carton, numero){
   return html;
 }
 
-/* Añade listeners de teclado y mejora accesibilidad en celdas nuevas */
+/* Añade listeners de teclado a celdas nuevas (delegación cubre clicks) */
 function attachCellListeners(root){
   root.querySelectorAll('td').forEach(td => {
     if (!td.classList.contains('free')) {
@@ -443,7 +438,7 @@ function crearGuia(){
     for(let c=0;c<5;c++){
       const celda = document.createElement("td");
       celda.dataset.pos = `${r},${c}`;
-      if(r===2&&c===2){
+      if(r===2 && c===2){
         celda.textContent='X';
         celda.classList.add('centro');
         celda.setAttribute('aria-hidden','true');
@@ -491,11 +486,10 @@ function restaurarGuia(){
 }
 
 /* Observer to re-apply keyboard listeners if needed */
-function attachAllCellListeners(){
-  document.querySelectorAll('#cartonesContainer .carton').forEach(div => attachCellListeners(div));
-}
+function attachAllCellListeners(){ document.querySelectorAll('#cartonesContainer .carton').forEach(div => attachCellListeners(div)); }
 const observer = new MutationObserver(()=>{ attachAllCellListeners(); aplicarGuiaBordes(); });
 observer.observe(document.getElementById('cartonesContainer'), { childList: true, subtree: true });
+
 </script>
 </body>
 </html>
