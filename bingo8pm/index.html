@@ -1,8 +1,3 @@
-### Solución: header y toolbar realmente fijos (sin .topbar, posiciones individuales)
-
-Pega este archivo completo (reemplaza tu index). He quitado la capa .topbar y fijado por separado header y .toolbar usando position:fixed con top precisos, ajustando el padding-top del body al total de esas alturas para que el contenido no se superponga. También mantengo la delegación de clics para marcar casillas y el resto de funcionalidades que tenías.
-
-```html
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -507,4 +502,3 @@ observer.observe(document.getElementById('cartonesContainer'), { childList: true
 </script>
 </body>
 </html>
-```
