@@ -1,3 +1,8 @@
+### Solución: header y toolbar realmente fijos (sin .topbar, posiciones individuales)
+
+Pega este archivo completo (reemplaza tu index). He quitado la capa .topbar y fijado por separado header y .toolbar usando position:fixed con top precisos, ajustando el padding-top del body al total de esas alturas para que el contenido no se superponga. También mantengo la delegación de clics para marcar casillas y el resto de funcionalidades que tenías.
+
+```html
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -19,7 +24,11 @@
     --tamanoFuente:28px;
     --tamanoFuenteHeader:24px;
 
-    --altoTop: 132px; /* ajustar si cambian header+toolbar */
+    /* alturas (ajusta si cambias padding/size del header o toolbar) */
+    --alto-header:64px;
+    --alto-toolbar:56px;
+    --altoTop: calc(var(--alto-header) + var(--alto-toolbar)); /* espacio reservado para elementos fijos */
+
     --gap:12px;
     --titulo-carton: #00d4ff;
   }
@@ -34,37 +43,38 @@
     text-align:center;
     -webkit-font-smoothing:antialiased;
     -moz-osx-font-smoothing:grayscale;
-    padding-top:var(--altoTop); /* espacio para topbar fijo */
+    padding-top: var(--altoTop); /* espacio para header + toolbar fijos */
+    -webkit-overflow-scrolling: touch;
   }
 
-  /* Topbar fijo: header + toolbar */
-  .topbar{
+  /* Header fijo en top 0 */
+  header{
     position: fixed;
     top: 0;
     left: 0;
     right: 0;
-    z-index: 99999;
-    display:flex;
-    flex-direction:column;
-    background: transparent;
-    pointer-events: auto;
-  }
-
-  header{
+    height: var(--alto-header);
     background:#191d34;
-    padding:12px 20px;
+    padding:8px 20px;
     display:flex;
     align-items:center;
     gap:16px;
     box-shadow:0 2px 6px rgba(0,0,0,0.4);
+    z-index: 10050;
   }
-  header img{ height:56px; max-width:40%; object-fit:contain; }
-  header h1{ margin:0; font-size:1.6rem; color:#ffeb3b; line-height:1; }
+  header img{ height:48px; width:auto; object-fit:contain; }
+  header h1{ margin:0; font-size:1.2rem; color:#ffeb3b; line-height:1; }
 
+  /* Toolbar fijo directamente debajo del header */
   .toolbar{
+    position: fixed;
+    top: var(--alto-header);
+    left: 0;
+    right: 0;
+    height: var(--alto-toolbar);
     background:#121528;
     color:#fff;
-    padding:10px 12px;
+    padding:8px 12px;
     display:flex;
     justify-content:center;
     align-items:center;
@@ -72,78 +82,99 @@
     flex-wrap:wrap;
     box-shadow:0 2px 6px rgba(0,0,0,0.25);
     border-bottom:1px solid rgba(255,255,255,0.08);
+    z-index: 10040;
   }
-  .toolbar input,.toolbar button{ padding:10px 14px; font-size:15px; border-radius:8px; border:none; }
-  .toolbar button{ background:linear-gradient(135deg,#00d4ff,#6c5ce7); color:#fff; cursor:pointer; transition:transform .15s, box-shadow .15s; }
-  .toolbar button:hover{ transform:translateY(-2px); box-shadow:0 4px 10px rgba(0,0,0,.25); }
+  .toolbar input, .toolbar button {
+    padding:8px 12px;
+    font-size:14px;
+    border-radius:8px;
+    border:none;
+  }
+  .toolbar button{ background:linear-gradient(135deg,#00d4ff,#6c5ce7); color:#fff; cursor:pointer; transition: transform .12s, box-shadow .12s; }
+  .toolbar button:hover{ transform: translateY(-2px); box-shadow:0 4px 10px rgba(0,0,0,.22); }
 
   .temas{ display:flex; gap:8px; margin-left:6px; }
-  .tema{ width:24px; height:24px; border-radius:50%; cursor:pointer; border:2px solid #fff; }
+  .tema{ width:22px; height:22px; border-radius:50%; cursor:pointer; border:2px solid #fff; }
 
   main{ padding:16px; max-width:1200px; margin:0 auto; }
 
-  h1{ margin:20px 0 10px; font-size:1.4rem; }
-  h2{ margin:10px 0 18px; color:#ffeb3b; font-size:1rem; }
+  h1{ margin:18px 0 10px; font-size:1.2rem; }
+  h2{ margin:8px 0 16px; color:#ffeb3b; font-size:1rem; }
 
   #guiaFigura{ margin:8px auto 18px; display:inline-block; background:#f5f5f5; padding:10px; border-radius:10px; border:1px solid #ddd; box-shadow:0 4px 10px rgba(0,0,0,.12); color:#000; }
   #tablaGuia{ border-collapse:collapse; }
-  #tablaGuia td{ width:40px; height:40px; border:1px solid #bbb; text-align:center; font-size:18px; cursor:pointer; transition:all .16s ease; font-weight:bold; background:#fff; }
+  #tablaGuia td{ width:40px; height:40px; border:1px solid #bbb; text-align:center; font-size:18px; cursor:pointer; transition:all .12s ease; font-weight:bold; background:#fff; }
   #tablaGuia td.relleno{ background:#ff9800; color:#fff; }
   #tablaGuia td.centro{ font-weight:bold; cursor:default; background:#eaeaea; color:#000; }
 
-  #cartonesContainer{ display:flex; flex-wrap:wrap; justify-content:center; gap:12px; padding:8px 0 24px; }
-  .carton{ position:relative; display:inline-block; margin:6px; padding:10px; background:var(--carton); border-radius:8px; min-width:calc(5 * var(--tamanoCelda) * 0.8); box-shadow:0 6px 18px rgba(0,0,0,.25); }
+  #cartonesContainer{
+    display:flex;
+    flex-wrap:wrap;
+    justify-content:center;
+    gap:12px;
+    padding:8px 12px 32px;
+  }
+  .carton{
+    position:relative;
+    display:inline-block;
+    margin:8px;
+    padding:10px;
+    background:var(--carton);
+    border-radius:8px;
+    min-width: calc(5 * var(--tamanoCelda) * 0.8);
+    box-shadow:0 6px 18px rgba(0,0,0,.25);
+  }
   .carton h3{ margin:0 0 10px; color:var(--titulo-carton); font-size:1rem; }
 
-  .carton .close-btn{ position:absolute; top:6px; right:6px; width:28px; height:28px; border-radius:6px; border:none; background:rgba(0,0,0,.45); color:#fff; font-weight:bold; display:flex; align-items:center; justify-content:center; cursor:pointer; transition:background .15s, transform .08s; box-shadow:0 2px 6px rgba(0,0,0,.4); }
+  .carton .close-btn{ position:absolute; top:6px; right:6px; width:28px; height:28px; border-radius:6px; border:none; background:rgba(0,0,0,.45); color:#fff; font-weight:bold; display:flex; align-items:center; justify-content:center; cursor:pointer; transition:background .12s, transform .08s; box-shadow:0 2px 6px rgba(0,0,0,.35); }
   .carton .close-btn:hover{ background:rgba(255,0,0,.85); transform:translateY(-1px); }
 
   table{ border-collapse:collapse; margin:auto; }
-  th{ width:calc(var(--tamanoCelda) * var(--escalaCarton)); height:calc(40px * var(--escalaCarton)); border:1px solid var(--borde); font-size:calc(var(--tamanoFuenteHeader) * var(--escalaCarton)); color:#ffeb3b; text-align:center; padding:4px; }
-  td{ width:calc(var(--tamanoCelda) * var(--escalaCarton)); height:calc(var(--tamanoCelda) * var(--escalaCarton)); border:1px solid var(--borde); cursor:pointer; font-weight:bold; text-align:center; font-size:calc(var(--tamanoFuente) * var(--escalaCarton)); color:var(--texto); background:transparent; position:relative; padding:4px; user-select:none; }
+  th{ width:calc(var(--tamanoCelda) * var(--escalaCarton)); height:calc(40px * var(--escalaCarton)); border:1px solid var(--borde); font-size:calc(var(--tamanoFuenteHeader) * var(--escalaCarton)); color:#ffeb3b; text-align:center; padding:4px; box-sizing:border-box; }
+  td{ width:calc(var(--tamanoCelda) * var(--escalaCarton)); height:calc(var(--tamanoCelda) * var(--escalaCarton)); border:1px solid var(--borde); cursor:pointer; font-weight:bold; text-align:center; font-size:calc(var(--tamanoFuente) * var(--escalaCarton)); color:var(--texto); background:transparent; position:relative; padding:4px; box-sizing:border-box; user-select:none; }
   td.free{ background:var(--free-bg); color:#000; cursor:default; }
   td.marcado1{ background:var(--marcado); color:#fff; }
 
-  .invisibleNumero{ color:transparent; transition:color .22s ease; }
+  .invisibleNumero{ color:transparent; transition:color .18s ease; }
 
   #status{ margin-top:8px; font-size:.9em; color:#ccc; min-height:1.2em; }
 
   footer{ margin-top:28px; padding:16px; text-align:center; font-size:.9rem; color:#aaa; background:#191d34; }
 
-  @media (max-width:640px){
-    .topbar{ width:100%; left:0; right:0; }
-    header img{ height:48px; max-width:28%; }
-    :root{ --tamanoFuente:20px; --tamanoCelda:44px; --tamanoFuenteHeader:18px; --altoTop:112px; }
-    .carton{ min-width:calc(5 * var(--tamanoCelda) * 0.9); }
-    #tablaGuia td{ width:34px; height:34px; font-size:16px; }
-    .carton .close-btn{ width:26px; height:26px; top:4px; right:4px; font-size:.9rem; }
+  @media (max-width:880px){
+    :root{ --tamanoCelda:44px; --tamanoFuente:22px; --tamanoFuenteHeader:20px; }
+    header img{ height:44px; }
   }
+  @media (max-width:520px){
+    :root{ --tamanoCelda:40px; --tamanoFuente:18px; --tamanoFuenteHeader:16px; }
+    header img{ height:40px; }
+  }
+
+  /* Nota: evita usar transform/filters en ancestros del header/toolbar en tu CSS global */
 </style>
 </head>
 <body>
 
-<div class="topbar" aria-hidden="false">
-  <header role="banner">
-    <img src="logo.png" alt="Logo Bingo 8pm">
-    <h1>🎉 Bingo Magic 8:00pm</h1>
-  </header>
+<header role="banner">
+  <img src="logo.png" alt="Logo Bingo 8pm">
+  <h1>🎉 Bingo Magic 8:00pm</h1>
+</header>
 
-  <div class="toolbar" role="region" aria-label="Barra de herramientas">
-    <input type="number" id="cartonInput" placeholder="Número de cartón" aria-label="Número de cartón">
-    <button id="agregarBtn" disabled aria-label="Agregar cartón">Agregar</button>
-    <button id="limpiarBtn" aria-label="Limpiar marcas">Limpiar</button>
-    <button id="quitarBtn" aria-label="Quitar cartones">Quitar</button>
-    <button id="zoomIn" aria-label="Aumentar zoom">+</button>
-    <button id="zoomOut" aria-label="Disminuir zoom">-</button>
+<div class="toolbar" role="region" aria-label="Barra de herramientas">
+  <input type="number" id="cartonInput" placeholder="Número de cartón" aria-label="Número de cartón">
+  <button id="agregarBtn" disabled aria-label="Agregar cartón">Agregar</button>
+  <button id="limpiarBtn" aria-label="Limpiar marcas">Limpiar</button>
+  <button id="quitarBtn" aria-label="Quitar cartones">Quitar</button>
+  <button id="zoomIn" aria-label="Achicar (más cartones)">+</button>
+  <button id="zoomOut" aria-label="Agrandar (menos cartones)">-</button>
 
-    <div class="temas" role="toolbar" aria-label="Temas">
-      <div class="tema" style="background:#000000;" onclick="cambiarTema('azul')" title="Azul (oscuro)" role="button" tabindex="0"></div>
-      <div class="tema" style="background:#ffffff;" onclick="cambiarTema('verde')" title="Verde (claro)" role="button" tabindex="0"></div>
-      <div class="tema" style="background:#9c27b0;" onclick="cambiarTema('morado')" title="Morado (oscuro)" role="button" tabindex="0"></div>
-    </div>
-
-    <div id="status" aria-live="polite"></div>
+  <div class="temas" role="toolbar" aria-label="Temas">
+    <div class="tema" style="background:#000000;" onclick="cambiarTema('azul')" title="Azul (oscuro)" role="button" tabindex="0"></div>
+    <div class="tema" style="background:#ffffff;" onclick="cambiarTema('verde')" title="Verde (claro)" role="button" tabindex="0"></div>
+    <div class="tema" style="background:#9c27b0;" onclick="cambiarTema('morado')" title="Morado (oscuro)" role="button" tabindex="0"></div>
   </div>
+
+  <div id="status" aria-live="polite"></div>
 </div>
 
 <main>
@@ -162,6 +193,7 @@
 </footer>
 
 <script>
+/* estado */
 let cartonesData = [];
 let cartonesMostrados = [];
 
@@ -193,17 +225,18 @@ document.addEventListener('DOMContentLoaded', () => {
   agregarBtn.addEventListener('click', agregarCarton);
   limpiarBtn.addEventListener('click', limpiarMarcas);
   quitarBtn.addEventListener('click', quitarCartones);
-  zoomInBtn.addEventListener('click', () => ajustarZoom(0.1));
-  zoomOutBtn.addEventListener('click', () => ajustarZoom(-0.1));
 
-  // Delegación: cualquier <td> dentro de cartonesContainer responde al clic (nuevo o existente)
+  /* + achica (ver más cartones), - agranda */
+  zoomInBtn.addEventListener('click', () => ajustarZoom(-0.1));
+  zoomOutBtn.addEventListener('click', () => ajustarZoom(0.1));
+
+  /* Delegación de clics y teclado para celdas dinámicas */
   cartonesContainer.addEventListener('click', (e) => {
     const td = e.target.closest('td');
     if (!td || !cartonesContainer.contains(td)) return;
     if (td.classList.contains('free')) return;
     cambiarColor(td);
   });
-  // Teclado delegación (Enter / Space)
   cartonesContainer.addEventListener('keydown', (e) => {
     if (e.key !== 'Enter' && e.key !== ' ') return;
     const td = e.target.closest('td');
@@ -214,7 +247,7 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 });
 
-/* CSV */
+/* CSV loader */
 async function cargarCSV(){
   statusEl.textContent = 'Cargando cartones...';
   try {
@@ -229,7 +262,6 @@ async function cargarCSV(){
     agregarBtn.disabled = true;
   }
 }
-
 function parseCSV(text){
   const lines = text.split(/\r?\n/).map(l => l.trim()).filter(l => l !== '');
   const cartones = [];
@@ -258,7 +290,6 @@ function agregarCarton(){
   guardarEstado();
   document.getElementById("cartonInput").value = '';
 }
-
 function renderCarton(numero){
   const carton = cartonesData[numero - 1];
   if (!carton) return;
@@ -266,10 +297,8 @@ function renderCarton(numero){
   div.className = "carton";
   div.dataset.numero = numero;
 
-  // Encabezado + tabla
-  div.innerHTML = `<h3>Cartón ${numero}</h3><table>${crearTabla(carton, numero)}</table>`;
+  div.innerHTML = `<h3>Cartón ${numero}</h3><div class="tabla-wrapper"><table>${crearTabla(carton, numero)}</table></div>`;
 
-  // Botón X en esquina superior derecha
   const closeBtn = document.createElement('button');
   closeBtn.className = 'close-btn';
   closeBtn.type = 'button';
@@ -278,11 +307,9 @@ function renderCarton(numero){
   closeBtn.addEventListener('click', () => {
     const ok = confirm(`¿Quitar el cartón ${numero}?`);
     if (!ok) return;
-
     div.remove();
     const idx = cartonesMostrados.indexOf(numero);
     if (idx > -1) cartonesMostrados.splice(idx, 1);
-
     const estadoStr = localStorage.getItem('estadoCartones');
     if (estadoStr) {
       try {
@@ -292,25 +319,18 @@ function renderCarton(numero){
         }
         estado.cartones = cartonesMostrados.slice();
         localStorage.setItem('estadoCartones', JSON.stringify(estado));
-      } catch (e) {
-        guardarEstado();
-      }
-    } else {
-      guardarEstado();
-    }
-
+      } catch (e) { guardarEstado(); }
+    } else { guardarEstado(); }
     aplicarGuiaBordes();
     statusEl.textContent = `Cartón ${numero} eliminado.`;
   });
 
   div.appendChild(closeBtn);
-
   cartonesContainer.appendChild(div);
   cartonesMostrados.push(numero);
   aplicarGuiaBordes();
-  attachCellListeners(div); // keyboard/tab accessibility for new cells
+  attachCellListeners(div); // accesibilidad teclado para celdas nuevas
 }
-
 function crearTabla(carton, numero){
   let html = '';
   const letras = ['B','I','N','G','O'];
@@ -330,7 +350,7 @@ function crearTabla(carton, numero){
   return html;
 }
 
-/* Añade listeners de teclado a celdas nuevas (delegación cubre clicks) */
+/* accesibilidad teclado en celdas nuevas */
 function attachCellListeners(root){
   root.querySelectorAll('td').forEach(td => {
     if (!td.classList.contains('free')) {
@@ -342,12 +362,14 @@ function attachCellListeners(root){
   });
 }
 
+/* marcar celda */
 function cambiarColor(td){
   if (td.classList.contains('free')) return;
   td.classList.toggle("marcado1");
   guardarEstado();
 }
 
+/* limpiar, quitar */
 function limpiarMarcas(){
   document.querySelectorAll('#cartonesContainer td.marcado1').forEach(td => td.classList.remove('marcado1'));
   guardarEstado();
@@ -355,7 +377,6 @@ function limpiarMarcas(){
   localStorage.removeItem("guiaFigura");
   crearGuia();
 }
-
 function quitarCartones(){
   cartonesContainer.innerHTML = '';
   cartonesMostrados = [];
@@ -365,23 +386,19 @@ function quitarCartones(){
   crearGuia();
 }
 
-/* Persistencia */
+/* persistencia */
 function guardarEstado(){
   const estado = { cartones: cartonesMostrados.slice(), marcados: [] };
   document.querySelectorAll('#cartonesContainer td.marcado1').forEach(td => {
-    const carton = td.dataset.carton;
-    const pos = td.dataset.pos;
-    estado.marcados.push({carton,pos});
+    estado.marcados.push({ carton: td.dataset.carton, pos: td.dataset.pos });
   });
-  localStorage.setItem("estadoCartones", JSON.stringify(estado));
+  localStorage.setItem('estadoCartones', JSON.stringify(estado));
 }
-
 function restaurarEstado(){
   const estadoStr = localStorage.getItem("estadoCartones");
   if (!estadoStr) return;
   let estado;
   try { estado = JSON.parse(estadoStr); } catch { return; }
-
   if (Array.isArray(estado.cartones)) estado.cartones.forEach(num => renderCarton(num));
   if (Array.isArray(estado.marcados)) {
     setTimeout(() => {
@@ -393,17 +410,17 @@ function restaurarEstado(){
   }
 }
 
-/* Zoom */
+/* zoom */
 function ajustarZoom(delta){
   let escala = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--escalaCarton')) || 1;
   escala = Math.round((escala + delta) * 100) / 100;
-  if (escala < 0.5) escala = 0.5;
+  if (escala < 0.4) escala = 0.4;
   if (escala > 2) escala = 2;
   document.documentElement.style.setProperty('--escalaCarton', escala);
   localStorage.setItem("zoomCarton", escala);
 }
 
-/* Temas */
+/* temas */
 function cambiarTema(color){
   if (color === 'azul'){
     document.documentElement.style.setProperty('--carton','#1b1b1b');
@@ -429,7 +446,7 @@ function cambiarTema(color){
   localStorage.setItem("temaBingo", color);
 }
 
-/* Guía 5x5 */
+/* guía 5x5 */
 function crearGuia(){
   const tabla = document.getElementById("tablaGuia");
   tabla.innerHTML = '';
@@ -456,7 +473,6 @@ function crearGuia(){
     tabla.appendChild(fila);
   }
 }
-
 function aplicarGuiaBordes(){
   document.querySelectorAll('#cartonesContainer td').forEach(td => td.classList.remove('invisibleNumero'));
   const posicionesGuia = Array.from(document.querySelectorAll('#tablaGuia td.relleno')).map(c=>c.dataset.pos);
@@ -467,8 +483,6 @@ function aplicarGuiaBordes(){
     else td.classList.remove('invisibleNumero');
   });
 }
-
-/* Persistencia guia */
 function guardarGuia(){
   const rellenos=[];
   document.querySelectorAll('#tablaGuia td.relleno').forEach(celda=> rellenos.push(celda.dataset.pos));
@@ -485,7 +499,7 @@ function restaurarGuia(){
   });
 }
 
-/* Observer to re-apply keyboard listeners if needed */
+/* observer para reaplicar listeners teclado si se necesita */
 function attachAllCellListeners(){ document.querySelectorAll('#cartonesContainer .carton').forEach(div => attachCellListeners(div)); }
 const observer = new MutationObserver(()=>{ attachAllCellListeners(); aplicarGuiaBordes(); });
 observer.observe(document.getElementById('cartonesContainer'), { childList: true, subtree: true });
@@ -493,3 +507,4 @@ observer.observe(document.getElementById('cartonesContainer'), { childList: true
 </script>
 </body>
 </html>
+```
