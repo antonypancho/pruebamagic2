@@ -1,6 +1,3 @@
-### index.html
-
-```html
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -17,18 +14,15 @@
     --borde: #ffffff;
     --free-bg: #444444;
 
-    /* Zoom proporcional */
     --escalaCarton: 1;
     --tamanoCelda: 50px;
     --tamanoFuente: 28px;
     --tamanoFuenteHeader: 24px;
 
-    /* Layout */
     --altoHeader: 92px;
     --gap: 12px;
   }
 
-  /* Global */
   *, *::before, *::after { box-sizing: border-box; }
   html, body { height: 100%; }
   body {
@@ -42,7 +36,6 @@
     padding-top: var(--altoHeader);
   }
 
-  /* Header fijo corregido */
   header {
     background:#191d34;
     padding:16px 20px;
@@ -68,7 +61,6 @@
     line-height:1;
   }
 
-  /* Toolbar */
   .toolbar {
     background:#121528;
     color:#fff;
@@ -103,7 +95,6 @@
   h1 { margin:20px 0 10px; font-size:1.4rem; }
   h2 { margin:10px 0 18px; color:#ffeb3b; font-size:1rem; }
 
-  /* Guía de figura */
   #guiaFigura {
     margin: 8px auto 18px;
     display: inline-block;
@@ -128,7 +119,6 @@
   #tablaGuia td.relleno { background: #ff9800; color: #fff; }
   #tablaGuia td.centro { font-weight: bold; cursor: default; background: #eaeaea; color:#000; }
 
-  /* Cartones */
   #cartonesContainer {
     display: flex;
     flex-wrap: wrap;
@@ -146,6 +136,23 @@
     box-shadow: 0 6px 18px rgba(0,0,0,0.25);
   }
   .carton h3 { margin:0 0 10px; color:#00d4ff; font-size:1rem; }
+
+  /* Controls individual cartón */
+  .carton .carton-controls {
+    display:flex;
+    gap:8px;
+    justify-content:center;
+    margin-top:8px;
+  }
+  .carton .carton-controls button {
+    padding:6px 8px;
+    font-size:0.9rem;
+    border-radius:6px;
+    border:none;
+    cursor:pointer;
+    background: linear-gradient(135deg,#ff6b6b,#ff9a9e);
+    color:#fff;
+  }
 
   table { border-collapse: collapse; margin: auto; }
   th {
@@ -175,7 +182,6 @@
   td.marcado1 { background:var(--marcado); color:#fff; }
   td.bordeGuia { outline: 3px solid #0542b4; outline-offset: -3px; }
 
-  /* Ocultar visualmente pero permitir interacciones si se desea */
   .invisibleNumero { color: transparent; transition: color 0.22s ease; }
 
   #status { margin-top:8px; font-size:0.9em; color:#ccc; min-height:1.2em; }
@@ -189,7 +195,6 @@
     background:#191d34;
   }
 
-  /* Responsive */
   @media (max-width: 640px) {
     header img { height:48px; max-width: 28%; }
     :root { --tamanoFuente: 20px; --tamanoCelda: 44px; --tamanoFuenteHeader: 18px; --altoHeader: 84px; }
@@ -325,6 +330,51 @@ function renderCarton(numero){
   div.className = "carton";
   div.dataset.numero = numero;
   div.innerHTML = `<h3>Cartón ${numero}</h3><table>${crearTabla(carton, numero)}</table>`;
+
+  // Controles individuales (Quitar)
+  const controls = document.createElement('div');
+  controls.className = 'carton-controls';
+  const quitarBtnInd = document.createElement('button');
+  quitarBtnInd.type = 'button';
+  quitarBtnInd.textContent = 'Quitar cartón';
+  quitarBtnInd.title = `Quitar cartón ${numero}`;
+  quitarBtnInd.addEventListener('click', () => {
+    const ok = confirm(`¿Quitar el cartón ${numero}?`);
+    if (!ok) return;
+
+    // Remover del DOM
+    div.remove();
+
+    // Actualizar array de mostrados
+    const idx = cartonesMostrados.indexOf(numero);
+    if (idx > -1) cartonesMostrados.splice(idx, 1);
+
+    // Actualizar estado guardado: filtrar marcados que pertenezcan a cartones restantes
+    const estadoStr = localStorage.getItem('estadoCartones');
+    if (estadoStr) {
+      try {
+        const estado = JSON.parse(estadoStr);
+        if (Array.isArray(estado.marcados)) {
+          estado.marcados = estado.marcados.filter(m => {
+            return cartonesMostrados.includes(parseInt(m.carton, 10));
+          });
+        }
+        estado.cartones = cartonesMostrados.slice();
+        localStorage.setItem('estadoCartones', JSON.stringify(estado));
+      } catch (e) {
+        guardarEstado();
+      }
+    } else {
+      guardarEstado();
+    }
+
+    aplicarGuiaBordes();
+    statusEl.textContent = `Cartón ${numero} eliminado.`;
+  });
+
+  controls.appendChild(quitarBtnInd);
+  div.appendChild(controls);
+
   document.getElementById("cartonesContainer").appendChild(div);
   cartonesMostrados.push(numero);
   aplicarGuiaBordes();
@@ -366,7 +416,6 @@ function cambiarColor(td){
   guardarEstado();
 }
 
-/* Limpieza y quitar */
 function limpiarMarcas(){
   document.querySelectorAll('#cartonesContainer td.marcado1').forEach(td => td.classList.remove('marcado1'));
   guardarEstado();
@@ -384,13 +433,13 @@ function quitarCartones(){
   crearGuia();
 }
 
-/* Estado persistente */
+/* Persistencia de cartones y marcas */
 function guardarEstado(){
   const estado = { cartones: cartonesMostrados.slice(), marcados: [] };
   document.querySelectorAll('#cartonesContainer td.marcado1').forEach(td => {
     const carton = td.dataset.carton;
     const pos = td.dataset.pos;
-    estado.marcados.push({ carton, pos });
+    estado.marcados.push({carton, pos});
   });
   localStorage.setItem("estadoCartones", JSON.stringify(estado));
 }
@@ -405,7 +454,6 @@ function restaurarEstado(){
     estado.cartones.forEach(num => renderCarton(num));
   }
   if (Array.isArray(estado.marcados)) {
-    // aplicar marcas después de renderizar las tablas
     setTimeout(() => {
       estado.marcados.forEach(m => {
         const td = document.querySelector(`#cartonesContainer td[data-carton="${m.carton}"][data-pos="${m.pos}"]`);
@@ -501,7 +549,7 @@ function aplicarGuiaBordes() {
   });
 }
 
-/* Persistencia guía */
+/* Persistencia guia */
 function guardarGuia(){
   const rellenos = [];
   document.querySelectorAll('#tablaGuia td.relleno').forEach(celda => rellenos.push(celda.dataset.pos));
@@ -524,7 +572,6 @@ function attachAllCellListeners(){
   document.querySelectorAll('#cartonesContainer .carton').forEach(div => attachCellListeners(div));
 }
 
-/* Escucha cambios en cartonesContainer para asegurar listeners (util cuando restorState renderiza) */
 const observer = new MutationObserver(() => {
   attachAllCellListeners();
   aplicarGuiaBordes();
@@ -534,4 +581,3 @@ observer.observe(document.getElementById('cartonesContainer'), { childList: true
 </script>
 </body>
 </html>
-```
