@@ -13,6 +13,7 @@
     --marcado: #2196f3;
     --borde: #ffffff;
     --free-bg: #444444;
+    --titulo-carton: #00d4ff;
 
     --escalaCarton: 1;
     --tamanoCelda: 50px;
@@ -136,7 +137,7 @@
     min-width: calc(5 * var(--tamanoCelda) * 0.8);
     box-shadow: 0 6px 18px rgba(0,0,0,0.25);
   }
-  .carton h3 { margin:0 0 10px; color:#00d4ff; font-size:1rem; }
+  .carton h3 { margin:0 0 10px; color: var(--titulo-carton); font-size:1rem; }
 
   /* Botón pequeño X en la esquina superior derecha */
   .carton .close-btn {
@@ -492,30 +493,28 @@ function ajustarZoom(delta){
 }
 
 /* Temas */
-function cambiarTema(color){
-  if (color === 'azul'){
-    document.documentElement.style.setProperty('--fondo', 'radial-gradient(circle at top, #6c5ce7, #0e1020)');
-    document.documentElement.style.setProperty('--carton', '#1b1b1b');
-    document.documentElement.style.setProperty('--texto', '#ffffff');
-    document.documentElement.style.setProperty('--marcado', '#2196f3');
-    document.documentElement.style.setProperty('--borde', '#ada8a8');
-    document.documentElement.style.setProperty('--free-bg', '#444444');
-  } else if (color === 'verde'){
-    document.documentElement.style.setProperty('--fondo', 'linear-gradient(180deg,#ffffff,#dde7dd)');
-    document.documentElement.style.setProperty('--carton', '#f5f5f5');
-    document.documentElement.style.setProperty('--texto', '#000000');
-    document.documentElement.style.setProperty('--marcado', '#4caf50');
-    document.documentElement.style.setProperty('--borde', '#333333');
-    document.documentElement.style.setProperty('--free-bg', '#e0e0e0');
-  } else if (color === 'morado'){
-    document.documentElement.style.setProperty('--fondo', 'radial-gradient(circle at top, #7b1fa2, #2c0b2f)');
-    document.documentElement.style.setProperty('--carton', '#f8bbd0');
-    document.documentElement.style.setProperty('--texto', '#000000');
-    document.documentElement.style.setProperty('--marcado', '#e91e63');
-    document.documentElement.style.setProperty('--borde', '#ffffff');
-  }
-  localStorage.setItem("temaBingo", color);
+if (color === 'azul'){
+  document.documentElement.style.setProperty('--carton', '#1b1b1b');
+  document.documentElement.style.setProperty('--texto', '#ffffff');
+  document.documentElement.style.setProperty('--marcado', '#2196f3');
+  document.documentElement.style.setProperty('--borde', '#ada8a8');
+  document.documentElement.style.setProperty('--free-bg', '#444444');
+  document.documentElement.style.setProperty('--titulo-carton', '#00d4ff');
+} else if (color === 'verde'){
+  document.documentElement.style.setProperty('--carton', '#f5f5f5');
+  document.documentElement.style.setProperty('--texto', '#000000');
+  document.documentElement.style.setProperty('--marcado', '#4caf50');
+  document.documentElement.style.setProperty('--borde', '#333333');
+  document.documentElement.style.setProperty('--free-bg', '#e0e0e0');
+  document.documentElement.style.setProperty('--titulo-carton', '#2e7d32'); /* ejemplo verde oscuro */
+} else if (color === 'morado'){
+  document.documentElement.style.setProperty('--carton', '#f8bbd0');
+  document.documentElement.style.setProperty('--texto', '#000000');
+  document.documentElement.style.setProperty('--marcado', '#e91e63');
+  document.documentElement.style.setProperty('--borde', '#ffffff');
+  document.documentElement.style.setProperty('--titulo-carton', '#6a1b9a'); /* ejemplo morado */
 }
+
 
 /* Guía 5x5 */
 function crearGuia(){
@@ -601,3 +600,4 @@ observer.observe(document.getElementById('cartonesContainer'), { childList: true
 </script>
 </body>
 </html>
+
