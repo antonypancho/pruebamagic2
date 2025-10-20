@@ -19,7 +19,7 @@
     --tamanoFuente:28px;
     --tamanoFuenteHeader:24px;
 
-    --altoTop: 132px; /* altura combinada topbar (header + toolbar) */
+    --altoTop: 132px;
     --gap:12px;
 
     --titulo-carton: #00d4ff;
@@ -35,21 +35,19 @@
     text-align:center;
     -webkit-font-smoothing:antialiased;
     -moz-osx-font-smoothing:grayscale;
-    padding-top:var(--altoTop); /* espacio para el top fijo */
+    padding-top:var(--altoTop);
   }
 
-  /* Topbar (encapsula header + toolbar) fijo y sin depender de transform en ancestros */
   .topbar{
     position: fixed !important;
-    inset: 0 auto auto 0; /* top:0; left:0; right:auto (compatible) */
     top: 0;
     left: 0;
     right: 0;
     z-index: 99999;
     display:flex;
     flex-direction:column;
-    background: transparent; /* header y toolbar tienen sus propios fondos */
-    pointer-events: none; /* permite que los elementos internos gestionen eventos */
+    background: transparent;
+    pointer-events: none;
   }
 
   header{
@@ -116,7 +114,7 @@
   footer{ margin-top:28px; padding:16px; text-align:center; font-size:.9rem; color:#aaa; background:#191d34; }
 
   @media (max-width:640px){
-    .topbar{ /* asegurar que la topbar ocupe todo el ancho en móviles */ width:100%; left:0; right:0; }
+    .topbar{ width:100%; left:0; right:0; }
     header img{ height:48px; max-width:28%; }
     :root{ --tamanoFuente:20px; --tamanoCelda:44px; --tamanoFuenteHeader:18px; --altoTop:112px; }
     .carton{ min-width:calc(5 * var(--tamanoCelda) * 0.9); }
@@ -127,7 +125,6 @@
 </head>
 <body>
 
-<!-- Topbar envuelve header + toolbar y está fijada -->
 <div class="topbar" aria-hidden="false">
   <header role="banner">
     <img src="logo.png" alt="Logo Bingo 8pm">
@@ -177,6 +174,7 @@ const quitarBtn = document.getElementById('quitarBtn');
 const statusEl = document.getElementById('status');
 const zoomInBtn = document.getElementById('zoomIn');
 const zoomOutBtn = document.getElementById('zoomOut');
+const cartonesContainer = document.getElementById('cartonesContainer');
 
 document.addEventListener('DOMContentLoaded', () => {
   const temaGuardado = localStorage.getItem("temaBingo");
@@ -200,6 +198,22 @@ document.addEventListener('DOMContentLoaded', () => {
   quitarBtn.addEventListener('click', quitarCartones);
   zoomInBtn.addEventListener('click', () => ajustarZoom(0.1));
   zoomOutBtn.addEventListener('click', () => ajustarZoom(-0.1));
+
+  // Delegación: asegurar que cualquier <td> (nuevo o existente) responda a clic y teclado
+  cartonesContainer.addEventListener('click', (e) => {
+    const td = e.target.closest('td');
+    if (!td || !cartonesContainer.contains(td)) return;
+    if (td.classList.contains('free')) return;
+    cambiarColor(td);
+  });
+  cartonesContainer.addEventListener('keydown', (e) => {
+    if (e.key !== 'Enter' && e.key !== ' ') return;
+    const td = e.target.closest('td');
+    if (!td || !cartonesContainer.contains(td)) return;
+    if (td.classList.contains('free')) return;
+    e.preventDefault();
+    cambiarColor(td);
+  });
 });
 
 /* CSV */
@@ -253,8 +267,11 @@ function renderCarton(numero){
   const div = document.createElement("div");
   div.className = "carton";
   div.dataset.numero = numero;
+
+  // Encabezado + tabla
   div.innerHTML = `<h3>Cartón ${numero}</h3><table>${crearTabla(carton, numero)}</table>`;
 
+  // Botón X
   const closeBtn = document.createElement('button');
   closeBtn.className = 'close-btn';
   closeBtn.type = 'button';
@@ -265,10 +282,10 @@ function renderCarton(numero){
     if (!ok) return;
 
     div.remove();
-
     const idx = cartonesMostrados.indexOf(numero);
     if (idx > -1) cartonesMostrados.splice(idx, 1);
 
+    // actualizar estado guardado
     const estadoStr = localStorage.getItem('estadoCartones');
     if (estadoStr) {
       try {
@@ -291,9 +308,11 @@ function renderCarton(numero){
 
   div.appendChild(closeBtn);
 
-  document.getElementById("cartonesContainer").appendChild(div);
+  cartonesContainer.appendChild(div);
   cartonesMostrados.push(numero);
   aplicarGuiaBordes();
+  // attachCellListeners not required because delegation handles clicks,
+  // but keep for keyboard tabindex support on newly added cells
   attachCellListeners(div);
 }
 
@@ -316,12 +335,14 @@ function crearTabla(carton, numero){
   return html;
 }
 
-/* Delegación de eventos para celdas */
+/* Añade listeners de teclado y mejora accesibilidad en celdas nuevas */
 function attachCellListeners(root){
   root.querySelectorAll('td').forEach(td => {
     if (!td.classList.contains('free')) {
-      td.addEventListener('click', () => cambiarColor(td));
-      td.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); cambiarColor(td); } });
+      td.setAttribute('tabindex', td.getAttribute('tabindex') ?? 0);
+      td.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); cambiarColor(td); }
+      });
     }
   });
 }
@@ -341,7 +362,7 @@ function limpiarMarcas(){
 }
 
 function quitarCartones(){
-  document.getElementById("cartonesContainer").innerHTML = '';
+  cartonesContainer.innerHTML = '';
   cartonesMostrados = [];
   localStorage.removeItem("estadoCartones");
   statusEl.textContent = 'Se quitaron los cartones y se limpió tu almacenamiento.';
@@ -428,8 +449,12 @@ function crearGuia(){
         celda.setAttribute('aria-hidden','true');
       } else {
         celda.tabIndex = 0;
-        celda.addEventListener('click', () => { celda.classList.toggle('relleno'); guardarGuia(); aplicarGuiaBordes(); });
-        celda.addEventListener('keydown', (e)=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); celda.click(); }});
+        celda.addEventListener('click', () => {
+          celda.classList.toggle('relleno');
+          guardarGuia();
+          aplicarGuiaBordes();
+        });
+        celda.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); celda.click(); }});
       }
       fila.appendChild(celda);
     }
@@ -465,11 +490,12 @@ function restaurarGuia(){
   });
 }
 
-/* Listeners y observer */
-function attachAllCellListeners(){ document.querySelectorAll('#cartonesContainer .carton').forEach(div => attachCellListeners(div)); }
+/* Observer to re-apply keyboard listeners if needed */
+function attachAllCellListeners(){
+  document.querySelectorAll('#cartonesContainer .carton').forEach(div => attachCellListeners(div));
+}
 const observer = new MutationObserver(()=>{ attachAllCellListeners(); aplicarGuiaBordes(); });
 observer.observe(document.getElementById('cartonesContainer'), { childList: true, subtree: true });
-
 </script>
 </body>
 </html>
