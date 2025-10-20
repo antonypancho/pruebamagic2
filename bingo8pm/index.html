@@ -1,6 +1,3 @@
-### index.html
-
-```html
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -9,253 +6,150 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="icon" href="logo.png">
 <style>
-  :root {
-    /* Fondo uniforme: cambia este color por el que prefieras */
-    --fondo: #2b0f4d;
+  :root{
+    --fondo:#2b0f4d;
+    --texto:#ffffff;
+    --carton:#1b1b1b;
+    --marcado:#2196f3;
+    --borde:#ffffff;
+    --free-bg:#444444;
 
-    --texto: #ffffff;
-    --carton: #1b1b1b;
-    --marcado: #2196f3;
-    --borde: #ffffff;
-    --free-bg: #444444;
+    --escalaCarton:1;
+    --tamanoCelda:50px;
+    --tamanoFuente:28px;
+    --tamanoFuenteHeader:24px;
 
-    --escalaCarton: 1;
-    --tamanoCelda: 50px;
-    --tamanoFuente: 28px;
-    --tamanoFuenteHeader: 24px;
+    --altoTop: 132px; /* altura combinada topbar (header + toolbar) */
+    --gap:12px;
 
-    /* Alto del header fijo (ajusta si cambias padding/imagen) */
-    --altoHeader: 92px;
-    --gap: 12px;
-
-    /* Título del cartón dependiente del tema */
     --titulo-carton: #00d4ff;
   }
 
-  *, *::before, *::after { box-sizing: border-box; }
-  html, body { height: 100%; }
-  body {
-    margin: 0;
-    font-family: 'Segoe UI', Arial, sans-serif;
-    background: var(--fondo);
-    color: var(--texto);
-    text-align: center;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-    padding-top: var(--altoHeader);
+  *,*::before,*::after{box-sizing:border-box;}
+  html,body{height:100%;}
+  body{
+    margin:0;
+    font-family:'Segoe UI',Arial,sans-serif;
+    background:var(--fondo);
+    color:var(--texto);
+    text-align:center;
+    -webkit-font-smoothing:antialiased;
+    -moz-osx-font-smoothing:grayscale;
+    padding-top:var(--altoTop); /* espacio para el top fijo */
   }
 
-  /* Header fijo y visible sobre todo */
-  header {
+  /* Topbar (encapsula header + toolbar) fijo y sin depender de transform en ancestros */
+  .topbar{
+    position: fixed !important;
+    inset: 0 auto auto 0; /* top:0; left:0; right:auto (compatible) */
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 99999;
+    display:flex;
+    flex-direction:column;
+    background: transparent; /* header y toolbar tienen sus propios fondos */
+    pointer-events: none; /* permite que los elementos internos gestionen eventos */
+  }
+
+  header{
+    pointer-events: auto;
     background:#191d34;
-    padding:16px 20px;
+    padding:12px 20px;
     display:flex;
     align-items:center;
     gap:16px;
     box-shadow:0 2px 6px rgba(0,0,0,0.4);
-    position: fixed;
-    left: 0;
-    top: 0;
-    width: 100%;
-    z-index: 9999;
   }
-  header img {
-    height: 56px;
-    max-width: 40%;
-    object-fit: contain;
-  }
-  header h1 {
-    margin:0;
-    font-size:1.6rem;
-    color:#ffeb3b;
-    line-height:1;
-  }
+  header img{ height:56px; max-width:40%; object-fit:contain; }
+  header h1{ margin:0; font-size:1.6rem; color:#ffeb3b; line-height:1; }
 
-  .toolbar {
+  .toolbar{
+    pointer-events: auto;
     background:#121528;
     color:#fff;
-    padding:12px;
+    padding:10px 12px;
     display:flex;
     justify-content:center;
     align-items:center;
     gap:var(--gap);
-    flex-wrap: wrap;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+    flex-wrap:wrap;
+    box-shadow:0 2px 6px rgba(0,0,0,0.25);
     border-bottom:1px solid rgba(255,255,255,0.08);
   }
-  main { padding: 16px; max-width: 1200px; margin: 0 auto; }
-  .toolbar input,
-  .toolbar button {
-    padding:10px 14px;
-    font-size:15px;
-    border-radius:8px;
-    border:none;
-  }
-  .toolbar button {
-    background:linear-gradient(135deg,#00d4ff,#6c5ce7);
-    color:#fff;
-    cursor:pointer;
-    transition: transform 0.15s, box-shadow 0.15s;
-  }
-  .toolbar button:hover { transform: translateY(-2px); box-shadow:0 4px 10px rgba(0,0,0,0.25); }
 
-  .temas { display:flex; gap:8px; margin-left:6px; }
-  .tema { width:24px; height:24px; border-radius:50%; cursor:pointer; border:2px solid #fff; }
+  main{ padding:16px; max-width:1200px; margin:0 auto; }
 
-  h1 { margin:20px 0 10px; font-size:1.4rem; }
-  h2 { margin:10px 0 18px; color:#ffeb3b; font-size:1rem; }
+  .toolbar input,.toolbar button{ padding:10px 14px; font-size:15px; border-radius:8px; border:none; }
+  .toolbar button{ background:linear-gradient(135deg,#00d4ff,#6c5ce7); color:#fff; cursor:pointer; transition:transform .15s, box-shadow .15s; }
+  .toolbar button:hover{ transform:translateY(-2px); box-shadow:0 4px 10px rgba(0,0,0,.25); }
 
-  #guiaFigura {
-    margin: 8px auto 18px;
-    display: inline-block;
-    background: #f5f5f5;
-    padding: 10px;
-    border-radius: 10px;
-    border: 1px solid #ddd;
-    box-shadow:0 4px 10px rgba(0,0,0,0.12);
-    color: #000;
-  }
-  #tablaGuia { border-collapse: collapse; }
-  #tablaGuia td {
-    width: 40px; height: 40px;
-    border: 1px solid #bbb;
-    text-align: center;
-    font-size: 18px;
-    cursor: pointer;
-    transition: all 0.16s ease;
-    font-weight: bold;
-    background: #fff;
-  }
-  #tablaGuia td.relleno { background: #ff9800; color: #fff; }
-  #tablaGuia td.centro { font-weight: bold; cursor: default; background: #eaeaea; color:#000; }
+  .temas{ display:flex; gap:8px; margin-left:6px; }
+  .tema{ width:24px; height:24px; border-radius:50%; cursor:pointer; border:2px solid #fff; }
 
-  #cartonesContainer {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 12px;
-    padding: 8px 0 24px;
-  }
-  .carton {
-    position: relative;
-    display: inline-block;
-    margin: 6px;
-    padding: 10px;
-    background: var(--carton);
-    border-radius: 8px;
-    min-width: calc(5 * var(--tamanoCelda) * 0.8);
-    box-shadow: 0 6px 18px rgba(0,0,0,0.25);
-  }
-  .carton h3 { margin:0 0 10px; color: var(--titulo-carton); font-size:1rem; }
+  h1{ margin:20px 0 10px; font-size:1.4rem; }
+  h2{ margin:10px 0 18px; color:#ffeb3b; font-size:1rem; }
 
-  /* Botón pequeño X (cerrar) en la esquina superior derecha */
-  .carton .close-btn {
-    position: absolute;
-    top: 6px;
-    right: 6px;
-    width:28px;
-    height:28px;
-    border-radius: 6px;
-    border: none;
-    background: rgba(0,0,0,0.45);
-    color: #fff;
-    font-weight: bold;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    cursor:pointer;
-    transition: background 0.15s, transform 0.08s;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.4);
-  }
-  .carton .close-btn:hover { background: rgba(255,0,0,0.85); transform: translateY(-1px); }
+  #guiaFigura{ margin:8px auto 18px; display:inline-block; background:#f5f5f5; padding:10px; border-radius:10px; border:1px solid #ddd; box-shadow:0 4px 10px rgba(0,0,0,.12); color:#000; }
+  #tablaGuia{ border-collapse:collapse; }
+  #tablaGuia td{ width:40px; height:40px; border:1px solid #bbb; text-align:center; font-size:18px; cursor:pointer; transition:all .16s ease; font-weight:bold; background:#fff; }
+  #tablaGuia td.relleno{ background:#ff9800; color:#fff; }
+  #tablaGuia td.centro{ font-weight:bold; cursor:default; background:#eaeaea; color:#000; }
 
-  .carton .carton-controls {
-    display:flex;
-    gap:8px;
-    justify-content:center;
-    margin-top:8px;
-  }
-  .carton .carton-controls button {
-    padding:6px 8px;
-    font-size:0.9rem;
-    border-radius:6px;
-    border:none;
-    cursor:pointer;
-    background: linear-gradient(135deg,#ff6b6b,#ff9a9e);
-    color:#fff;
-  }
+  #cartonesContainer{ display:flex; flex-wrap:wrap; justify-content:center; gap:12px; padding:8px 0 24px; }
+  .carton{ position:relative; display:inline-block; margin:6px; padding:10px; background:var(--carton); border-radius:8px; min-width:calc(5 * var(--tamanoCelda) * 0.8); box-shadow:0 6px 18px rgba(0,0,0,.25); }
+  .carton h3{ margin:0 0 10px; color:var(--titulo-carton); font-size:1rem; }
 
-  table { border-collapse: collapse; margin: auto; }
-  th {
-    width: calc(var(--tamanoCelda) * var(--escalaCarton));
-    height: calc(40px * var(--escalaCarton));
-    border:1px solid var(--borde);
-    font-size: calc(var(--tamanoFuenteHeader) * var(--escalaCarton));
-    color:#ffeb3b;
-    text-align:center;
-    padding:4px;
-  }
-  td {
-    width: calc(var(--tamanoCelda) * var(--escalaCarton));
-    height: calc(var(--tamanoCelda) * var(--escalaCarton));
-    border:1px solid var(--borde);
-    cursor:pointer;
-    font-weight:bold;
-    text-align:center;
-    font-size: calc(var(--tamanoFuente) * var(--escalaCarton));
-    color: var(--texto);
-    background: transparent;
-    position: relative;
-    padding: 4px;
-    user-select: none;
-  }
-  td.free { background: var(--free-bg); color:#000; cursor:default; }
-  td.marcado1 { background:var(--marcado); color:#fff; }
+  .carton .close-btn{ position:absolute; top:6px; right:6px; width:28px; height:28px; border-radius:6px; border:none; background:rgba(0,0,0,.45); color:#fff; font-weight:bold; display:flex; align-items:center; justify-content:center; cursor:pointer; transition:background .15s, transform .08s; box-shadow:0 2px 6px rgba(0,0,0,.4); }
+  .carton .close-btn:hover{ background:rgba(255,0,0,.85); transform:translateY(-1px); }
 
-  .invisibleNumero { color: transparent; transition: color 0.22s ease; }
+  table{ border-collapse:collapse; margin:auto; }
+  th{ width:calc(var(--tamanoCelda) * var(--escalaCarton)); height:calc(40px * var(--escalaCarton)); border:1px solid var(--borde); font-size:calc(var(--tamanoFuenteHeader) * var(--escalaCarton)); color:#ffeb3b; text-align:center; padding:4px; }
+  td{ width:calc(var(--tamanoCelda) * var(--escalaCarton)); height:calc(var(--tamanoCelda) * var(--escalaCarton)); border:1px solid var(--borde); cursor:pointer; font-weight:bold; text-align:center; font-size:calc(var(--tamanoFuente) * var(--escalaCarton)); color:var(--texto); background:transparent; position:relative; padding:4px; user-select:none; }
+  td.free{ background:var(--free-bg); color:#000; cursor:default; }
+  td.marcado1{ background:var(--marcado); color:#fff; }
 
-  #status { margin-top:8px; font-size:0.9em; color:#ccc; min-height:1.2em; }
+  .invisibleNumero{ color:transparent; transition:color .22s ease; }
 
-  footer {
-    margin-top:28px;
-    padding:16px;
-    text-align:center;
-    font-size:0.9rem;
-    color:#aaa;
-    background:#191d34;
-  }
+  #status{ margin-top:8px; font-size:.9em; color:#ccc; min-height:1.2em; }
 
-  @media (max-width: 640px) {
-    header img { height:48px; max-width: 28%; }
-    :root { --tamanoFuente: 20px; --tamanoCelda: 44px; --tamanoFuenteHeader: 18px; --altoHeader: 84px; }
-    .carton { min-width: calc(5 * var(--tamanoCelda) * 0.9); }
-    #tablaGuia td { width:34px; height:34px; font-size:16px; }
-    .carton .close-btn { width:26px; height:26px; top:4px; right:4px; font-size:0.9rem; }
+  footer{ margin-top:28px; padding:16px; text-align:center; font-size:.9rem; color:#aaa; background:#191d34; }
+
+  @media (max-width:640px){
+    .topbar{ /* asegurar que la topbar ocupe todo el ancho en móviles */ width:100%; left:0; right:0; }
+    header img{ height:48px; max-width:28%; }
+    :root{ --tamanoFuente:20px; --tamanoCelda:44px; --tamanoFuenteHeader:18px; --altoTop:112px; }
+    .carton{ min-width:calc(5 * var(--tamanoCelda) * 0.9); }
+    #tablaGuia td{ width:34px; height:34px; font-size:16px; }
+    .carton .close-btn{ width:26px; height:26px; top:4px; right:4px; font-size:.9rem; }
   }
 </style>
 </head>
 <body>
 
-<header role="banner">
-  <img src="logo.png" alt="Logo Bingo 8pm">
-  <h1>🎉 Bingo Magic 8:00pm</h1>
-</header>
+<!-- Topbar envuelve header + toolbar y está fijada -->
+<div class="topbar" aria-hidden="false">
+  <header role="banner">
+    <img src="logo.png" alt="Logo Bingo 8pm">
+    <h1>🎉 Bingo Magic 8:00pm</h1>
+  </header>
 
-<div class="toolbar" role="region" aria-label="Barra de herramientas">
-  <input type="number" id="cartonInput" placeholder="Número de cartón" aria-label="Número de cartón">
-  <button id="agregarBtn" disabled aria-label="Agregar cartón">Agregar</button>
-  <button id="limpiarBtn" aria-label="Limpiar marcas">Limpiar</button>
-  <button id="quitarBtn" aria-label="Quitar cartones">Quitar</button>
-  <button id="zoomIn" aria-label="Aumentar zoom">+</button>
-  <button id="zoomOut" aria-label="Disminuir zoom">-</button>
+  <div class="toolbar" role="region" aria-label="Barra de herramientas">
+    <input type="number" id="cartonInput" placeholder="Número de cartón" aria-label="Número de cartón">
+    <button id="agregarBtn" disabled aria-label="Agregar cartón">Agregar</button>
+    <button id="limpiarBtn" aria-label="Limpiar marcas">Limpiar</button>
+    <button id="quitarBtn" aria-label="Quitar cartones">Quitar</button>
+    <button id="zoomIn" aria-label="Aumentar zoom">+</button>
+    <button id="zoomOut" aria-label="Disminuir zoom">-</button>
 
-  <div class="temas" role="toolbar" aria-label="Temas">
-    <div class="tema" style="background:#000000;" onclick="cambiarTema('azul')" title="Azul (oscuro)" role="button" tabindex="0"></div>
-    <div class="tema" style="background:#ffffff;" onclick="cambiarTema('verde')" title="Verde (claro)" role="button" tabindex="0"></div>
-    <div class="tema" style="background:#9c27b0;" onclick="cambiarTema('morado')" title="Morado (oscuro)" role="button" tabindex="0"></div>
+    <div class="temas" role="toolbar" aria-label="Temas">
+      <div class="tema" style="background:#000000;" onclick="cambiarTema('azul')" title="Azul (oscuro)" role="button" tabindex="0"></div>
+      <div class="tema" style="background:#ffffff;" onclick="cambiarTema('verde')" title="Verde (claro)" role="button" tabindex="0"></div>
+      <div class="tema" style="background:#9c27b0;" onclick="cambiarTema('morado')" title="Morado (oscuro)" role="button" tabindex="0"></div>
+    </div>
+
+    <div id="status" aria-live="polite"></div>
   </div>
-
-  <div id="status" aria-live="polite"></div>
 </div>
 
 <main>
@@ -287,14 +181,10 @@ const zoomOutBtn = document.getElementById('zoomOut');
 document.addEventListener('DOMContentLoaded', () => {
   const temaGuardado = localStorage.getItem("temaBingo");
   if (temaGuardado) cambiarTema(temaGuardado);
-  else {
-    document.documentElement.style.setProperty('--titulo-carton', '#00d4ff');
-  }
+  else document.documentElement.style.setProperty('--titulo-carton', '#00d4ff');
 
   const zoomGuardado = localStorage.getItem("zoomCarton");
-  if (zoomGuardado) {
-    document.documentElement.style.setProperty('--escalaCarton', zoomGuardado);
-  }
+  if (zoomGuardado) document.documentElement.style.setProperty('--escalaCarton', zoomGuardado);
 
   crearGuia();
   restaurarGuia();
@@ -384,9 +274,7 @@ function renderCarton(numero){
       try {
         const estado = JSON.parse(estadoStr);
         if (Array.isArray(estado.marcados)) {
-          estado.marcados = estado.marcados.filter(m => {
-            return cartonesMostrados.includes(parseInt(m.carton, 10));
-          });
+          estado.marcados = estado.marcados.filter(m => cartonesMostrados.includes(parseInt(m.carton,10)));
         }
         estado.cartones = cartonesMostrados.slice();
         localStorage.setItem('estadoCartones', JSON.stringify(estado));
@@ -461,13 +349,13 @@ function quitarCartones(){
   crearGuia();
 }
 
-/* Persistencia de cartones y marcas */
+/* Persistencia */
 function guardarEstado(){
   const estado = { cartones: cartonesMostrados.slice(), marcados: [] };
   document.querySelectorAll('#cartonesContainer td.marcado1').forEach(td => {
     const carton = td.dataset.carton;
     const pos = td.dataset.pos;
-    estado.marcados.push({carton, pos});
+    estado.marcados.push({carton,pos});
   });
   localStorage.setItem("estadoCartones", JSON.stringify(estado));
 }
@@ -478,9 +366,7 @@ function restaurarEstado(){
   let estado;
   try { estado = JSON.parse(estadoStr); } catch { return; }
 
-  if (Array.isArray(estado.cartones)) {
-    estado.cartones.forEach(num => renderCarton(num));
-  }
+  if (Array.isArray(estado.cartones)) estado.cartones.forEach(num => renderCarton(num));
   if (Array.isArray(estado.marcados)) {
     setTimeout(() => {
       estado.marcados.forEach(m => {
@@ -504,28 +390,28 @@ function ajustarZoom(delta){
 /* Temas */
 function cambiarTema(color){
   if (color === 'azul'){
-    document.documentElement.style.setProperty('--fondo', '#2b0f4d');
-    document.documentElement.style.setProperty('--carton', '#1b1b1b');
-    document.documentElement.style.setProperty('--texto', '#ffffff');
-    document.documentElement.style.setProperty('--marcado', '#2196f3');
-    document.documentElement.style.setProperty('--borde', '#ada8a8');
-    document.documentElement.style.setProperty('--free-bg', '#444444');
-    document.documentElement.style.setProperty('--titulo-carton', '#00d4ff');
+    document.documentElement.style.setProperty('--fondo','#2b0f4d');
+    document.documentElement.style.setProperty('--carton','#1b1b1b');
+    document.documentElement.style.setProperty('--texto','#ffffff');
+    document.documentElement.style.setProperty('--marcado','#2196f3');
+    document.documentElement.style.setProperty('--borde','#ada8a8');
+    document.documentElement.style.setProperty('--free-bg','#444444');
+    document.documentElement.style.setProperty('--titulo-carton','#00d4ff');
   } else if (color === 'verde'){
-    document.documentElement.style.setProperty('--fondo', '#e9f5ea');
-    document.documentElement.style.setProperty('--carton', '#f5f5f5');
-    document.documentElement.style.setProperty('--texto', '#000000');
-    document.documentElement.style.setProperty('--marcado', '#4caf50');
-    document.documentElement.style.setProperty('--borde', '#333333');
-    document.documentElement.style.setProperty('--free-bg', '#e0e0e0');
-    document.documentElement.style.setProperty('--titulo-carton', '#2e7d32');
+    document.documentElement.style.setProperty('--fondo','#e9f5ea');
+    document.documentElement.style.setProperty('--carton','#f5f5f5');
+    document.documentElement.style.setProperty('--texto','#000000');
+    document.documentElement.style.setProperty('--marcado','#4caf50');
+    document.documentElement.style.setProperty('--borde','#333333');
+    document.documentElement.style.setProperty('--free-bg','#e0e0e0');
+    document.documentElement.style.setProperty('--titulo-carton','#2e7d32');
   } else if (color === 'morado'){
-    document.documentElement.style.setProperty('--fondo', '#3a0f3a');
-    document.documentElement.style.setProperty('--carton', '#f8bbd0');
-    document.documentElement.style.setProperty('--texto', '#000000');
-    document.documentElement.style.setProperty('--marcado', '#e91e63');
-    document.documentElement.style.setProperty('--borde', '#ffffff');
-    document.documentElement.style.setProperty('--titulo-carton', '#6a1b9a');
+    document.documentElement.style.setProperty('--fondo','#3a0f3a');
+    document.documentElement.style.setProperty('--carton','#f8bbd0');
+    document.documentElement.style.setProperty('--texto','#000000');
+    document.documentElement.style.setProperty('--marcado','#e91e63');
+    document.documentElement.style.setProperty('--borde','#ffffff');
+    document.documentElement.style.setProperty('--titulo-carton','#6a1b9a');
   }
   localStorage.setItem("temaBingo", color);
 }
@@ -534,23 +420,19 @@ function cambiarTema(color){
 function crearGuia(){
   const tabla = document.getElementById("tablaGuia");
   tabla.innerHTML = '';
-  for(let r=0; r<5; r++){
+  for(let r=0;r<5;r++){
     const fila = document.createElement("tr");
-    for(let c=0; c<5; c++){
+    for(let c=0;c<5;c++){
       const celda = document.createElement("td");
       celda.dataset.pos = `${r},${c}`;
-      if(r === 2 && c === 2){
-        celda.textContent = 'X';
+      if(r===2&&c===2){
+        celda.textContent='X';
         celda.classList.add('centro');
         celda.setAttribute('aria-hidden','true');
       } else {
         celda.tabIndex = 0;
-        celda.addEventListener('click', () => {
-          celda.classList.toggle('relleno');
-          guardarGuia();
-          aplicarGuiaBordes();
-        });
-        celda.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); celda.click(); }});
+        celda.addEventListener('click', () => { celda.classList.toggle('relleno'); guardarGuia(); aplicarGuiaBordes(); });
+        celda.addEventListener('keydown', (e)=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); celda.click(); }});
       }
       fila.appendChild(celda);
     }
@@ -558,59 +440,39 @@ function crearGuia(){
   }
 }
 
-function aplicarGuiaBordes() {
-  // limpiar visual previo (solo elimina la clase que oculta números)
-  document.querySelectorAll('#cartonesContainer td').forEach(td => {
-    td.classList.remove('invisibleNumero');
-  });
-
-  // posiciones activas en la guía
-  const posicionesGuia = Array.from(document.querySelectorAll('#tablaGuia td.relleno'))
-    .map(celda => celda.dataset.pos);
-
-  if (posicionesGuia.length === 0) return;
-
-  // aplicar solo la visibilidad (sin añadir bordes)
-  document.querySelectorAll('#cartonesContainer td').forEach(td => {
+function aplicarGuiaBordes(){
+  document.querySelectorAll('#cartonesContainer td').forEach(td => td.classList.remove('invisibleNumero'));
+  const posicionesGuia = Array.from(document.querySelectorAll('#tablaGuia td.relleno')).map(c=>c.dataset.pos);
+  if(posicionesGuia.length===0) return;
+  document.querySelectorAll('#cartonesContainer td').forEach(td=>{
     const pos = td.dataset.pos;
-    if (!posicionesGuia.includes(pos)) {
-      td.classList.add('invisibleNumero');
-    } else {
-      td.classList.remove('invisibleNumero');
-    }
+    if(!posicionesGuia.includes(pos)) td.classList.add('invisibleNumero');
+    else td.classList.remove('invisibleNumero');
   });
 }
 
 /* Persistencia guia */
 function guardarGuia(){
-  const rellenos = [];
-  document.querySelectorAll('#tablaGuia td.relleno').forEach(celda => rellenos.push(celda.dataset.pos));
+  const rellenos=[];
+  document.querySelectorAll('#tablaGuia td.relleno').forEach(celda=> rellenos.push(celda.dataset.pos));
   localStorage.setItem('guiaFigura', JSON.stringify(rellenos));
 }
-
 function restaurarGuia(){
   const data = localStorage.getItem('guiaFigura');
-  if (!data) return;
+  if(!data) return;
   let rellenos;
-  try { rellenos = JSON.parse(data); } catch { return; }
-  rellenos.forEach(pos => {
+  try{ rellenos = JSON.parse(data); } catch { return; }
+  rellenos.forEach(pos=>{
     const celda = document.querySelector(`#tablaGuia td[data-pos="${pos}"]`);
-    if (celda) celda.classList.add('relleno');
+    if(celda) celda.classList.add('relleno');
   });
 }
 
-/* Al agregar nuevos cartones desde estado restaurado, reaplicar listeners y guía */
-function attachAllCellListeners(){
-  document.querySelectorAll('#cartonesContainer .carton').forEach(div => attachCellListeners(div));
-}
-
-const observer = new MutationObserver(() => {
-  attachAllCellListeners();
-  aplicarGuiaBordes();
-});
+/* Listeners y observer */
+function attachAllCellListeners(){ document.querySelectorAll('#cartonesContainer .carton').forEach(div => attachCellListeners(div)); }
+const observer = new MutationObserver(()=>{ attachAllCellListeners(); aplicarGuiaBordes(); });
 observer.observe(document.getElementById('cartonesContainer'), { childList: true, subtree: true });
 
 </script>
 </body>
 </html>
-```
