@@ -390,7 +390,6 @@ function ajustarZoom(delta){
 /* Temas */
 function cambiarTema(color){
   if (color === 'azul'){
-    document.documentElement.style.setProperty('--fondo','#2b0f4d');
     document.documentElement.style.setProperty('--carton','#1b1b1b');
     document.documentElement.style.setProperty('--texto','#ffffff');
     document.documentElement.style.setProperty('--marcado','#2196f3');
@@ -398,7 +397,6 @@ function cambiarTema(color){
     document.documentElement.style.setProperty('--free-bg','#444444');
     document.documentElement.style.setProperty('--titulo-carton','#00d4ff');
   } else if (color === 'verde'){
-    document.documentElement.style.setProperty('--fondo','#e9f5ea');
     document.documentElement.style.setProperty('--carton','#f5f5f5');
     document.documentElement.style.setProperty('--texto','#000000');
     document.documentElement.style.setProperty('--marcado','#4caf50');
@@ -406,7 +404,6 @@ function cambiarTema(color){
     document.documentElement.style.setProperty('--free-bg','#e0e0e0');
     document.documentElement.style.setProperty('--titulo-carton','#2e7d32');
   } else if (color === 'morado'){
-    document.documentElement.style.setProperty('--fondo','#3a0f3a');
     document.documentElement.style.setProperty('--carton','#f8bbd0');
     document.documentElement.style.setProperty('--texto','#000000');
     document.documentElement.style.setProperty('--marcado','#e91e63');
@@ -476,3 +473,4 @@ observer.observe(document.getElementById('cartonesContainer'), { childList: true
 </script>
 </body>
 </html>
+
