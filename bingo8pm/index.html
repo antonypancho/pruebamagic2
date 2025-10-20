@@ -6,220 +6,253 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 <style>
-  :root {
-    --fondo: #121212;
-    --texto: #ffffff;
-    --carton: #1b1b1b;
-    --marcado: #2196f3;
-    --borde: #ffffff;
-    --free-bg: #444444;
+  :root {
+    --fondo: #121212;
+    --texto: #ffffff;
+    --carton: #1b1b1b;
+    --marcado: #2196f3;
+    --borde: #ffffff;
+    --free-bg: #444444;
 
-    /* Zoom proporcional perfecto */
-    --escalaCarton: 1;
-    --tamanoCelda: 50px;
-    --tamanoFuente: 28px;
-    --tamanoFuenteHeader: 24px;
+    /* Zoom proporcional perfecto */
+    --escalaCarton: 1;
+    --tamanoCelda: 50px;
+    --tamanoFuente: 28px;
+    --tamanoFuenteHeader: 24px;
+  }
+
+  /* Estilo general y branding */
+  body {
+    margin:0;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background: radial-gradient(circle at top, #6c5ce7, #0e1020);
+    color:#fff;
+    text-align:center;
+    /* CORREGIDO: Espacio para el header fijo */
+    padding-top: 92px; 
+  }
+
+  header {
+    background:#191d34;
+    padding:16px 24px;
+    display:flex;
+    align-items:center;
+    gap:16px;
+    box-shadow:0 2px 6px rgba(0,0,0,0.4);
+    /* CORREGIDO: error de tipeo 'fidex' */
+    position: fixed; 
+    top: 0;
+    width: 100%;
+    box-sizing: border-box; /* NUEVO: Buena práctica */
+    z-index: 100;
+  }
+  header img { height:60px; }
+  header h1 { margin:0; font-size:1.8rem; color:#ffeb3b; }
+
+  .toolbar {
+    background:#121528;
+    color:#fff;
+    padding:16px;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    gap:12px;
+    flex-wrap: wrap;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+    border-bottom:1px solid rgba(255,255,255,0.12);
+  }
+
+  /* CORREGIDO: Estilos de <main> que ahora sí se usará */
+  main {
+    padding-left: 16px;
+    padding-right: 16px;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  .toolbar input,
+  .toolbar button {
+    padding:12px 16px;
+    font-size:16px;
+    border-radius:8px;
+    border:none;
+  }
+  .toolbar button {
+    background:linear-gradient(135deg,#00d4ff,#6c5ce7);
+    color:#fff;
+    cursor:pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .toolbar button:hover {
+    transform: translateY(-2px);
+    box-shadow:0 4px 10px rgba(0,0,0,0.3);
+  }
+
+  .temas {
+    display:flex;
+    gap:8px;
+    margin-left: 10px;
+  }
+  .tema {
+    width:24px; height:24px;
+    border-radius:50%;
+    cursor:pointer;
+    border:2px solid #fff;
+  }
+
+  h1 { margin:20px 0 10px; }
+  h2 { margin:10px 0 20px; color:#ffeb3b; }
+
+  /* Guía de figura */
+  #guiaFigura {
+    margin: 10px auto 20px;
+    display: inline-block;
+    background: #f5f5f5;
+    padding: 12px;
+    border-radius: 12px;
+    border: 1px solid #ddd;
+    box-shadow:0 4px 10px rgba(0,0,0,0.15);
+  }
+
+  #tablaGuia {
+    border-collapse: collapse;
+  }
+  #tablaGuia td {
+    width: 40px;
+    height: 40px;
+    border: 1px solid #bbb;
+    text-align: center;
+    font-size: 20px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    color: #000;
+    font-weight: bold;
+  }
+  #tablaGuia td.relleno {
+    background: #ff9800;
+    color: #fff;
+  }
+  #tablaGuia td.centro {
+    font-weight: bold;
+    cursor: default;
+    background: #eaeaeac5;
+  }
+
+  /* Cartones */
+  .carton {
+    display:inline-block;
+    margin:15px;
+    padding:10px;
+    background:var(--carton);
+    border-radius:8px;
+  }
+  .carton h3 {
+    margin:0 0 10px; 
+    color:#00d4ff;
+    /* NUEVO: Flexbox para alinear el título y el botón 'X' */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
   }
 
-  /* Estilo general y branding */
-  body {
-    margin:0;
-    font-family: 'Segoe UI', Arial, sans-serif;
-    background: radial-gradient(circle at top, #6c5ce7, #0e1020);
-    color:#fff;
-    text-align:center;
-  }
-
-  header {
-    background:#191d34;
-    padding:16px 24px;
-    display:flex;
-    align-items:center;
-    gap:16px;
-    box-shadow:0 2px 6px rgba(0,0,0,0.4);
-    position: fidex;
-    top: 0;
-    width: 100%;
-    z-index: 100;
-  }
-  header img { height:60px; }
-  header h1 { margin:0; font-size:1.8rem; color:#ffeb3b; }
-
-  .toolbar {
-    background:#121528;
-    color:#fff;
-    padding:16px;
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    gap:12px;
-    flex-wrap: wrap;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.3);
-    border-bottom:1px solid rgba(255,255,255,0.12);
-  }
-  main {
-  padding-left: 16px;  /* Espacio a la izquierda */
-  padding-right: 16px; /* Espacio a la derecha */
-  max-width: 1200px;   /* Evita que se estire demasiado en pantallas gigantes */
-  margin: 0 auto;      /* Centra el contenedor en pantallas grandes */
-}
-  .toolbar input,
-  .toolbar button {
-    padding:12px 16px;
-    font-size:16px;
-    border-radius:8px;
-    border:none;
-  }
-  .toolbar button {
-    background:linear-gradient(135deg,#00d4ff,#6c5ce7);
-    color:#fff;
-    cursor:pointer;
-    transition: transform 0.2s, box-shadow 0.2s;
-  }
-  .toolbar button:hover {
-    transform: translateY(-2px);
-    box-shadow:0 4px 10px rgba(0,0,0,0.3);
-  }
-
-  .temas {
-    display:flex;
-    gap:8px;
-    margin-left: 10px;
-  }
-  .tema {
-    width:24px; height:24px;
-    border-radius:50%;
-    cursor:pointer;
-    border:2px solid #fff;
-  }
-
-  h1 { margin:20px 0 10px; }
-  h2 { margin:10px 0 20px; color:#ffeb3b; }
-
-  /* Guía de figura */
-  #guiaFigura {
-    margin: 10px auto 20px;
-    display: inline-block;
-    background: #f5f5f5;
-    padding: 12px;
-    border-radius: 12px;
-    border: 1px solid #ddd;
-    box-shadow:0 4px 10px rgba(0,0,0,0.15);
-  }
-
-  #tablaGuia {
-    border-collapse: collapse;
-  }
-  #tablaGuia td {
-    width: 40px;
-    height: 40px;
-    border: 1px solid #bbb;
-    text-align: center;
+  /* NUEVO: Estilo para el botón 'X' de quitar cartón */
+  .btn-quitar-uno {
+    background: #e91e63;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 28px;
+    height: 28px;
     font-size: 20px;
+    font-weight: bold;
     cursor: pointer;
-    transition: all 0.2s ease;
-    color: #000;
-    font-weight: bold;
+    line-height: 26px; /* Ajuste vertical */
+    padding: 0;
+    transition: background 0.2s;
   }
-  #tablaGuia td.relleno {
-    background: #ff9800;
-    color: #fff;
-  }
-  #tablaGuia td.centro {
-    font-weight: bold;
-    cursor: default;
-    background: #eaeaeac5;
+  .btn-quitar-uno:hover {
+    background: #ad1457;
   }
 
-  /* Cartones */
-  .carton {
-    display:inline-block;
-    margin:15px;
-    padding:10px;
-    background:var(--carton);
-    border-radius:8px;
-  }
-  .carton h3 { margin:0 0 10px; color:#00d4ff; }
+  table { border-collapse:collapse; margin:auto; }
 
-  table { border-collapse:collapse; margin:auto; }
+  th {
+    width: calc(var(--tamanoCelda) * var(--escalaCarton));
+    height: calc(40px * var(--escalaCarton));
+    border:1px solid var(--borde);
+    font-size: calc(var(--tamanoFuenteHeader) * var(--escalaCarton));
+    color:#ffeb3b;
+    text-align:center;
+  }
 
-  th {
-    width: calc(var(--tamanoCelda) * var(--escalaCarton));
-    height: calc(40px * var(--escalaCarton));
-    border:1px solid var(--borde);
-    font-size: calc(var(--tamanoFuenteHeader) * var(--escalaCarton));
-    color:#ffeb3b;
-    text-align:center;
-  }
+  td {
+    width: calc(var(--tamanoCelda) * var(--escalaCarton));
+    height: calc(var(--tamanoCelda) * var(--escalaCarton));
+    border:1px solid var(--borde);
+    cursor:pointer;
+    font-weight:bold;
+    text-align:center;
+    font-size: calc(var(--tamanoFuente) * var(--escalaCarton));
+    color: var(--texto);
+    background: transparent;
+    position: relative;
+  }
+  td.free { background: var(--free-bg); color:#000; cursor:default; }
+  td.marcado1 { background:var(--marcado); color:#fff; }
+  td.bordeGuia { outline: 3px solid #0542b4; outline-offset: -3px; }
 
-  td {
-    width: calc(var(--tamanoCelda) * var(--escalaCarton));
-    height: calc(var(--tamanoCelda) * var(--escalaCarton));
-    border:1px solid var(--borde);
-    cursor:pointer;
-    font-weight:bold;
-    text-align:center;
-    font-size: calc(var(--tamanoFuente) * var(--escalaCarton));
-    color: var(--texto);
-    background: transparent;
-    position: relative;
-  }
-  td.free { background: var(--free-bg); color:#000; cursor:default; }
-  td.marcado1 { background:var(--marcado); color:#fff; }
-  td.bordeGuia { outline: 3px solid #0542b4; outline-offset: -3px; }
+  #status { margin-top:10px; font-size:0.9em; color:#ccc; }
 
-  #status { margin-top:10px; font-size:0.9em; color:#ccc; }
-
-  footer {
-    margin-top:40px;
-    padding:20px;
-    text-align:center;
-    font-size:0.9rem;
-    color:#aaa;
-    background:#191d34;
-  }
-  .invisibleNumero {
-    color: transparent;
-    pointer-events: none;
-    transition: color 0.3s ease;
-  }
+  footer {
+    margin-top:40px;
+    padding:20px;
+    text-align:center;
+    font-size:0.9rem;
+    color:#aaa;
+    background:#191d34;
+  }
+  .invisibleNumero {
+    color: transparent;
+    pointer-events: none;
+    transition: color 0.3s ease;
+  }
 </style>
 </head>
 <body>
 
 <header>
-  <img src="logo.png" alt="Logo Bingo 8pm">
-  <h1>🎉 Bingo Magic 8:00pm</h1>
+  <img src="logo.png" alt="Logo Bingo 8pm">
+  <h1>🎉 Bingo Magic 8:00pm</h1>
 </header>
 
 <div class="toolbar">
-  <input type="number" id="cartonInput" placeholder="Número de cartón">
-  <button id="agregarBtn" disabled>Agregar</button>
-  <button id="limpiarBtn">Limpiar</button>
-  <button id="quitarBtn">Quitar</button>
-  <button onclick="ajustarZoom(0.1)">+</button>
-  <button onclick="ajustarZoom(-0.1)">-</button>
+  <input type="number" id="cartonInput" placeholder="Número de cartón">
+  <button id="agregarBtn" disabled>Agregar</button>
+  <button id="limpiarBtn">Limpiar</button>
+    <button id="quitarTodoBtn">Quitar Todos</button>
+  <button onclick="ajustarZoom(0.1)">+</button>
+  <button onclick="ajustarZoom(-0.1)">-</button>
 
-  <div class="temas">
-    <div class="tema" style="background:#000000;" onclick="cambiarTema('azul')" title="Azul (oscuro)"></div>
-    <div class="tema" style="background:#ffffff;" onclick="cambiarTema('verde')" title="Verde (claro)"></div>
-    <div class="tema" style="background:#9c27b0;" onclick="cambiarTema('morado')" title="Morado (oscuro)"></div>
+  <div class="temas">
+    <div class="tema" style="background:#000000;" onclick="cambiarTema('azul')" title="Azul (oscuro)"></div>
+    <div class="tema" style="background:#ffffff;" onclick="cambiarTema('verde')" title="Verde (claro)"></div>
+    <div class="tema" style="background:#9c27b0;" onclick="cambiarTema('morado')" title="Morado (oscuro)"></div>
+  </div>
+
+  <div id="status"></div>
+</div>
+
+<main>
+  <h1>🎟️ Juega tu Cartón</h1>
+
+  <h2>👇Dibuja La Figura que estamos jugando👇</h2>
+  <div id="guiaFigura">
+    <table id="tablaGuia"></table>
   </div>
 
-  <div id="status"></div>
-</div>
-
-<h1>🎟️ Juega tu Cartón</h1>
-
-<h2>👇Dibuja La Figura que estamos jugando👇</h2>
-<div id="guiaFigura">
-  <table id="tablaGuia"></table>
-</div>
-
-<div id="cartonesContainer"></div>
-
+  <div id="cartonesContainer"></div>
+</main>
 <footer>
-  &copy; 2025 BingoMagic.online — ¡Diversión mágica en cada partida!
+  &copy; 2025 BingoMagic.online — ¡Diversión mágica en cada partida!
 </footer>
 
 <script>
@@ -228,282 +261,345 @@ let cartonesMostrados = [];
 
 const agregarBtn = document.getElementById('agregarBtn');
 const limpiarBtn = document.getElementById('limpiarBtn');
-const quitarBtn = document.getElementById('quitarBtn');
+/* MODIFICADO: ID del botón */
+const quitarTodoBtn = document.getElementById('quitarTodoBtn');
 const statusEl = document.getElementById('status');
+const cartonesContainer = document.getElementById('cartonesContainer'); // NUEVO: referencia al contenedor
 
 document.addEventListener('DOMContentLoaded', () => {
-  // Restaurar tema guardado
-  const temaGuardado = localStorage.getItem("temaBingo");
-  if (temaGuardado) cambiarTema(temaGuardado);
+  // Restaurar tema guardado
+  const temaGuardado = localStorage.getItem("temaBingo");
+  if (temaGuardado) cambiarTema(temaGuardado);
 
-  // Restaurar zoom guardado
-  const zoomGuardado = localStorage.getItem("zoomCarton");
-  if (zoomGuardado) {
-    document.documentElement.style.setProperty('--escalaCarton', zoomGuardado);
-  }
+  // Restaurar zoom guardado
+  const zoomGuardado = localStorage.getItem("zoomCarton");
+  if (zoomGuardado) {
+    document.documentElement.style.setProperty('--escalaCarton', zoomGuardado);
+  }
 
-  // Crear guía y restaurar su estado
-  crearGuia();
-  restaurarGuia();
+  // Crear guía y restaurar su estado
+  crearGuia();
+  restaurarGuia();
 
-  // Cargar CSV y luego restaurar estado de cartones
-  cargarCSV().then(() => {
-    agregarBtn.disabled = false;
-    restaurarEstado();
-    // Aplicar guías a cartones ya renderizados
-    aplicarGuiaBordes();
+  // Cargar CSV y luego restaurar estado de cartones
+  cargarCSV().then(() => {
+    agregarBtn.disabled = false;
+    restaurarEstado();
+    // Aplicar guías a cartones ya renderizados
+    aplicarGuiaBordes();
+  });
+
+  agregarBtn.addEventListener('click', agregarCarton);
+  limpiarBtn.addEventListener('click', limpiarMarcas);
+  /* MODIFICADO: Asignación al ID correcto */
+  quitarTodoBtn.addEventListener('click', quitarCartones);
+
+
+  /* NUEVO: Delegación de eventos para los botones "X" y para marcar celdas */
+  cartonesContainer.addEventListener('click', (e) => {
+    const target = e.target;
+
+    // Caso 1: Clic en un botón "X" para quitar cartón
+    if (target.classList.contains('btn-quitar-uno')) {
+      const numero = target.dataset.numero;
+      if (confirm(`¿Seguro que quieres quitar el cartón ${numero}?`)) {
+        quitarCartonUnico(numero);
+      }
+      return; // Detenemos la ejecución
+    }
+
+    // Caso 2: Clic en una celda (TD) para marcarla
+    if (target.tagName === 'TD' && !target.classList.contains('free')) {
+      target.classList.toggle("marcado1");
+      guardarEstado(); // Guardamos el estado
+    }
   });
 
-  agregarBtn.addEventListener('click', agregarCarton);
-  limpiarBtn.addEventListener('click', limpiarMarcas);
-  quitarBtn.addEventListener('click', quitarCartones);
 });
 
 async function cargarCSV(){
-  statusEl.textContent = 'Cargando cartones...';
-  try {
-    // apuntamos al CSV dentro de la carpeta del juego
-    const res = await fetch('csv/cartones.csv');
-    const text = await res.text();
-    cartonesData = parseCSV(text);
-    statusEl.textContent = `✅`;
-  } catch (e) {
-    statusEl.textContent = 'Error cargando CSV. Verifica la ruta o que esté publicado.';
-    agregarBtn.disabled = true;
-  }
+  statusEl.textContent = 'Cargando cartones...';
+  try {
+    // apuntamos al CSV dentro de la carpeta del juego
+    const res = await fetch('csv/cartones.csv');
+    const text = await res.text();
+    cartonesData = parseCSV(text);
+    statusEl.textContent = `✅`;
+  } catch (e) {
+    statusEl.textContent = 'Error cargando CSV. Verifica la ruta o que esté publicado.';
+    agregarBtn.disabled = true;
+  }
 }
 
 function parseCSV(text){
-  const lines = text.split(/\r?\n/).map(l => l.trim()).filter(l => l !== '');
-  const cartones = [];
-  let i = 0;
-  while (i < lines.length) {
-    if (lines[i].toUpperCase().startsWith("CARTÓN")) { i++; continue; }
-    if (lines[i].toUpperCase() === "B,I,N,G,O") { i++; }
-    const carton = [];
-    for (let r = 0; r < 5 && i < lines.length; r++, i++) {
-      const fila = lines[i].split(',').map(n => n.trim());
-      carton.push(fila);
-    }
-    if (carton.length === 5) cartones.push(carton);
-  }
-  return cartones;
+  const lines = text.split(/\r?\n/).map(l => l.trim()).filter(l => l !== '');
+  const cartones = [];
+  let i = 0;
+  while (i < lines.length) {
+    if (lines[i].toUpperCase().startsWith("CARTÓN")) { i++; continue; }
+    if (lines[i].toUpperCase() === "B,I,N,G,O") { i++; }
+    const carton = [];
+    for (let r = 0; r < 5 && i < lines.length; r++, i++) {
+      const fila = lines[i].split(',').map(n => n.trim());
+      carton.push(fila);
+    }
+    if (carton.length === 5) cartones.push(carton);
+  }
+  return cartones;
 }
 
 function agregarCarton(){
-  const numero = parseInt(document.getElementById("cartonInput").value, 10);
-  if (isNaN(numero)) { alert("Ingresa un número."); return; }
-  if (numero < 1 || numero > cartonesData.length) { alert("Número inválido."); return; }
-  if (cartonesMostrados.includes(numero)) { alert("Ese cartón ya está en pantalla."); return; }
+  const numero = parseInt(document.getElementById("cartonInput").value, 10);
+  if (isNaN(numero)) { alert("Ingresa un número."); return; }
+  if (numero < 1 || numero > cartonesData.length) { alert("Número inválido."); return; }
+  if (cartonesMostrados.includes(numero)) { alert("Ese cartón ya está en pantalla."); return; }
 
-  renderCarton(numero);
-  guardarEstado();
-  aplicarGuiaBordes(); // aplicar bordes guía al nuevo cartón
-  document.getElementById("cartonInput").value = ''; // ¡Línea nueva!
+  renderCarton(numero);
+  guardarEstado();
+  aplicarGuiaBordes(); // aplicar bordes guía al nuevo cartón
+  document.getElementById("cartonInput").value = '';
 }
 
 function renderCarton(numero){
-  const carton = cartonesData[numero - 1];
-  if (!carton) return;
-  const div = document.createElement("div");
-  div.className = "carton";
-  div.dataset.numero = numero;
-  div.innerHTML = `<h3>Cartón ${numero}</h3><table>${crearTabla(carton, numero)}</table>`;
-  document.getElementById("cartonesContainer").appendChild(div);
-  cartonesMostrados.push(numero);
+  const carton = cartonesData[numero - 1];
+  if (!carton) return;
+  const div = document.createElement("div");
+  div.className = "carton";
+  div.dataset.numero = numero;
+
+  /* MODIFICADO: HTML del cartón para incluir el botón "X" */
+  div.innerHTML = `
+    <h3>
+      <span>Cartón ${numero}</span>
+      <button class="btn-quitar-uno" data-numero="${numero}">&times;</button>
+    </h3>
+    <table>${crearTabla(carton, numero)}</table>`;
+  
+  document.getElementById("cartonesContainer").appendChild(div);
+  cartonesMostrados.push(numero);
 }
 
 function crearTabla(carton, numero){
-  let html = '';
-  // Encabezado BINGO
-  const letras = ['B','I','N','G','O'];
-  html += '<tr>';
-  for (let c = 0; c < 5; c++) {
-    html += `<th>${letras[c]}</th>`;
-  }
-  html += '</tr>';
+  let html = '';
+  // Encabezado BINGO
+  const letras = ['B','I','N','G','O'];
+  html += '<tr>';
+  for (let c = 0; c < 5; c++) {
+    html += `<th>${letras[c]}</th>`;
+  }
+  html += '</tr>';
 
-  // Filas con números
-  for (let r = 0; r < 5; r++) {
-    html += '<tr>';
-    for (let c = 0; c < 5; c++) {
-      const val = carton[r][c];
-      const classes = (val.toUpperCase && val.toUpperCase() === 'X') ? 'free' : '';
-      html += `<td class="${classes}" data-carton="${numero}" data-pos="${r},${c}" onclick="cambiarColor(this)">${val}</td>`;
-    }
-    html += '</tr>';
-  }
-  return html;
+  // Filas con números
+  for (let r = 0; r < 5; r++) {
+    html += '<tr>';
+    for (let c = 0; c < 5; c++) {
+      const val = carton[r][c];
+      const classes = (val.toUpperCase && val.toUpperCase() === 'X') ? 'free' : '';
+      /* MODIFICADO: Se quita el 'onclick' de la celda */
+      html += `<td class="${classes}" data-carton="${numero}" data-pos="${r},${c}">${val}</td>`;
+    }
+    html += '</tr>';
+  }
+  return html;
 }
 
+/* MODIFICADO: Esta función ya no es necesaria 
+   (la lógica se movió al listener en DOMContentLoaded)
 function cambiarColor(td){
-  if (td.classList.contains('free')) return;
-  td.classList.toggle("marcado1");
-  guardarEstado();
+  if (td.classList.contains('free')) return;
+  td.classList.toggle("marcado1");
+  guardarEstado();
 }
+*/
 
 function limpiarMarcas(){
-  // Quitar marcas de los cartones
-  document.querySelectorAll('#cartonesContainer td.marcado1').forEach(td=>{
-    td.classList.remove('marcado1');
-  });
-  guardarEstado();
+  // Quitar marcas de los cartones
+  document.querySelectorAll('#cartonesContainer td.marcado1').forEach(td=>{
+    td.classList.remove('marcado1');
+  });
+  guardarEstado();
 
-  // Quitar también los bordes guía
-  document.querySelectorAll('#cartonesContainer td.bordeGuia').forEach(td=>{
-    td.classList.remove('bordeGuia');
-  });
+  // Quitar también los bordes guía
+  document.querySelectorAll('#cartonesContainer td.bordeGuia').forEach(td=>{
+    td.classList.remove('bordeGuia');
+  });
 
-  // Reiniciar la guía de dinámicas
-  localStorage.removeItem("guiaFigura");
-  crearGuia();
+  // Reiniciar la guía de dinámicas
+  localStorage.removeItem("guiaFigura");
+  crearGuia();
 }
 
 function quitarCartones(){
-  document.getElementById("cartonesContainer").innerHTML = '';
-  cartonesMostrados = [];
-  localStorage.removeItem("estadoCartones");
-  statusEl.textContent = 'Se quitaron los cartones y se limpió tu almacenamiento.';
-  // Reiniciar también la guía de dinámicas
-  localStorage.removeItem("guiaFigura"); // borrar guardado
-  crearGuia();                           // volver a dibujar la tabla vacía
+  document.getElementById("cartonesContainer").innerHTML = '';
+  cartonesMostrados = [];
+  localStorage.removeItem("estadoCartones");
+  statusEl.textContent = 'Se quitaron los cartones y se limpió tu almacenamiento.';
+  // Reiniciar también la guía de dinámicas
+  localStorage.removeItem("guiaFigura"); // borrar guardado
+  crearGuia();                           // volver a dibujar la tabla vacía
 }
+
+/* NUEVA FUNCIÓN: Para quitar un solo cartón */
+function quitarCartonUnico(numero) {
+  const num = parseInt(numero, 10);
+
+  // 1. Quitar el cartón del DOM
+  const cartonDiv = document.querySelector(`.carton[data-numero="${num}"]`);
+  if (cartonDiv) {
+    cartonDiv.remove();
+  }
+
+  // 2. Quitar el número del array de control
+  cartonesMostrados = cartonesMostrados.filter(n => n !== num);
+
+  // 3. Volver a guardar el estado actualizado
+  guardarEstado();
+
+  statusEl.textContent = `Cartón ${num} quitado.`;
+}
+
 
 /* Persistencia de cartones y marcas */
 function guardarEstado(){
-  const estado = {
-    cartones: cartonesMostrados.slice(),
-    marcados: []
-  };
-  document.querySelectorAll('#cartonesContainer td.marcado1').forEach(td=>{
-    const carton = td.dataset.carton;
-    const pos = td.dataset.pos;
-    estado.marcados.push({carton, pos});
-  });
-  localStorage.setItem("estadoCartones", JSON.stringify(estado));
+  const estado = {
+    cartones: cartonesMostrados.slice(),
+    marcados: []
+  };
+  document.querySelectorAll('#cartonesContainer td.marcado1').forEach(td=>{
+    const carton = td.dataset.carton;
+    const pos = td.dataset.pos;
+    estado.marcados.push({carton, pos});
+  });
+  localStorage.setItem("estadoCartones", JSON.stringify(estado));
 }
 
 function restaurarEstado(){
-  const estadoStr = localStorage.getItem("estadoCartones");
-  if (!estadoStr) return;
-  let estado;
-  try { estado = JSON.parse(estadoStr); } catch { return; }
+  const estadoStr = localStorage.getItem("estadoCartones");
+  if (!estadoStr) return;
+  let estado;
+  try { estado = JSON.parse(estadoStr); } catch { return; }
 
-  if (Array.isArray(estado.cartones)) {
-    estado.cartones.forEach(num => renderCarton(num));
-  }
-  if (Array.isArray(estado.marcados)) {
-    estado.marcados.forEach(m => {
-      const td = document.querySelector(`#cartonesContainer td[data-carton="${m.carton}"][data-pos="${m.pos}"]`);
-      if (td) td.classList.add('marcado1');
-    });
-  }
+  if (Array.isArray(estado.cartones)) {
+    // Limpiamos por si acaso
+    cartonesMostrados = []; 
+    estado.cartones.forEach(num => renderCarton(num));
+  }
+  if (Array.isArray(estado.marcados)) {
+    estado.marcados.forEach(m => {
+      const td = document.querySelector(`#cartonesContainer td[data-carton="${m.carton}"][data-pos="${m.pos}"]`);
+      if (td) td.classList.add('marcado1');
+    });
+  }
 }
 
 /* Zoom proporcional perfecto (+ y -) */
 function ajustarZoom(delta){
-  let escala = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--escalaCarton')) || 1;
-  escala += delta;
-  if (escala < 0.5) escala = 0.5; // mínimo
-  if (escala > 2) escala = 2;     // máximo
-  document.documentElement.style.setProperty('--escalaCarton', escala);
-  localStorage.setItem("zoomCarton", escala);
+  let escala = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--escalaCarton')) || 1;
+  escala += delta;
+  if (escala < 0.5) escala = 0.5; // mínimo
+  if (escala > 2) escala = 2;     // máximo
+  document.documentElement.style.setProperty('--escalaCarton', escala);
+  localStorage.setItem("zoomCarton", escala);
 }
 
 /* Temas */
 function cambiarTema(color){
-  if (color === 'azul'){
-    document.documentElement.style.setProperty('--fondo', '#121212');
-    document.documentElement.style.setProperty('--carton', '#1b1b1b');
-    document.documentElement.style.setProperty('--texto', '#ffffff');
-    document.documentElement.style.setProperty('--marcado', '#2196f3');
-    document.documentElement.style.setProperty('--borde', '#ada8a8'); // corregido
-    document.documentElement.style.setProperty('--free-bg', '#444444');
-  } else if (color === 'verde'){
-    document.documentElement.style.setProperty('--fondo', '#ffffff');
-    document.documentElement.style.setProperty('--carton', '#f5f5f5');
-    document.documentElement.style.setProperty('--texto', '#000000');
-    document.documentElement.style.setProperty('--marcado', '#4caf50');
-    document.documentElement.style.setProperty('--borde', '#333333');
-    document.documentElement.style.setProperty('--free-bg', '#e0e0e0');
-  } else if (color === 'morado'){
-    document.documentElement.style.setProperty('--fondo', '#6a1b9a');
-    document.documentElement.style.setProperty('--carton', '#f8bbd0');
-    document.documentElement.style.setProperty('--texto', '#000000');
-    document.documentElement.style.setProperty('--marcado', '#e91e63');
-    // --cuadro removida (no usada)
-  }
-  localStorage.setItem("temaBingo", color);
+  if (color === 'azul'){
+    document.documentElement.style.setProperty('--fondo', '#121212');
+    document.documentElement.style.setProperty('--carton', '#1b1b1b');
+    document.documentElement.style.setProperty('--texto', '#ffffff');
+    document.documentElement.style.setProperty('--marcado', '#2196f3');
+    document.documentElement.style.setProperty('--borde', '#ada8a8'); 
+    document.documentElement.style.setProperty('--free-bg', '#444444');
+  } else if (color === 'verde'){
+    document.documentElement.style.setProperty('--fondo', '#ffffff');
+    document.documentElement.style.setProperty('--carton', '#f5f5f5');
+    document.documentElement.style.setProperty('--texto', '#000000');
+    document.documentElement.style.setProperty('--marcado', '#4caf50');
+    document.documentElement.style.setProperty('--borde', '#333333');
+    document.documentElement.style.setProperty('--free-bg', '#e0e0e0');
+  } else if (color === 'morado'){
+    document.documentElement.style.setProperty('--fondo', '#6a1b9a');
+    document.documentElement.style.setProperty('--carton', '#f8bbd0');
+    document.documentElement.style.setProperty('--texto', '#000000');
+    document.documentElement.style.setProperty('--marcado', '#e91e63');
+    /* NUEVO: Propiedades faltantes para tema completo */
+    document.documentElement.style.setProperty('--borde', '#6a1b9a');
+    document.documentElement.style.setProperty('--free-bg', '#ce93d8');
+  }
+  localStorage.setItem("temaBingo", color);
 }
 
 /* =========================
-   Guía de figura 5x5
-   ========================= */
+   Guía de figura 5x5
+   ========================= */
 function crearGuia(){
-  const tabla = document.getElementById("tablaGuia");
-  tabla.innerHTML = '';
-  for(let r=0; r<5; r++){
-    const fila = document.createElement("tr");
-    for(let c=0; c<5; c++){
-      const celda = document.createElement("td");
-      celda.dataset.pos = `${r},${c}`;
-      if(r === 2 && c === 2){
-        celda.textContent = 'X';
-        celda.classList.add('centro');
-      } else {
-        celda.addEventListener('click', () => {
-          celda.classList.toggle('relleno');  // guía se rellena
-          guardarGuia();
-          aplicarGuiaBordes();                 // cartones solo borde
-        });
-      }
-      fila.appendChild(celda);
-    }
-    tabla.appendChild(fila);
-  }
+  const tabla = document.getElementById("tablaGuia");
+  tabla.innerHTML = '';
+  for(let r=0; r<5; r++){
+    const fila = document.createElement("tr");
+    for(let c=0; c<5; c++){
+      const celda = document.createElement("td");
+      celda.dataset.pos = `${r},${c}`;
+      if(r === 2 && c === 2){
+        celda.textContent = 'X';
+        celda.classList.add('centro');
+      } else {
+        celda.addEventListener('click', () => {
+          celda.classList.toggle('relleno');s
+          guardarGuia();
+          aplicarGuiaBordes();
+        });
+      }
+      fila.appendChild(celda);
+    }
+    tabla.appendChild(fila);
+  }
 }
 
 /* Aplica bordes guía en todos los cartones mostrados según la guía rellena */
 function aplicarGuiaBordes() {
-  // Limpiar visibilidad anterior
-  document.querySelectorAll('#cartonesContainer td').forEach(td => {
-    td.classList.remove('invisibleNumero');
-  });
+  // Limpiar visibilidad anterior
+  document.querySelectorAll('#cartonesContainer td').forEach(td => {
+    td.classList.remove('invisibleNumero');
+  });
 
-  // Obtener posiciones activas en la guía
-  const posicionesGuia = Array.from(document.querySelectorAll('#tablaGuia td.relleno'))
-    .map(celda => celda.dataset.pos);
+  // Obtener posiciones activas en la guía
+  const posicionesGuia = Array.from(document.querySelectorAll('#tablaGuia td.relleno'))
+    .map(celda => celda.dataset.pos);
 
-  // Ocultar números que no están en la figura
-  document.querySelectorAll('#cartonesContainer td').forEach(td => {
-    const pos = td.dataset.pos;
-    if (!posicionesGuia.includes(pos)) {
-      td.classList.add('invisibleNumero');
-    }
-  });
+  // Si hay al menos una guía seleccionada, filtramos.
+  if (posicionesGuia.length > 0) {
+    document.querySelectorAll('#cartonesContainer td').forEach(td => {
+      const pos = td.dataset.pos;
+      // Ocultar si NO está en la guía Y NO es la celda 'free' (X)
+      if (!posicionesGuia.includes(pos) && pos !== '2,2') {
+        td.classList.add('invisibleNumero');
+      }
+    });
+  }
 }
 
 /* Persistencia de la figura guía */
 function guardarGuia(){
-  const rellenos = [];
-  document.querySelectorAll('#tablaGuia td.relleno').forEach(celda => {
-    rellenos.push(celda.dataset.pos);
-  });
-  localStorage.setItem('guiaFigura', JSON.stringify(rellenos));
+  const rellenos = [];
+  document.querySelectorAll('#tablaGuia td.relleno').forEach(celda => {
+    rellenos.push(celda.dataset.pos);
+  });
+  localStorage.setItem('guiaFigura', JSON.stringify(rellenos));
 }
 
 function restaurarGuia(){
-  const data = localStorage.getItem('guiaFigura');
-  if (!data) return;
-  let rellenos;
-  try { rellenos = JSON.parse(data); } catch { return; }
-  rellenos.forEach(pos => {
-    const celda = document.querySelector(`#tablaGuia td[data-pos="${pos}"]`);
-    if (celda) celda.classList.add('relleno');
-  });
+  const data = localStorage.getItem('guiaFigura');
+  if (!data) return;
+  let rellenos;
+  try { rellenos = JSON.parse(data); } catch { return; }
+  rellenos.forEach(pos => {
+    const celda = document.querySelector(`#tablaGuia td[data-pos="${pos}"]`);
+    if (celda) celda.classList.add('relleno');
+  });
 }
 
-/* Reaplicar guía cuando se agregan nuevos cartones (ya se llama en agregarCarton) */
 </script>
 </body>
 </html>
