@@ -43,7 +43,7 @@
     position: fixed; 
     top: 0;
     width: 100%;
-    box-sizing: border-box; /* NUEVO: Buena práctica */
+    box-sizing: border-box; /* Buena práctica */
     z-index: 100;
   }
   header img { height:60px; }
@@ -148,13 +148,13 @@
   .carton h3 {
     margin:0 0 10px; 
     color:#00d4ff;
-    /* NUEVO: Flexbox para alinear el título y el botón 'X' */
+    /* Flexbox para alinear el título y el botón 'X' */
     display: flex;
     justify-content: space-between;
     align-items: center;
   }
 
-  /* NUEVO: Estilo para el botón 'X' de quitar cartón */
+  /* Estilo para el botón 'X' de quitar cartón */
   .btn-quitar-uno {
     background: #e91e63;
     color: white;
@@ -261,10 +261,9 @@ let cartonesMostrados = [];
 
 const agregarBtn = document.getElementById('agregarBtn');
 const limpiarBtn = document.getElementById('limpiarBtn');
-/* MODIFICADO: ID del botón */
 const quitarTodoBtn = document.getElementById('quitarTodoBtn');
 const statusEl = document.getElementById('status');
-const cartonesContainer = document.getElementById('cartonesContainer'); // NUEVO: referencia al contenedor
+const cartonesContainer = document.getElementById('cartonesContainer'); // referencia al contenedor
 
 document.addEventListener('DOMContentLoaded', () => {
   // Restaurar tema guardado
@@ -291,11 +290,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
   agregarBtn.addEventListener('click', agregarCarton);
   limpiarBtn.addEventListener('click', limpiarMarcas);
-  /* MODIFICADO: Asignación al ID correcto */
   quitarTodoBtn.addEventListener('click', quitarCartones);
 
 
-  /* NUEVO: Delegación de eventos para los botones "X" y para marcar celdas */
+  /* Delegación de eventos para los botones "X" y para marcar celdas */
   cartonesContainer.addEventListener('click', (e) => {
     const target = e.target;
 
@@ -367,7 +365,7 @@ function renderCarton(numero){
   div.className = "carton";
   div.dataset.numero = numero;
 
-  /* MODIFICADO: HTML del cartón para incluir el botón "X" */
+  /* HTML del cartón para incluir el botón "X" */
   div.innerHTML = `
     <h3>
       <span>Cartón ${numero}</span>
@@ -395,7 +393,7 @@ function crearTabla(carton, numero){
     for (let c = 0; c < 5; c++) {
       const val = carton[r][c];
       const classes = (val.toUpperCase && val.toUpperCase() === 'X') ? 'free' : '';
-      /* MODIFICADO: Se quita el 'onclick' de la celda */
+      /* Se quita el 'onclick' de la celda */
       html += `<td class="${classes}" data-carton="${numero}" data-pos="${r},${c}">${val}</td>`;
     }
     html += '</tr>';
@@ -403,13 +401,8 @@ function crearTabla(carton, numero){
   return html;
 }
 
-/* MODIFICADO: Esta función ya no es necesaria 
-   (la lógica se movió al listener en DOMContentLoaded)
-function cambiarColor(td){
-  if (td.classList.contains('free')) return;
-  td.classList.toggle("marcado1");
-  guardarEstado();
-}
+/* La función cambiarColor(td) ya no es necesaria, 
+su lógica se movió al listener en DOMContentLoaded
 */
 
 function limpiarMarcas(){
@@ -523,7 +516,7 @@ function cambiarTema(color){
     document.documentElement.style.setProperty('--carton', '#f8bbd0');
     document.documentElement.style.setProperty('--texto', '#000000');
     document.documentElement.style.setProperty('--marcado', '#e91e63');
-    /* NUEVO: Propiedades faltantes para tema completo */
+    /* Propiedades faltantes añadidas */
     document.documentElement.style.setProperty('--borde', '#6a1b9a');
     document.documentElement.style.setProperty('--free-bg', '#ce93d8');
   }
@@ -546,10 +539,11 @@ function crearGuia(){
         celda.classList.add('centro');
       } else {
         celda.addEventListener('click', () => {
-          celda.classList.toggle('relleno');s
+          /* !! CORREGIDO !! La 's' extra ha sido eliminada */
+          celda.classList.toggle('relleno');
           guardarGuia();
           aplicarGuiaBordes();
-        });
+  T     });
       }
       fila.appendChild(celda);
     }
@@ -557,7 +551,7 @@ function crearGuia(){
   }
 }
 
-/* Aplica bordes guía en todos los cartones mostrados según la guía rellena */
+/* Aplica visibilidad en cartones según la guía rellena */
 function aplicarGuiaBordes() {
   // Limpiar visibilidad anterior
   document.querySelectorAll('#cartonesContainer td').forEach(td => {
@@ -603,4 +597,3 @@ function restaurarGuia(){
 </script>
 </body>
 </html>
-
