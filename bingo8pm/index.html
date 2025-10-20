@@ -1,3 +1,6 @@
+### index.html
+
+```html
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -13,7 +16,7 @@
     --marcado: #2196f3;
     --borde: #ffffff;
     --free-bg: #444444;
-    
+
     --escalaCarton: 1;
     --tamanoCelda: 50px;
     --tamanoFuente: 28px;
@@ -21,6 +24,9 @@
 
     --altoHeader: 92px;
     --gap: 12px;
+
+    /* Título del cartón dependiente del tema */
+    --titulo-carton: #00d4ff;
   }
 
   *, *::before, *::after { box-sizing: border-box; }
@@ -138,7 +144,7 @@
   }
   .carton h3 { margin:0 0 10px; color: var(--titulo-carton); font-size:1rem; }
 
-  /* Botón pequeño X en la esquina superior derecha */
+  /* Botón pequeño X (cerrar) en la esquina superior derecha */
   .carton .close-btn {
     position: absolute;
     top: 6px;
@@ -201,8 +207,6 @@
   }
   td.free { background: var(--free-bg); color:#000; cursor:default; }
   td.marcado1 { background:var(--marcado); color:#fff; }
-
-  /* bordes de guía removidos: ya no existe td.bordeGuia ni estilos asociados */
 
   .invisibleNumero { color: transparent; transition: color 0.22s ease; }
 
@@ -279,6 +283,10 @@ const zoomOutBtn = document.getElementById('zoomOut');
 document.addEventListener('DOMContentLoaded', () => {
   const temaGuardado = localStorage.getItem("temaBingo");
   if (temaGuardado) cambiarTema(temaGuardado);
+  else {
+    // asegurar que la variable CSS del título se inicialice incluso si no hay tema guardado
+    document.documentElement.style.setProperty('--titulo-carton', '#00d4ff');
+  }
 
   const zoomGuardado = localStorage.getItem("zoomCarton");
   if (zoomGuardado) {
@@ -492,28 +500,33 @@ function ajustarZoom(delta){
 }
 
 /* Temas */
-if (color === 'azul'){
-  document.documentElement.style.setProperty('--carton', '#1b1b1b');
-  document.documentElement.style.setProperty('--texto', '#ffffff');
-  document.documentElement.style.setProperty('--marcado', '#2196f3');
-  document.documentElement.style.setProperty('--borde', '#ada8a8');
-  document.documentElement.style.setProperty('--free-bg', '#444444');
-  document.documentElement.style.setProperty('--titulo-carton', '#00d4ff');
-} else if (color === 'verde'){
-  document.documentElement.style.setProperty('--carton', '#f5f5f5');
-  document.documentElement.style.setProperty('--texto', '#000000');
-  document.documentElement.style.setProperty('--marcado', '#4caf50');
-  document.documentElement.style.setProperty('--borde', '#333333');
-  document.documentElement.style.setProperty('--free-bg', '#e0e0e0');
-  document.documentElement.style.setProperty('--titulo-carton', '#2e7d32'); /* ejemplo verde oscuro */
-} else if (color === 'morado'){
-  document.documentElement.style.setProperty('--carton', '#f8bbd0');
-  document.documentElement.style.setProperty('--texto', '#000000');
-  document.documentElement.style.setProperty('--marcado', '#e91e63');
-  document.documentElement.style.setProperty('--borde', '#ffffff');
-  document.documentElement.style.setProperty('--titulo-carton', '#6a1b9a'); /* ejemplo morado */
+function cambiarTema(color){
+  if (color === 'azul'){
+    document.documentElement.style.setProperty('--fondo', 'radial-gradient(circle at top, #6c5ce7, #0e1020)');
+    document.documentElement.style.setProperty('--carton', '#1b1b1b');
+    document.documentElement.style.setProperty('--texto', '#ffffff');
+    document.documentElement.style.setProperty('--marcado', '#2196f3');
+    document.documentElement.style.setProperty('--borde', '#ada8a8');
+    document.documentElement.style.setProperty('--free-bg', '#444444');
+    document.documentElement.style.setProperty('--titulo-carton', '#00d4ff');
+  } else if (color === 'verde'){
+    document.documentElement.style.setProperty('--fondo', 'linear-gradient(180deg,#ffffff,#dde7dd)');
+    document.documentElement.style.setProperty('--carton', '#f5f5f5');
+    document.documentElement.style.setProperty('--texto', '#000000');
+    document.documentElement.style.setProperty('--marcado', '#4caf50');
+    document.documentElement.style.setProperty('--borde', '#333333');
+    document.documentElement.style.setProperty('--free-bg', '#e0e0e0');
+    document.documentElement.style.setProperty('--titulo-carton', '#2e7d32');
+  } else if (color === 'morado'){
+    document.documentElement.style.setProperty('--fondo', 'radial-gradient(circle at top, #7b1fa2, #2c0b2f)');
+    document.documentElement.style.setProperty('--carton', '#f8bbd0');
+    document.documentElement.style.setProperty('--texto', '#000000');
+    document.documentElement.style.setProperty('--marcado', '#e91e63');
+    document.documentElement.style.setProperty('--borde', '#ffffff');
+    document.documentElement.style.setProperty('--titulo-carton', '#6a1b9a');
+  }
+  localStorage.setItem("temaBingo", color);
 }
-
 
 /* Guía 5x5 */
 function crearGuia(){
@@ -562,7 +575,6 @@ function aplicarGuiaBordes() {
       td.classList.add('invisibleNumero');
     } else {
       td.classList.remove('invisibleNumero');
-      // Nota: ya no se añade ni se usa la clase 'bordeGuia'
     }
   });
 }
@@ -599,5 +611,4 @@ observer.observe(document.getElementById('cartonesContainer'), { childList: true
 </script>
 </body>
 </html>
-
-
+```
