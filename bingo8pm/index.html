@@ -127,6 +127,7 @@
     padding: 8px 0 24px;
   }
   .carton {
+    position: relative; /* para posicionar la X */
     display: inline-block;
     margin: 6px;
     padding: 10px;
@@ -137,7 +138,28 @@
   }
   .carton h3 { margin:0 0 10px; color:#00d4ff; font-size:1rem; }
 
-  /* Controls individual cartón */
+  /* Botón pequeño X (cerrar) en la esquina superior derecha */
+  .carton .close-btn {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    width:28px;
+    height:28px;
+    border-radius: 6px;
+    border: none;
+    background: rgba(0,0,0,0.45);
+    color: #fff;
+    font-weight: bold;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    cursor:pointer;
+    transition: background 0.15s, transform 0.08s;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+  }
+  .carton .close-btn:hover { background: rgba(255,0,0,0.85); transform: translateY(-1px); }
+
+  /* Controls individual cartón (mantener en caso de que quieras usarlo) */
   .carton .carton-controls {
     display:flex;
     gap:8px;
@@ -200,6 +222,7 @@
     :root { --tamanoFuente: 20px; --tamanoCelda: 44px; --tamanoFuenteHeader: 18px; --altoHeader: 84px; }
     .carton { min-width: calc(5 * var(--tamanoCelda) * 0.9); }
     #tablaGuia td { width:34px; height:34px; font-size:16px; }
+    .carton .close-btn { width:26px; height:26px; top:4px; right:4px; font-size:0.9rem; }
   }
 </style>
 </head>
@@ -331,25 +354,21 @@ function renderCarton(numero){
   div.dataset.numero = numero;
   div.innerHTML = `<h3>Cartón ${numero}</h3><table>${crearTabla(carton, numero)}</table>`;
 
-  // Controles individuales (Quitar)
-  const controls = document.createElement('div');
-  controls.className = 'carton-controls';
-  const quitarBtnInd = document.createElement('button');
-  quitarBtnInd.type = 'button';
-  quitarBtnInd.textContent = 'Quitar cartón';
-  quitarBtnInd.title = `Quitar cartón ${numero}`;
-  quitarBtnInd.addEventListener('click', () => {
+  // Botón X en esquina superior derecha
+  const closeBtn = document.createElement('button');
+  closeBtn.className = 'close-btn';
+  closeBtn.type = 'button';
+  closeBtn.setAttribute('aria-label', `Cerrar cartón ${numero}`);
+  closeBtn.innerHTML = '✕';
+  closeBtn.addEventListener('click', () => {
     const ok = confirm(`¿Quitar el cartón ${numero}?`);
     if (!ok) return;
 
-    // Remover del DOM
     div.remove();
 
-    // Actualizar array de mostrados
     const idx = cartonesMostrados.indexOf(numero);
     if (idx > -1) cartonesMostrados.splice(idx, 1);
 
-    // Actualizar estado guardado: filtrar marcados que pertenezcan a cartones restantes
     const estadoStr = localStorage.getItem('estadoCartones');
     if (estadoStr) {
       try {
@@ -372,8 +391,7 @@ function renderCarton(numero){
     statusEl.textContent = `Cartón ${numero} eliminado.`;
   });
 
-  controls.appendChild(quitarBtnInd);
-  div.appendChild(controls);
+  div.appendChild(closeBtn);
 
   document.getElementById("cartonesContainer").appendChild(div);
   cartonesMostrados.push(numero);
