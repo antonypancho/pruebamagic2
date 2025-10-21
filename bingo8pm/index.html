@@ -14,21 +14,19 @@
     --borde:#ffffff;
     --free-bg:#444444;
 
-    --escalaCarton:1;
+    /* Tamaños que controlan el cartón completo */
     --tamanoCelda:50px;
     --tamanoFuente:28px;
     --tamanoFuenteHeader:24px;
 
     --alto-header:64px;
     --alto-toolbar:56px;
-    --altoTop: calc(var(--alto-header) + var(--alto-toolbar));
-
     --gap:12px;
-    --titulo-carton: #00d4ff;
+    --titulo-carton:#00d4ff;
   }
 
-  *,*::before,*::after{box-sizing:border-box;}
-  html,body{height:100%;}
+  *,*::before,*::after{ box-sizing:border-box; }
+  html,body{ height:100%; }
   body{
     margin:0;
     font-family:'Segoe UI',Arial,sans-serif;
@@ -37,10 +35,9 @@
     text-align:center;
     -webkit-font-smoothing:antialiased;
     -moz-osx-font-smoothing:grayscale;
-    /* Importante: SIN padding-top porque header/toolbar no son fijos */
   }
 
-  /* Header normal (no fijo) */
+  /* Header */
   header{
     position: static;
     height: var(--alto-header);
@@ -54,7 +51,7 @@
   header img{ height:48px; width:auto; object-fit:contain; }
   header h1{ margin:0; font-size:1.2rem; color:#ffeb3b; line-height:1; }
 
-  /* Toolbar normal (no fija) y siempre horizontal */
+  /* Toolbar siempre horizontal */
   .toolbar{
     position: static;
     min-height: var(--alto-toolbar);
@@ -70,14 +67,19 @@
     box-shadow:0 2px 6px rgba(0,0,0,0.25);
     border-bottom:1px solid rgba(255,255,255,0.08);
   }
-  .toolbar input, .toolbar button {
+  .toolbar input, .toolbar button{
     padding:8px 12px;
     font-size:14px;
     border-radius:8px;
     border:none;
   }
-  .toolbar button{ background:linear-gradient(135deg,#00d4ff,#6c5ce7); color:#fff; cursor:pointer; transition: transform .12s, box-shadow .12s; }
-  .toolbar button:hover{ transform: translateY(-2px); box-shadow:0 4px 10px rgba(0,0,0,.22); }
+  .toolbar button{
+    background:linear-gradient(135deg,#00d4ff,#6c5ce7);
+    color:#fff;
+    cursor:pointer;
+    transition:transform .12s, box-shadow .12s;
+  }
+  .toolbar button:hover{ transform:translateY(-2px); box-shadow:0 4px 10px rgba(0,0,0,.22); }
 
   .temas{ display:flex; gap:8px; margin-left:6px; }
   .tema{ width:22px; height:22px; border-radius:50%; cursor:pointer; border:2px solid #fff; }
@@ -87,18 +89,46 @@
   h1{ margin:18px 0 10px; font-size:1.2rem; }
   h2{ margin:8px 0 16px; color:#ffeb3b; font-size:1rem; }
 
-  #guiaFigura{ margin:8px auto 18px; display:inline-block; background:#f5f5f5; padding:10px; border-radius:10px; border:1px solid #ddd; box-shadow:0 4px 10px rgba(0,0,0,.12); color:#000; }
+  /* Guía más pequeña */
+  #guiaFigura{
+    margin:8px auto 18px;
+    display:inline-block;
+    background:#f5f5f5;
+    padding:10px;
+    border-radius:10px;
+    border:1px solid #ddd;
+    box-shadow:0 4px 10px rgba(0,0,0,.12);
+    color:#000;
+  }
   #tablaGuia{ border-collapse:collapse; }
-  #tablaGuia td{ width:28px; height:28px; border:1px solid #bbb; text-align:center; font-size:14px; cursor:pointer; transition:all .12s ease; font-weight:bold; background:#fff; }
+  #tablaGuia td{
+    width:28px; height:28px;
+    border:1px solid #bbb;
+    text-align:center;
+    font-size:14px;
+    cursor:pointer;
+    transition:all .12s ease;
+    font-weight:bold;
+    background:#fff;
+  }
   #tablaGuia td.relleno{ background:#ff9800; color:#fff; }
   #tablaGuia td.centro{ font-weight:bold; cursor:default; background:#eaeaea; color:#000; }
 
+  /* Contenedor de cartones: por defecto flex-wrap */
   #cartonesContainer{
     display:flex;
     flex-wrap:wrap;
     justify-content:center;
     gap:12px;
     padding:8px 12px 32px;
+  }
+
+  /* En móvil cambiamos a grid y columnas dinámicas por clases */
+  @media (max-width:520px){
+    #cartonesContainer{ display:grid; gap:8px; }
+    #cartonesContainer.cols-1{ grid-template-columns: 1fr; }
+    #cartonesContainer.cols-2{ grid-template-columns: repeat(2,1fr); }
+    #cartonesContainer.cols-3{ grid-template-columns: repeat(3,1fr); }
   }
 
   .carton{
@@ -113,12 +143,36 @@
   }
   .carton h3{ margin:0 0 10px; color:var(--titulo-carton); font-size:1rem; }
 
-  .carton .close-btn{ position:absolute; top:6px; right:6px; width:28px; height:28px; border-radius:6px; border:none; background:rgba(0,0,0,.45); color:#fff; font-weight:bold; display:flex; align-items:center; justify-content:center; cursor:pointer; transition:background .12s, transform .08s; box-shadow:0 2px 6px rgba(0,0,0,.35); }
+  .carton .close-btn{
+    position:absolute; top:6px; right:6px;
+    width:28px; height:28px; border-radius:6px; border:none;
+    background:rgba(0,0,0,.45); color:#fff; font-weight:bold;
+    display:flex; align-items:center; justify-content:center;
+    cursor:pointer; transition:background .12s, transform .08s;
+    box-shadow:0 2px 6px rgba(0,0,0,.35);
+  }
   .carton .close-btn:hover{ background:rgba(255,0,0,.85); transform:translateY(-1px); }
 
+  /* Tamaños del cartón controlados por variables */
   table{ border-collapse:collapse; margin:auto; }
-  th{ width:calc(var(--tamanoCelda) * var(--escalaCarton)); height:calc(40px * var(--escalaCarton)); border:1px solid var(--borde); font-size:calc(var(--tamanoFuenteHeader) * var(--escalaCarton)); color:#ffeb3b; text-align:center; padding:4px; box-sizing:border-box; }
-  td{ width:calc(var(--tamanoCelda) * var(--escalaCarton)); height:calc(var(--tamanoCelda) * var(--escalaCarton)); border:1px solid var(--borde); cursor:pointer; font-weight:bold; text-align:center; font-size:calc(var(--tamanoFuente) * var(--escalaCarton)); color:var(--texto); background:transparent; position:relative; padding:4px; box-sizing:border-box; user-select:none; }
+  th{
+    width:var(--tamanoCelda);
+    height:40px;
+    border:1px solid var(--borde);
+    font-size:var(--tamanoFuenteHeader);
+    color:#ffeb3b; text-align:center; padding:4px; box-sizing:border-box;
+  }
+  td{
+    width:var(--tamanoCelda);
+    height:var(--tamanoCelda);
+    border:1px solid var(--borde);
+    cursor:pointer; font-weight:bold; text-align:center;
+    font-size:var(--tamanoFuente);
+    color:var(--texto);
+    background:transparent;
+    position:relative;
+    padding:4px; box-sizing:border-box; user-select:none;
+  }
   td.free{ background:var(--free-bg); color:#000; cursor:default; }
   td.marcado1{ background:var(--marcado); color:#fff; }
 
@@ -135,20 +189,8 @@
   @media (max-width:520px){
     :root{ --tamanoCelda:40px; --tamanoFuente:18px; --tamanoFuenteHeader:16px; }
     header img{ height:40px; }
-  }
-
-  /* 📱 Móvil: grid dinámico según zoom */
-  @media (max-width:520px){
-    #cartonesContainer{
-      display:grid;
-      gap:8px;
-    }
-    #cartonesContainer.cols-1{ grid-template-columns: 1fr; }
-    #cartonesContainer.cols-2{ grid-template-columns: repeat(2,1fr); }
-    #cartonesContainer.cols-3{ grid-template-columns: repeat(3,1fr); }
-    .carton{ width:100%; min-width:auto; margin:0; padding:6px; }
-    .carton h3{ font-size:0.8rem; }
-    th,td{ font-size:0.7rem; }
+    .toolbar{ gap:8px; }
+    .temas .tema{ width:20px; height:20px; }
   }
 </style>
 </head>
@@ -164,8 +206,8 @@
   <button id="agregarBtn" disabled aria-label="Agregar cartón">Agregar</button>
   <button id="limpiarBtn" aria-label="Limpiar marcas">Limpiar</button>
   <button id="quitarBtn" aria-label="Quitar cartones">Quitar</button>
-  <button id="zoomIn" aria-label="Achicar (más cartones)">+</button>
-  <button id="zoomOut" aria-label="Agrandar (menos cartones)">-</button>
+  <button id="zoomIn" aria-label="Agrandar (cartones más grandes)">+</button>
+  <button id="zoomOut" aria-label="Achicar (cartones más pequeños)">-</button>
 
   <div class="temas" role="toolbar" aria-label="Temas">
     <div class="tema" style="background:#000000;" onclick="cambiarTema('azul')" title="Azul (oscuro)" role="button" tabindex="0"></div>
@@ -209,8 +251,16 @@ document.addEventListener('DOMContentLoaded', () => {
   if (temaGuardado) cambiarTema(temaGuardado);
   else document.documentElement.style.setProperty('--titulo-carton', '#00d4ff');
 
+  // Restaurar zoom basado en variables de tamaño (celda, fuentes)
   const zoomGuardado = localStorage.getItem("zoomCarton");
-  if (zoomGuardado) document.documentElement.style.setProperty('--escalaCarton', zoomGuardado);
+  if (zoomGuardado){
+    try{
+      const {celda, fuente, fuenteHeader} = JSON.parse(zoomGuardado);
+      document.documentElement.style.setProperty('--tamanoCelda', celda + "px");
+      document.documentElement.style.setProperty('--tamanoFuente', fuente + "px");
+      document.documentElement.style.setProperty('--tamanoFuenteHeader', fuenteHeader + "px");
+    }catch(e){}
+  }
 
   crearGuia();
   restaurarGuia();
@@ -219,16 +269,17 @@ document.addEventListener('DOMContentLoaded', () => {
     agregarBtn.disabled = false;
     restaurarEstado();
     aplicarGuiaBordes();
-    aplicarColumnasPorZoom(); // aplica columnas según zoom guardado
+    aplicarColumnasPorZoom(); // aplica columnas en móvil según tamaño actual
   });
 
   agregarBtn.addEventListener('click', agregarCarton);
   limpiarBtn.addEventListener('click', limpiarMarcas);
   quitarBtn.addEventListener('click', quitarCartones);
 
-  zoomInBtn.addEventListener('click', () => ajustarZoom(-0.1));
-  zoomOutBtn.addEventListener('click', () => ajustarZoom(0.1));
+  zoomInBtn.addEventListener('click', () => ajustarZoom(1));
+  zoomOutBtn.addEventListener('click', () => ajustarZoom(-1));
 
+  /* Delegación de clics y teclado para celdas dinámicas */
   cartonesContainer.addEventListener('click', (e) => {
     const td = e.target.closest('td');
     if (!td || !cartonesContainer.contains(td)) return;
@@ -244,7 +295,6 @@ document.addEventListener('DOMContentLoaded', () => {
     cambiarColor(td);
   });
 
-  // Reaplicar columnas al cambiar tamaño de ventana
   window.addEventListener('resize', aplicarColumnasPorZoom);
 });
 
@@ -330,7 +380,7 @@ function renderCarton(numero){
   cartonesContainer.appendChild(div);
   cartonesMostrados.push(numero);
   aplicarGuiaBordes();
-  attachCellListeners(div);
+  attachCellListeners(div); // accesibilidad teclado para celdas nuevas
 }
 function crearTabla(carton, numero){
   let html = '';
@@ -411,31 +461,53 @@ function restaurarEstado(){
   }
 }
 
-/* zoom + columnas en móvil */
-function ajustarZoom(delta){
-  let escala = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--escalaCarton')) || 1;
-  escala = Math.round((escala + delta) * 100) / 100;
-  if (escala < 0.6) escala = 0.6;
-  if (escala > 2) escala = 2;
-  document.documentElement.style.setProperty('--escalaCarton', escala);
-  localStorage.setItem("zoomCarton", escala);
+/* zoom: cambia tamaño real del cartón y columnas en móvil */
+zoomInBtn.addEventListener('click', () => ajustarZoom(1));
+zoomOutBtn.addEventListener('click', () => ajustarZoom(-1));
 
+function ajustarZoom(delta){
+  // Obtener valores actuales
+  let celda = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--tamanoCelda'));
+  let fuente = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--tamanoFuente'));
+  let fuenteHeader = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--tamanoFuenteHeader'));
+
+  // Ajustes por paso
+  celda += delta * 6;
+  fuente += delta * 4;
+  fuenteHeader += delta * 3;
+
+  // Límites
+  if (celda < 30) celda = 30;
+  if (celda > 90) celda = 90;
+  if (fuente < 14) fuente = 14;
+  if (fuente > 48) fuente = 48;
+  if (fuenteHeader < 12) fuenteHeader = 12;
+  if (fuenteHeader > 36) fuenteHeader = 36;
+
+  // Aplicar
+  document.documentElement.style.setProperty('--tamanoCelda', celda + "px");
+  document.documentElement.style.setProperty('--tamanoFuente', fuente + "px");
+  document.documentElement.style.setProperty('--tamanoFuenteHeader', fuenteHeader + "px");
+
+  // Guardar
+  localStorage.setItem("zoomCarton", JSON.stringify({celda, fuente, fuenteHeader}));
+
+  // Ajustar columnas en móvil
   aplicarColumnasPorZoom();
 }
 function aplicarColumnasPorZoom(){
-  // Solo ajusta columnas si estamos en móvil
   if (window.innerWidth <= 520) {
-    const escala = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--escalaCarton')) || 1;
+    const celda = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--tamanoCelda'));
     cartonesContainer.classList.remove("cols-1","cols-2","cols-3");
-    if (escala > 1.3) {
-      cartonesContainer.classList.add("cols-1"); // grande → 1 por fila
-    } else if (escala > 0.9) {
-      cartonesContainer.classList.add("cols-2"); // mediano → 2 por fila
+    // Umbrales basados en tamaño de celda
+    if (celda >= 60) {
+      cartonesContainer.classList.add("cols-1"); // grande
+    } else if (celda >= 42) {
+      cartonesContainer.classList.add("cols-2"); // mediano
     } else {
-      cartonesContainer.classList.add("cols-3"); // pequeño → 3 por fila
+      cartonesContainer.classList.add("cols-3"); // pequeño
     }
   } else {
-    // En pantallas mayores vuelve a flex-wrap por defecto
     cartonesContainer.classList.remove("cols-1","cols-2","cols-3");
   }
 }
@@ -527,4 +599,3 @@ observer.observe(document.getElementById('cartonesContainer'), { childList: true
 </script>
 </body>
 </html>
-
