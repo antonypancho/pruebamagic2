@@ -126,47 +126,26 @@
 
   footer{ margin-top:28px; padding:16px; text-align:center; font-size:.9rem; color:#aaa; background:#191d34; }
 
-  @media (max-width:880px){
-    :root{ --tamanoCelda:44px; --tamanoFuente:22px; --tamanoFuenteHeader:20px; }
-    header img{ height:44px; }
-  }
-  @media (max-width:520px){
-    :root{ --tamanoCelda:40px; --tamanoFuente:18px; --tamanoFuenteHeader:16px; }
-    header img{ height:40px; }
-  }
-/* 📱 Ajustes responsive para móviles */
+  /* 📱 Toolbar vertical en pantallas pequeñas */
 @media (max-width: 600px){
   .toolbar {
     flex-direction: column;   /* apila los elementos */
-    align-items: stretch;
+    align-items: stretch;     /* que ocupen todo el ancho */
     height: auto;             /* que crezca según contenido */
-    gap: 8px;
+    gap: 10px;
   }
-  .toolbar input, .toolbar button {
-    width: 100%;              /* botones e input ocupan todo el ancho */
-    font-size: 16px;
+
+  .toolbar input,
+  .toolbar button {
+    width: 100%;              /* cada control ocupa todo el ancho */
+    font-size: 16px;          /* más cómodo para tocar en móvil */
   }
+
   .temas {
     justify-content: center;
     margin-top: 8px;
   }
 }
-
-@media (max-width:480px){
-  :root{
-    --tamanoCelda:34px;       /* celdas más pequeñas */
-    --tamanoFuente:16px;
-    --tamanoFuenteHeader:14px;
-  }
-  .carton{
-    width:100%;               /* cada cartón ocupa todo el ancho */
-    min-width:auto;
-  }
-  table{ width:100%; }
-  h1{ font-size:1rem; }
-  h2{ font-size:0.9rem; }
-  header h1{ font-size:1rem; }
-}  
 </style>
 </head>
 <body>
@@ -523,4 +502,5 @@ observer.observe(document.getElementById('cartonesContainer'), { childList: true
 </script>
 </body>
 </html>
+
 
