@@ -126,32 +126,52 @@
 
   footer{ margin-top:28px; padding:16px; text-align:center; font-size:.9rem; color:#aaa; background:#191d34; }
 
+  @media (max-width:880px){
+    :root{ --tamanoCelda:44px; --tamanoFuente:22px; --tamanoFuenteHeader:20px; }
+    header img{ height:44px; }
+  }
+  @media (max-width:520px){
+    :root{ --tamanoCelda:40px; --tamanoFuente:18px; --tamanoFuenteHeader:16px; }
+    header img{ height:40px; }
+  }
+
   /* 📱 Toolbar vertical en pantallas pequeñas */
-@media (max-width: 600px){
-  .toolbar {
-    flex-direction: column;   /* apila los elementos */
-    align-items: stretch;     /* que ocupen todo el ancho */
-    height: auto;             /* que crezca según contenido */
-    gap: 10px;
+  @media (max-width: 600px){
+    .toolbar {
+      flex-direction: column;   /* apila los elementos */
+      align-items: stretch;     /* ocupan todo el ancho */
+      height: auto;             /* crece según contenido */
+      gap: 10px;
+    }
+    .toolbar input,
+    .toolbar button {
+      width: 100%;              /* cada control a ancho completo */
+      font-size: 16px;
+    }
+    .temas {
+      justify-content: center;
+      margin-top: 8px;
+      width: 100%;
+    }
+    .temas .tema {
+      flex: 1;
+      max-width: 40px;
+      margin: 0 auto;
+    }
   }
 
-  .toolbar input,
-  .toolbar button {
-    width: 100%;              /* cada control ocupa todo el ancho */
-    font-size: 16px;          /* más cómodo para tocar en móvil */
+  @media (max-width:480px){
+    :root{
+      --tamanoCelda:34px;
+      --tamanoFuente:16px;
+      --tamanoFuenteHeader:14px;
+    }
+    .carton{ width:100%; min-width:auto; }
+    table{ width:100%; }
+    h1{ font-size:1rem; }
+    h2{ font-size:0.9rem; }
+    header h1{ font-size:1rem; }
   }
-
-  .temas {
-    justify-content: center;
-    margin-top: 8px;
-    width: 100%;
-  }
-  .temas .tema {
-    flex: 1;                  /* se reparten el espacio */
-    max-width: 40px;          /* pero no se deforman demasiado */
-    margin: 0 auto;
-  }
-}
 </style>
 </head>
 <body>
@@ -508,6 +528,3 @@ observer.observe(document.getElementById('cartonesContainer'), { childList: true
 </script>
 </body>
 </html>
-
-
-
