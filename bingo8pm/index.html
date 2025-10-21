@@ -137,6 +137,26 @@
     .toolbar input, .toolbar button { font-size: 15px; }
     .temas .tema { width: 20px; height: 20px; }
   }
+  /* 📱 Mostrar 3 cartones por fila en pantallas pequeñas */
+@media (max-width: 520px){
+  #cartonesContainer {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); /* 3 columnas iguales */
+    gap: 8px;
+  }
+  .carton {
+    width: 100%;       /* ocupa su celda de la grilla */
+    min-width: auto;   /* evita que se expanda demasiado */
+    margin: 0;         /* el gap ya maneja el espacio */
+    padding: 6px;      /* un poco más compacto */
+  }
+  .carton h3 {
+    font-size: 0.8rem; /* títulos más pequeños */
+  }
+  th, td {
+    font-size: 0.7rem; /* números más pequeños */
+  }
+}
 </style>
 </head>
 <body>
@@ -493,3 +513,4 @@ observer.observe(document.getElementById('cartonesContainer'), { childList: true
 </script>
 </body>
 </html>
+
