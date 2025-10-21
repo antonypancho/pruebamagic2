@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="utf-8">
+<meta charset="UTF-8">
 <title>BingoMagic 8:00pm — Juega tu Cartón</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="logo.png">
 <style>
   :root{
     --fondo:#3A29BA;
@@ -18,63 +19,65 @@
     --tamanoFuente:28px;
     --tamanoFuenteHeader:24px;
 
+    /* alturas (ajusta si cambias padding/size del header o toolbar) */
     --alto-header:64px;
     --alto-toolbar:56px;
-    --altoTop: calc(var(--alto-header) + var(--alto-toolbar));
+    --altoTop: calc(var(--alto-header) + var(--alto-toolbar)); /* espacio reservado para elementos fijos */
 
     --gap:12px;
-    --titulo-carton:#00d4ff;
+    --titulo-carton: #00d4ff;
   }
 
-  /* reset mínimo */
   *,*::before,*::after{box-sizing:border-box;}
-  html,body{height:100%; margin:0; padding:0;}
+  html,body{height:100%;}
   body{
-    font-family: 'Segoe UI', Arial, sans-serif;
+    margin:0;
+    font-family:'Segoe UI',Arial,sans-serif;
     background:var(--fondo);
     color:var(--texto);
     text-align:center;
     -webkit-font-smoothing:antialiased;
     -moz-osx-font-smoothing:grayscale;
-    padding-top: var(--altoTop);
-    overflow-y: auto;
+    padding-top: var(--altoTop); /* espacio para header + toolbar fijos */
     -webkit-overflow-scrolling: touch;
   }
 
-  /* HEADER fijo en top 0 */
+  /* Header fijo en top 0 */
   header{
     position: fixed;
     top: 0;
     left: 0;
     right: 0;
     height: var(--alto-header);
+    background:#191d34;
+    padding:8px 20px;
     display:flex;
     align-items:center;
-    gap:12px;
-    padding:8px 16px;
-    background:#191d34;
-    z-index: 10000;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+    gap:16px;
+    box-shadow:0 2px 6px rgba(0,0,0,0.4);
+    z-index: 10050;
   }
-  header img{ height:48px; width:auto; display:block; }
-  header h1{ margin:0; font-size:1.15rem; color:#ffeb3b; }
+  header img{ height:48px; width:auto; object-fit:contain; }
+  header h1{ margin:0; font-size:1.2rem; color:#ffeb3b; line-height:1; }
 
-  /* TOOLBAR fijo justo debajo del header */
+  /* Toolbar fijo directamente debajo del header */
   .toolbar{
     position: fixed;
     top: var(--alto-header);
     left: 0;
     right: 0;
     height: var(--alto-toolbar);
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    gap:var(--gap);
-    padding:6px 12px;
     background:#121528;
-    z-index: 10000;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.25);
-    border-bottom:1px solid rgba(255,255,255,0.06);
+    color:#fff;
+    padding:8px 12px;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    gap:var(--gap);
+    flex-wrap:wrap;
+    box-shadow:0 2px 6px rgba(0,0,0,0.25);
+    border-bottom:1px solid rgba(255,255,255,0.08);
+    z-index: 10040;
   }
   .toolbar input, .toolbar button {
     padding:8px 12px;
@@ -82,28 +85,48 @@
     border-radius:8px;
     border:none;
   }
-  .toolbar button { background:linear-gradient(135deg,#00d4ff,#6c5ce7); color:#fff; cursor:pointer; }
-  .toolbar .temas{ display:flex; gap:8px; margin-left:6px; }
+  .toolbar button{ background:linear-gradient(135deg,#00d4ff,#6c5ce7); color:#fff; cursor:pointer; transition: transform .12s, box-shadow .12s; }
+  .toolbar button:hover{ transform: translateY(-2px); box-shadow:0 4px 10px rgba(0,0,0,.22); }
 
-  main{ max-width:1200px; margin:0 auto; padding:16px; }
+  .temas{ display:flex; gap:8px; margin-left:6px; }
+  .tema{ width:22px; height:22px; border-radius:50%; cursor:pointer; border:2px solid #fff; }
 
-  /* guía y cartones */
-  #guiaFigura{ margin:8px auto 18px; background:#f5f5f5; padding:10px; border-radius:10px; color:#000; display:inline-block; }
+  main{ padding:16px; max-width:1200px; margin:0 auto; }
+
+  h1{ margin:18px 0 10px; font-size:1.2rem; }
+  h2{ margin:8px 0 16px; color:#ffeb3b; font-size:1rem; }
+
+  #guiaFigura{ margin:8px auto 18px; display:inline-block; background:#f5f5f5; padding:10px; border-radius:10px; border:1px solid #ddd; box-shadow:0 4px 10px rgba(0,0,0,.12); color:#000; }
   #tablaGuia{ border-collapse:collapse; }
-  #tablaGuia td{ width:40px; height:40px; border:1px solid #bbb; text-align:center; font-weight:bold; cursor:pointer; background:#fff; }
+  #tablaGuia td{ width:40px; height:40px; border:1px solid #bbb; text-align:center; font-size:18px; cursor:pointer; transition:all .12s ease; font-weight:bold; background:#fff; }
   #tablaGuia td.relleno{ background:#ff9800; color:#fff; }
-  #tablaGuia td.centro{ background:#eaeaea; color:#000; font-weight:bold; cursor:default; }
+  #tablaGuia td.centro{ font-weight:bold; cursor:default; background:#eaeaea; color:#000; }
 
-  #cartonesContainer{ display:flex; flex-wrap:wrap; justify-content:center; gap:12px; padding:8px 6px 40px; }
-  .carton{ position:relative; display:inline-block; margin:8px; padding:10px; background:var(--carton); border-radius:8px; min-width: calc(5 * var(--tamanoCelda) * 0.8); box-shadow:0 6px 18px rgba(0,0,0,.25); }
-  .carton h3{ margin:0 0 8px; color:var(--titulo-carton); font-size:1rem; }
+  #cartonesContainer{
+    display:flex;
+    flex-wrap:wrap;
+    justify-content:center;
+    gap:12px;
+    padding:8px 12px 32px;
+  }
+  .carton{
+    position:relative;
+    display:inline-block;
+    margin:8px;
+    padding:10px;
+    background:var(--carton);
+    border-radius:8px;
+    min-width: calc(5 * var(--tamanoCelda) * 0.8);
+    box-shadow:0 6px 18px rgba(0,0,0,.25);
+  }
+  .carton h3{ margin:0 0 10px; color:var(--titulo-carton); font-size:1rem; }
 
-  .close-btn{ position:absolute; top:6px; right:6px; width:28px; height:28px; border-radius:6px; border:none; background:rgba(0,0,0,.45); color:#fff; cursor:pointer; display:flex; align-items:center; justify-content:center; }
-  .close-btn:hover{ background:rgba(255,0,0,.9); transform:translateY(-1px); }
+  .carton .close-btn{ position:absolute; top:6px; right:6px; width:28px; height:28px; border-radius:6px; border:none; background:rgba(0,0,0,.45); color:#fff; font-weight:bold; display:flex; align-items:center; justify-content:center; cursor:pointer; transition:background .12s, transform .08s; box-shadow:0 2px 6px rgba(0,0,0,.35); }
+  .carton .close-btn:hover{ background:rgba(255,0,0,.85); transform:translateY(-1px); }
 
-  table{ border-collapse:collapse; margin:auto; width:100%; }
+  table{ border-collapse:collapse; margin:auto; }
   th{ width:calc(var(--tamanoCelda) * var(--escalaCarton)); height:calc(40px * var(--escalaCarton)); border:1px solid var(--borde); font-size:calc(var(--tamanoFuenteHeader) * var(--escalaCarton)); color:#ffeb3b; text-align:center; padding:4px; box-sizing:border-box; }
-  td{ width:calc(var(--tamanoCelda) * var(--escalaCarton)); height:calc(var(--tamanoCelda) * var(--escalaCarton)); border:1px solid var(--borde); cursor:pointer; font-weight:bold; text-align:center; font-size:calc(var(--tamanoFuente) * var(--escalaCarton)); color:var(--texto); background:transparent; padding:4px; box-sizing:border-box; user-select:none; }
+  td{ width:calc(var(--tamanoCelda) * var(--escalaCarton)); height:calc(var(--tamanoCelda) * var(--escalaCarton)); border:1px solid var(--borde); cursor:pointer; font-weight:bold; text-align:center; font-size:calc(var(--tamanoFuente) * var(--escalaCarton)); color:var(--texto); background:transparent; position:relative; padding:4px; box-sizing:border-box; user-select:none; }
   td.free{ background:var(--free-bg); color:#000; cursor:default; }
   td.marcado1{ background:var(--marcado); color:#fff; }
 
@@ -113,31 +136,39 @@
 
   footer{ margin-top:28px; padding:16px; text-align:center; font-size:.9rem; color:#aaa; background:#191d34; }
 
-  @media (max-width:520px){
-    :root{ --tamanoCelda:40px; --tamanoFuente:18px; --tamanoFuenteHeader:16px; --alto-header:56px; --alto-toolbar:56px; --altoTop: calc(var(--alto-header) + var(--alto-toolbar)); }
-    header h1{ font-size:1rem; }
+  @media (max-width:880px){
+    :root{ --tamanoCelda:44px; --tamanoFuente:22px; --tamanoFuenteHeader:20px; }
+    header img{ height:44px; }
   }
+  @media (max-width:520px){
+    :root{ --tamanoCelda:40px; --tamanoFuente:18px; --tamanoFuenteHeader:16px; }
+    header img{ height:40px; }
+  }
+
+  /* Nota: evita usar transform/filters en ancestros del header/toolbar en tu CSS global */
 </style>
 </head>
 <body>
 
-<header role="banner" aria-hidden="false">
+<header role="banner">
   <img src="logo.png" alt="Logo Bingo 8pm">
   <h1>🎉 Bingo Magic 8:00pm</h1>
 </header>
 
 <div class="toolbar" role="region" aria-label="Barra de herramientas">
-  <input id="cartonInput" type="number" placeholder="Número de cartón" aria-label="Número de cartón">
-  <button id="agregarBtn" disabled>Agregar</button>
-  <button id="limpiarBtn">Limpiar</button>
-  <button id="quitarBtn">Quitar</button>
-  <button id="zoomIn">+</button>
-  <button id="zoomOut">-</button>
+  <input type="number" id="cartonInput" placeholder="Número de cartón" aria-label="Número de cartón">
+  <button id="agregarBtn" disabled aria-label="Agregar cartón">Agregar</button>
+  <button id="limpiarBtn" aria-label="Limpiar marcas">Limpiar</button>
+  <button id="quitarBtn" aria-label="Quitar cartones">Quitar</button>
+  <button id="zoomIn" aria-label="Achicar (más cartones)">+</button>
+  <button id="zoomOut" aria-label="Agrandar (menos cartones)">-</button>
+
   <div class="temas" role="toolbar" aria-label="Temas">
-    <div style="background:#000;" onclick="cambiarTema('azul')" title="Azul" role="button" tabindex="0"></div>
-    <div style="background:#fff;" onclick="cambiarTema('verde')" title="Verde" role="button" tabindex="0"></div>
-    <div style="background:#9c27b0;" onclick="cambiarTema('morado')" title="Morado" role="button" tabindex="0"></div>
+    <div class="tema" style="background:#000000;" onclick="cambiarTema('azul')" title="Azul (oscuro)" role="button" tabindex="0"></div>
+    <div class="tema" style="background:#ffffff;" onclick="cambiarTema('verde')" title="Verde (claro)" role="button" tabindex="0"></div>
+    <div class="tema" style="background:#9c27b0;" onclick="cambiarTema('morado')" title="Morado (oscuro)" role="button" tabindex="0"></div>
   </div>
+
   <div id="status" aria-live="polite"></div>
 </div>
 
@@ -145,34 +176,37 @@
   <h1>🎟️ Juega tu Cartón</h1>
   <h2>👇Dibuja La Figura que estamos jugando👇</h2>
 
-  <div id="guiaFigura">
-    <table id="tablaGuia" role="grid"></table>
+  <div id="guiaFigura" aria-label="Guía de figura">
+    <table id="tablaGuia" role="grid" aria-label="Tabla guía 5 por 5"></table>
   </div>
 
-  <div id="cartonesContainer" role="region" aria-live="polite"></div>
+  <div id="cartonesContainer" aria-live="polite" role="region" aria-label="Contenedor de cartones"></div>
 </main>
 
-<footer role="contentinfo">&copy; 2025 BingoMagic.online</footer>
+<footer role="contentinfo">
+  &copy; 2025 BingoMagic.online — ¡Diversión mágica en cada partida!
+</footer>
 
 <script>
-/* Estado y elementos */
-const cartonesContainer = document.getElementById('cartonesContainer');
-const agregarBtn = document.getElementById('agregarBtn');
-const limpiarBtn = document.getElementById('limpiarBtn');
-const quitarBtn = document.getElementById('quitarBtn');
-const zoomInBtn = document.getElementById('zoomIn');
-const zoomOutBtn = document.getElementById('zoomOut');
-const statusEl = document.getElementById('status');
-
+/* estado */
 let cartonesData = [];
 let cartonesMostrados = [];
 
-/* Inicialización */
+const agregarBtn = document.getElementById('agregarBtn');
+const limpiarBtn = document.getElementById('limpiarBtn');
+const quitarBtn = document.getElementById('quitarBtn');
+const statusEl = document.getElementById('status');
+const zoomInBtn = document.getElementById('zoomIn');
+const zoomOutBtn = document.getElementById('zoomOut');
+const cartonesContainer = document.getElementById('cartonesContainer');
+
 document.addEventListener('DOMContentLoaded', () => {
-  const tema = localStorage.getItem('temaBingo');
-  if (tema) cambiarTema(tema);
-  const zoom = localStorage.getItem('zoomCarton');
-  if (zoom) document.documentElement.style.setProperty('--escalaCarton', zoom);
+  const temaGuardado = localStorage.getItem("temaBingo");
+  if (temaGuardado) cambiarTema(temaGuardado);
+  else document.documentElement.style.setProperty('--titulo-carton', '#00d4ff');
+
+  const zoomGuardado = localStorage.getItem("zoomCarton");
+  if (zoomGuardado) document.documentElement.style.setProperty('--escalaCarton', zoomGuardado);
 
   crearGuia();
   restaurarGuia();
@@ -186,6 +220,8 @@ document.addEventListener('DOMContentLoaded', () => {
   agregarBtn.addEventListener('click', agregarCarton);
   limpiarBtn.addEventListener('click', limpiarMarcas);
   quitarBtn.addEventListener('click', quitarCartones);
+
+  /* + achica (ver más cartones), - agranda */
   zoomInBtn.addEventListener('click', () => ajustarZoom(-0.1));
   zoomOutBtn.addEventListener('click', () => ajustarZoom(0.1));
 
@@ -210,210 +246,258 @@ document.addEventListener('DOMContentLoaded', () => {
 async function cargarCSV(){
   statusEl.textContent = 'Cargando cartones...';
   try {
-    const res = await fetch('./csv/cartones.csv', { cache: 'no-store' });
+    const res = await fetch('./csv/cartones.csv', { cache: "no-store" });
     if (!res.ok) throw new Error('CSV no encontrado');
     const text = await res.text();
     cartonesData = parseCSV(text);
     statusEl.textContent = `✅ ${cartonesData.length} cartones cargados.`;
-  } catch (err) {
-    console.error(err);
-    statusEl.textContent = 'Error cargando CSV.';
+  } catch (e) {
+    console.error(e);
+    statusEl.textContent = 'Error cargando CSV. Verifica la ruta /csv/cartones.csv y que el archivo esté publicado.';
     agregarBtn.disabled = true;
   }
 }
 function parseCSV(text){
-  const lines = text.split(/\r?\n/).map(l=>l.trim()).filter(l=>l!=='');
+  const lines = text.split(/\r?\n/).map(l => l.trim()).filter(l => l !== '');
   const cartones = [];
-  let i=0;
-  while(i<lines.length){
-    if (lines[i].toUpperCase().startsWith('CARTÓN')) { i++; continue; }
-    if (lines[i].toUpperCase() === 'B,I,N,G,O') { i++; }
-    const carton=[];
-    for (let r=0;r<5 && i<lines.length; r++, i++){
-      carton.push(lines[i].split(',').map(n=>n.trim()));
+  let i = 0;
+  while (i < lines.length) {
+    if (lines[i].toUpperCase().startsWith("CARTÓN")) { i++; continue; }
+    if (lines[i].toUpperCase() === "B,I,N,G,O") { i++; }
+    const carton = [];
+    for (let r = 0; r < 5 && i < lines.length; r++, i++) {
+      const fila = lines[i].split(',').map(n => n.trim());
+      carton.push(fila);
     }
-    if (carton.length===5) cartones.push(carton);
+    if (carton.length === 5) cartones.push(carton);
   }
   return cartones;
 }
 
-/* Render / UI */
+/* Render y UI */
 function agregarCarton(){
-  const n = parseInt(document.getElementById('cartonInput').value,10);
-  if (isNaN(n)) { alert('Ingresa un número.'); return; }
-  if (n<1 || n>cartonesData.length) { alert('Número inválido.'); return; }
-  if (cartonesMostrados.includes(n)) { alert('Ese cartón ya está en pantalla.'); return; }
-  renderCarton(n);
+  const numero = parseInt(document.getElementById("cartonInput").value, 10);
+  if (isNaN(numero)) { alert("Ingresa un número."); return; }
+  if (numero < 1 || numero > cartonesData.length) { alert("Número inválido."); return; }
+  if (cartonesMostrados.includes(numero)) { alert("Ese cartón ya está en pantalla."); return; }
+
+  renderCarton(numero);
   guardarEstado();
-  document.getElementById('cartonInput').value = '';
+  document.getElementById("cartonInput").value = '';
 }
 function renderCarton(numero){
-  const carton = cartonesData[numero-1];
+  const carton = cartonesData[numero - 1];
   if (!carton) return;
-  const el = document.createElement('div');
-  el.className = 'carton';
-  el.dataset.numero = numero;
-  el.innerHTML = `<h3>Cartón ${numero}</h3><div class="tabla-wrapper"><table>${crearTabla(carton, numero)}</table></div>`;
-  const btn = document.createElement('button');
-  btn.className = 'close-btn';
-  btn.type='button';
-  btn.innerText='✕';
-  btn.addEventListener('click', () => {
-    if (!confirm(`¿Quitar el cartón ${numero}?`)) return;
-    el.remove();
+  const div = document.createElement("div");
+  div.className = "carton";
+  div.dataset.numero = numero;
+
+  div.innerHTML = `<h3>Cartón ${numero}</h3><div class="tabla-wrapper"><table>${crearTabla(carton, numero)}</table></div>`;
+
+  const closeBtn = document.createElement('button');
+  closeBtn.className = 'close-btn';
+  closeBtn.type = 'button';
+  closeBtn.setAttribute('aria-label', `Cerrar cartón ${numero}`);
+  closeBtn.innerHTML = '✕';
+  closeBtn.addEventListener('click', () => {
+    const ok = confirm(`¿Quitar el cartón ${numero}?`);
+    if (!ok) return;
+    div.remove();
     const idx = cartonesMostrados.indexOf(numero);
-    if (idx>-1) cartonesMostrados.splice(idx,1);
-    actualizarEstadoDespuesEliminar();
+    if (idx > -1) cartonesMostrados.splice(idx, 1);
+    const estadoStr = localStorage.getItem('estadoCartones');
+    if (estadoStr) {
+      try {
+        const estado = JSON.parse(estadoStr);
+        if (Array.isArray(estado.marcados)) {
+          estado.marcados = estado.marcados.filter(m => cartonesMostrados.includes(parseInt(m.carton,10)));
+        }
+        estado.cartones = cartonesMostrados.slice();
+        localStorage.setItem('estadoCartones', JSON.stringify(estado));
+      } catch (e) { guardarEstado(); }
+    } else { guardarEstado(); }
     aplicarGuiaBordes();
+    statusEl.textContent = `Cartón ${numero} eliminado.`;
   });
-  el.appendChild(btn);
-  cartonesContainer.appendChild(el);
+
+  div.appendChild(closeBtn);
+  cartonesContainer.appendChild(div);
   cartonesMostrados.push(numero);
   aplicarGuiaBordes();
-  attachCellListeners(el);
+  attachCellListeners(div); // accesibilidad teclado para celdas nuevas
 }
 function crearTabla(carton, numero){
-  const letras=['B','I','N','G','O'];
-  let html='<tr>';
-  for(let c=0;c<5;c++) html+=`<th>${letras[c]}</th>`;
-  html+='</tr>';
-  for(let r=0;r<5;r++){
-    html+='<tr>';
-    for(let c=0;c<5;c++){
+  let html = '';
+  const letras = ['B','I','N','G','O'];
+  html += '<tr>';
+  for (let c = 0; c < 5; c++) html += `<th scope="col">${letras[c]}</th>`;
+  html += '</tr>';
+  for (let r = 0; r < 5; r++) {
+    html += '<tr>';
+    for (let c = 0; c < 5; c++) {
       const val = carton[r][c] ?? '';
-      const isFree = (typeof val==='string' && val.toUpperCase()==='X');
-      const cls = isFree ? 'free' : '';
-      html+=`<td class="${cls}" data-carton="${numero}" data-pos="${r},${c}" tabindex="${isFree?-1:0}" role="gridcell">${val}</td>`;
+      const isFree = (typeof val === 'string' && val.toUpperCase() === 'X');
+      const classes = isFree ? 'free' : '';
+      html += `<td class="${classes}" data-carton="${numero}" data-pos="${r},${c}" tabindex="${isFree ? -1 : 0}" role="gridcell" aria-label="Cartón ${numero} fila ${r+1} columna ${c+1}">${val}</td>`;
     }
-    html+='</tr>';
+    html += '</tr>';
   }
   return html;
 }
 
-/* Accessibility: attach keyboard handler for new cells */
+/* accesibilidad teclado en celdas nuevas */
 function attachCellListeners(root){
-  root.querySelectorAll('td').forEach(td=>{
+  root.querySelectorAll('td').forEach(td => {
     if (!td.classList.contains('free')) {
       td.setAttribute('tabindex', td.getAttribute('tabindex') ?? 0);
-      td.addEventListener('keydown', (e)=>{
+      td.addEventListener('keydown', (e) => {
         if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); cambiarColor(td); }
       });
     }
   });
 }
 
-/* marcar */
+/* marcar celda */
 function cambiarColor(td){
   if (td.classList.contains('free')) return;
-  td.classList.toggle('marcado1');
+  td.classList.toggle("marcado1");
   guardarEstado();
 }
 
-/* limpiar / quitar */
+/* limpiar, quitar */
 function limpiarMarcas(){
-  document.querySelectorAll('#cartonesContainer td.marcado1').forEach(t => t.classList.remove('marcado1'));
+  document.querySelectorAll('#cartonesContainer td.marcado1').forEach(td => td.classList.remove('marcado1'));
   guardarEstado();
-  document.querySelectorAll('#cartonesContainer td.bordeGuia').forEach(t => t.classList.remove('bordeGuia'));
-  localStorage.removeItem('guiaFigura');
+  document.querySelectorAll('#cartonesContainer td.bordeGuia').forEach(td => td.classList.remove('bordeGuia'));
+  localStorage.removeItem("guiaFigura");
   crearGuia();
 }
 function quitarCartones(){
-  cartonesContainer.innerHTML='';
-  cartonesMostrados=[];
-  localStorage.removeItem('estadoCartones');
-  statusEl.textContent='Se quitaron los cartones.';
-  localStorage.removeItem('guiaFigura');
+  cartonesContainer.innerHTML = '';
+  cartonesMostrados = [];
+  localStorage.removeItem("estadoCartones");
+  statusEl.textContent = 'Se quitaron los cartones y se limpió tu almacenamiento.';
+  localStorage.removeItem("guiaFigura");
   crearGuia();
-}
-function actualizarEstadoDespuesEliminar(){
-  const estadoStr = localStorage.getItem('estadoCartones');
-  if (!estadoStr) { guardarEstado(); return; }
-  try{
-    const estado = JSON.parse(estadoStr);
-    if (Array.isArray(estado.marcados)) {
-      estado.marcados = estado.marcados.filter(m => cartonesMostrados.includes(parseInt(m.carton,10)));
-    }
-    estado.cartones = cartonesMostrados.slice();
-    localStorage.setItem('estadoCartones', JSON.stringify(estado));
-  }catch(e){ guardarEstado(); }
 }
 
 /* persistencia */
 function guardarEstado(){
   const estado = { cartones: cartonesMostrados.slice(), marcados: [] };
-  document.querySelectorAll('#cartonesContainer td.marcado1').forEach(td=>{
+  document.querySelectorAll('#cartonesContainer td.marcado1').forEach(td => {
     estado.marcados.push({ carton: td.dataset.carton, pos: td.dataset.pos });
   });
   localStorage.setItem('estadoCartones', JSON.stringify(estado));
 }
 function restaurarEstado(){
-  const s = localStorage.getItem('estadoCartones'); if (!s) return;
-  let estado; try{ estado = JSON.parse(s);}catch{return;}
-  if (Array.isArray(estado.cartones)) estado.cartones.forEach(n => renderCarton(n));
+  const estadoStr = localStorage.getItem("estadoCartones");
+  if (!estadoStr) return;
+  let estado;
+  try { estado = JSON.parse(estadoStr); } catch { return; }
+  if (Array.isArray(estado.cartones)) estado.cartones.forEach(num => renderCarton(num));
   if (Array.isArray(estado.marcados)) {
-    setTimeout(()=> {
-      estado.marcados.forEach(m=>{
+    setTimeout(() => {
+      estado.marcados.forEach(m => {
         const td = document.querySelector(`#cartonesContainer td[data-carton="${m.carton}"][data-pos="${m.pos}"]`);
         if (td) td.classList.add('marcado1');
       });
-    },120);
+    }, 120);
   }
 }
 
 /* zoom */
 function ajustarZoom(delta){
-  let e = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--escalaCarton')) || 1;
-  e = Math.round((e + delta)*100)/100;
-  if (e < 0.4) e = 0.4;
-  if (e > 2) e = 2;
-  document.documentElement.style.setProperty('--escalaCarton', e);
-  localStorage.setItem('zoomCarton', e);
+  let escala = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--escalaCarton')) || 1;
+  escala = Math.round((escala + delta) * 100) / 100;
+  if (escala < 0.4) escala = 0.4;
+  if (escala > 2) escala = 2;
+  document.documentElement.style.setProperty('--escalaCarton', escala);
+  localStorage.setItem("zoomCarton", escala);
 }
 
 /* temas */
 function cambiarTema(color){
-  if (color==='azul'){ document.documentElement.style.setProperty('--carton','#1b1b1b'); document.documentElement.style.setProperty('--texto','#ffffff'); document.documentElement.style.setProperty('--marcado','#2196f3'); document.documentElement.style.setProperty('--borde','#ada8a8'); document.documentElement.style.setProperty('--free-bg','#444444'); document.documentElement.style.setProperty('--titulo-carton','#00d4ff'); }
-  if (color==='verde'){ document.documentElement.style.setProperty('--carton','#f5f5f5'); document.documentElement.style.setProperty('--texto','#000000'); document.documentElement.style.setProperty('--marcado','#4caf50'); document.documentElement.style.setProperty('--borde','#333333'); document.documentElement.style.setProperty('--free-bg','#e0e0e0'); document.documentElement.style.setProperty('--titulo-carton','#2e7d32'); }
-  if (color==='morado'){ document.documentElement.style.setProperty('--carton','#f8bbd0'); document.documentElement.style.setProperty('--texto','#000000'); document.documentElement.style.setProperty('--marcado','#e91e63'); document.documentElement.style.setProperty('--borde','#ffffff'); document.documentElement.style.setProperty('--titulo-carton','#6a1b9a'); }
-  localStorage.setItem('temaBingo', color);
+  if (color === 'azul'){
+    document.documentElement.style.setProperty('--carton','#1b1b1b');
+    document.documentElement.style.setProperty('--texto','#ffffff');
+    document.documentElement.style.setProperty('--marcado','#2196f3');
+    document.documentElement.style.setProperty('--borde','#ada8a8');
+    document.documentElement.style.setProperty('--free-bg','#444444');
+    document.documentElement.style.setProperty('--titulo-carton','#00d4ff');
+  } else if (color === 'verde'){
+    document.documentElement.style.setProperty('--carton','#f5f5f5');
+    document.documentElement.style.setProperty('--texto','#000000');
+    document.documentElement.style.setProperty('--marcado','#4caf50');
+    document.documentElement.style.setProperty('--borde','#333333');
+    document.documentElement.style.setProperty('--free-bg','#e0e0e0');
+    document.documentElement.style.setProperty('--titulo-carton','#2e7d32');
+  } else if (color === 'morado'){
+    document.documentElement.style.setProperty('--carton','#f8bbd0');
+    document.documentElement.style.setProperty('--texto','#000000');
+    document.documentElement.style.setProperty('--marcado','#e91e63');
+    document.documentElement.style.setProperty('--borde','#ffffff');
+    document.documentElement.style.setProperty('--titulo-carton','#6a1b9a');
+  }
+  localStorage.setItem("temaBingo", color);
 }
 
 /* guía 5x5 */
 function crearGuia(){
-  const t = document.getElementById('tablaGuia'); t.innerHTML='';
+  const tabla = document.getElementById("tablaGuia");
+  tabla.innerHTML = '';
   for(let r=0;r<5;r++){
-    const tr = document.createElement('tr');
+    const fila = document.createElement("tr");
     for(let c=0;c<5;c++){
-      const td = document.createElement('td');
-      td.dataset.pos = `${r},${c}`;
-      if (r===2 && c===2){ td.textContent='X'; td.classList.add('centro'); td.setAttribute('aria-hidden','true'); }
-      else {
-        td.tabIndex = 0;
-        td.addEventListener('click', ()=> { td.classList.toggle('relleno'); guardarGuia(); aplicarGuiaBordes(); });
-        td.addEventListener('keydown', (e)=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); td.click(); }});
+      const celda = document.createElement("td");
+      celda.dataset.pos = `${r},${c}`;
+      if(r===2 && c===2){
+        celda.textContent='X';
+        celda.classList.add('centro');
+        celda.setAttribute('aria-hidden','true');
+      } else {
+        celda.tabIndex = 0;
+        celda.addEventListener('click', () => {
+          celda.classList.toggle('relleno');
+          guardarGuia();
+          aplicarGuiaBordes();
+        });
+        celda.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); celda.click(); }});
       }
-      tr.appendChild(td);
+      fila.appendChild(celda);
     }
-    t.appendChild(tr);
+    tabla.appendChild(fila);
   }
 }
 function aplicarGuiaBordes(){
   document.querySelectorAll('#cartonesContainer td').forEach(td => td.classList.remove('invisibleNumero'));
-  const posiciones = Array.from(document.querySelectorAll('#tablaGuia td.relleno')).map(x=>x.dataset.pos);
-  if (posiciones.length===0) return;
+  const posicionesGuia = Array.from(document.querySelectorAll('#tablaGuia td.relleno')).map(c=>c.dataset.pos);
+  if(posicionesGuia.length===0) return;
   document.querySelectorAll('#cartonesContainer td').forEach(td=>{
     const pos = td.dataset.pos;
-    if (!posiciones.includes(pos)) td.classList.add('invisibleNumero');
+    if(!posicionesGuia.includes(pos)) td.classList.add('invisibleNumero');
     else td.classList.remove('invisibleNumero');
   });
 }
-function guardarGuia(){ const rell=[]; document.querySelectorAll('#tablaGuia td.relleno').forEach(c=> rell.push(c.dataset.pos)); localStorage.setItem('guiaFigura', JSON.stringify(rell)); }
-function restaurarGuia(){ const d = localStorage.getItem('guiaFigura'); if (!d) return; try{ const r = JSON.parse(d); r.forEach(pos=>{ const td = document.querySelector(`#tablaGuia td[data-pos="${pos}"]`); if(td) td.classList.add('relleno'); }); }catch{} }
+function guardarGuia(){
+  const rellenos=[];
+  document.querySelectorAll('#tablaGuia td.relleno').forEach(celda=> rellenos.push(celda.dataset.pos));
+  localStorage.setItem('guiaFigura', JSON.stringify(rellenos));
+}
+function restaurarGuia(){
+  const data = localStorage.getItem('guiaFigura');
+  if(!data) return;
+  let rellenos;
+  try{ rellenos = JSON.parse(data); } catch { return; }
+  rellenos.forEach(pos=>{
+    const celda = document.querySelector(`#tablaGuia td[data-pos="${pos}"]`);
+    if(celda) celda.classList.add('relleno');
+  });
+}
 
-/* accesibility reapply */
+/* observer para reaplicar listeners teclado si se necesita */
 function attachAllCellListeners(){ document.querySelectorAll('#cartonesContainer .carton').forEach(div => attachCellListeners(div)); }
 const observer = new MutationObserver(()=>{ attachAllCellListeners(); aplicarGuiaBordes(); });
-observer.observe(cartonesContainer, { childList:true, subtree:true });
+observer.observe(document.getElementById('cartonesContainer'), { childList: true, subtree: true });
 
 </script>
 </body>
