@@ -134,6 +134,39 @@
     :root{ --tamanoCelda:40px; --tamanoFuente:18px; --tamanoFuenteHeader:16px; }
     header img{ height:40px; }
   }
+/* 📱 Ajustes responsive para móviles */
+@media (max-width: 600px){
+  .toolbar {
+    flex-direction: column;   /* apila los elementos */
+    align-items: stretch;
+    height: auto;             /* que crezca según contenido */
+    gap: 8px;
+  }
+  .toolbar input, .toolbar button {
+    width: 100%;              /* botones e input ocupan todo el ancho */
+    font-size: 16px;
+  }
+  .temas {
+    justify-content: center;
+    margin-top: 8px;
+  }
+}
+
+@media (max-width:480px){
+  :root{
+    --tamanoCelda:34px;       /* celdas más pequeñas */
+    --tamanoFuente:16px;
+    --tamanoFuenteHeader:14px;
+  }
+  .carton{
+    width:100%;               /* cada cartón ocupa todo el ancho */
+    min-width:auto;
+  }
+  table{ width:100%; }
+  h1{ font-size:1rem; }
+  h2{ font-size:0.9rem; }
+  header h1{ font-size:1rem; }
+}  
 </style>
 </head>
 <body>
@@ -490,3 +523,4 @@ observer.observe(document.getElementById('cartonesContainer'), { childList: true
 </script>
 </body>
 </html>
+
