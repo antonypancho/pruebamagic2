@@ -144,6 +144,12 @@
   .temas {
     justify-content: center;
     margin-top: 8px;
+    width: 100%;
+  }
+  .temas .tema {
+    flex: 1;                  /* se reparten el espacio */
+    max-width: 40px;          /* pero no se deforman demasiado */
+    margin: 0 auto;
   }
 }
 </style>
@@ -502,5 +508,6 @@ observer.observe(document.getElementById('cartonesContainer'), { childList: true
 </script>
 </body>
 </html>
+
 
 
