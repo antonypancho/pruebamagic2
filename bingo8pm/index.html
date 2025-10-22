@@ -29,18 +29,15 @@
 
   *,*::before,*::after{box-sizing:border-box;}
   html,body{height:100%;}
-  /* ---- Forzar vista de escritorio en móviles (igual que en PC) ---- */
+
+  /* Opción A: permitir vista completa y scroll horizontal sin min-width forzado */
   html, body {
-    /* Ajusta este valor si tu diseño desktop es más ancho */
-    min-width: 1200px;
     -webkit-text-size-adjust: 100%;
     text-size-adjust: 100%;
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
+    min-width: 0;
   }
-  /* Evitar que el contenedor reordene automáticamente */
-  #cartonesContainer { flex-wrap: nowrap; }
-  table { table-layout: fixed; }
 
   body{
     margin:0;
@@ -50,10 +47,9 @@
     text-align:center;
     -webkit-font-smoothing:antialiased;
     -moz-osx-font-smoothing:grayscale;
-    /* Importante: SIN padding-top porque header/toolbar no son fijos */
   }
 
-  /* Header normal (no fijo) */
+  /* Header */
   header{
     position: static;
     height: var(--alto-header);
@@ -67,7 +63,7 @@
   header img{ height:48px; width:auto; object-fit:contain; }
   header h1{ margin:0; font-size:1.2rem; color:#ffeb3b; line-height:1; }
 
-  /* Toolbar normal (no fija) y siempre horizontal */
+  /* Toolbar */
   .toolbar{
     position: static;
     min-height: var(--alto-toolbar);
@@ -106,7 +102,7 @@
   #tablaGuia td.relleno{ background:#ff9800; color:#fff; }
   #tablaGuia td.centro{ font-weight:bold; cursor:default; background:#eaeaea; color:#000; }
 
-  /* CARTON / TABLA: same on all devices (no mobile-specific overrides) */
+  /* CARTON / TABLA: same on all devices */
   #cartonesContainer{
     display:flex;
     flex-wrap:wrap;
@@ -122,7 +118,6 @@
     padding:10px;
     background:var(--carton);
     border-radius:8px;
-    /* remove rigid shrink blockers so behavior is identical to desktop */
     min-width: 0;
     width: auto;
     max-width: 360px;
@@ -133,7 +128,7 @@
   .carton .close-btn{ position:absolute; top:6px; right:6px; width:28px; height:28px; border-radius:6px; border:none; background:rgba(0,0,0,.45); color:#fff; font-weight:bold; display:flex; align-items:center; justify-content:center; cursor:pointer; transition:background .12s, transform .08s; box-shadow:0 2px 6px rgba(0,0,0,.35); }
   .carton .close-btn:hover{ background:rgba(255,0,0,.85); transform:translateY(-1px); }
 
-  table{ border-collapse:collapse; margin:auto; }
+  table{ border-collapse:collapse; margin:auto; table-layout: fixed; }
   th{
     width:calc(var(--tamanoCelda) * var(--escalaCarton));
     height:calc(40px * var(--escalaCarton));
@@ -158,6 +153,7 @@
     padding:4px;
     box-sizing:border-box;
     user-select:none;
+    overflow:hidden;
   }
   td.free{ background:var(--free-bg); color:#000; cursor:default; }
   td.marcado1{ background:var(--marcado); color:#fff; }
@@ -168,8 +164,7 @@
 
   footer{ margin-top:28px; padding:16px; text-align:center; font-size:.9rem; color:#aaa; background:#191d34; }
 
-  /* NOTE: no @media rules that change layout or font sizes remain.
-     This ensures mobile renders like desktop/laptop/tablet. */
+  /* Keep any small-screen media rules removed so mobile shows like desktop */
 </style>
 </head>
 <body>
@@ -239,7 +234,7 @@ document.addEventListener('DOMContentLoaded', () => {
     agregarBtn.disabled = false;
     restaurarEstado();
     aplicarGuiaBordes();
-    aplicarColumnasPorZoom(); // mantiene comportamiento, but columns logic only toggles classes (no mobile-only CSS now)
+    aplicarColumnasPorZoom();
   });
 
   agregarBtn.addEventListener('click', agregarCarton);
@@ -264,13 +259,8 @@ document.addEventListener('DOMContentLoaded', () => {
     cambiarColor(td);
   });
 
-  // Reaplicar columns logic on resize (safe to keep)
   window.addEventListener('resize', aplicarColumnasPorZoom);
-
-  // Enter in input
-  document.getElementById('cartonInput').addEventListener('keydown', (e) => {
-    if (e.key === 'Enter') agregarCarton();
-  });
+  document.getElementById('cartonInput').addEventListener('keydown', (e) => { if (e.key === 'Enter') agregarCarton(); });
 });
 
 /* CSV loader */
@@ -357,7 +347,6 @@ function renderCarton(numero){
   aplicarGuiaBordes();
   attachCellListeners(div);
 
-  // focus first td for accessibility
   const first = div.querySelector('td:not(.free)');
   if (first) first.focus();
 }
@@ -448,12 +437,9 @@ function ajustarZoom(delta){
   if (escala > 2) escala = 2;
   document.documentElement.style.setProperty('--escalaCarton', escala);
   localStorage.setItem("zoomCarton", escala);
-
   aplicarColumnasPorZoom();
 }
 function aplicarColumnasPorZoom(){
-  // This toggles classes but CSS no longer changes layout based on them,
-  // so behavior is consistent across devices.
   const escala = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--escalaCarton')) || 1;
   cartonesContainer.classList.remove("cols-1","cols-2","cols-3");
   if (escala > 1.3) {
