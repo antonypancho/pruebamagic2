@@ -15,9 +15,8 @@
     --free-bg:#444444;
 
     --escalaCarton:1;
-    --tamanoCelda:50px;
-    --tamanoFuente:28px;
-    --tamanoFuenteHeader:24px;
+    --tamanoFuente:1.15rem;
+    --tamanoFuenteHeader:1rem;
 
     --alto-header:64px;
     --alto-toolbar:56px;
@@ -37,10 +36,8 @@
     text-align:center;
     -webkit-font-smoothing:antialiased;
     -moz-osx-font-smoothing:grayscale;
-    /* Importante: SIN padding-top porque header/toolbar no son fijos */
   }
 
-  /* Header normal (no fijo) */
   header{
     position: static;
     height: var(--alto-header);
@@ -54,7 +51,6 @@
   header img{ height:48px; width:auto; object-fit:contain; }
   header h1{ margin:0; font-size:1.2rem; color:#ffeb3b; line-height:1; }
 
-  /* Toolbar normal (no fija) y siempre horizontal */
   .toolbar{
     position: static;
     min-height: var(--alto-toolbar);
@@ -108,37 +104,65 @@
     padding:10px;
     background:var(--carton);
     border-radius:8px;
-    min-width: calc(5 * var(--tamanoCelda) * 0.8);
     box-shadow:0 6px 18px rgba(0,0,0,.25);
+    min-width: 0;
+    width: auto;
+    max-width: 360px;
   }
   .carton h3{ margin:0 0 10px; color:var(--titulo-carton); font-size:1rem; }
 
   .carton .close-btn{ position:absolute; top:6px; right:6px; width:28px; height:28px; border-radius:6px; border:none; background:rgba(0,0,0,.45); color:#fff; font-weight:bold; display:flex; align-items:center; justify-content:center; cursor:pointer; transition:background .12s, transform .08s; box-shadow:0 2px 6px rgba(0,0,0,.35); }
   .carton .close-btn:hover{ background:rgba(255,0,0,.85); transform:translateY(-1px); }
 
-  table{ border-collapse:collapse; margin:auto; }
-  th{ width:calc(var(--tamanoCelda) * var(--escalaCarton)); height:calc(40px * var(--escalaCarton)); border:1px solid var(--borde); font-size:calc(var(--tamanoFuenteHeader) * var(--escalaCarton)); color:#ffeb3b; text-align:center; padding:4px; box-sizing:border-box; }
-  td{ width:calc(var(--tamanoCelda) * var(--escalaCarton)); height:calc(var(--tamanoCelda) * var(--escalaCarton)); border:1px solid var(--borde); cursor:pointer; font-weight:bold; text-align:center; font-size:calc(var(--tamanoFuente) * var(--escalaCarton)); color:var(--texto); background:transparent; position:relative; padding:4px; box-sizing:border-box; user-select:none; }
+  /* tablas responsivas: ocupan 100% del contenedor del cartón */
+  .carton .tabla-wrapper { width:100%; overflow:hidden; display:flex; justify-content:center; }
+  .carton table { table-layout: fixed; width: 100%; max-width: 320px; border-collapse: collapse; background:transparent; border: none; }
+  .carton td, .carton th {
+    width: calc(100% / 5);
+    padding: 4px;
+    box-sizing: border-box;
+  }
+
+  /* fuentes con clamp para impedir que queden muy pequeñas o demasiado grandes */
+  .carton td { 
+    font-size: clamp(14px, 2.6vw, 22px);
+    line-height: 1;
+    color: var(--texto);
+    background: transparent;
+    border:1px solid var(--borde);
+    font-weight:bold;
+    text-align:center;
+    position:relative;
+    padding:4px;
+    user-select:none;
+  }
+  .carton th{
+    font-size: clamp(12px, 2.2vw, 18px);
+    color:#ffeb3b;
+    height: calc(40px * var(--escalaCarton));
+    border:1px solid var(--borde);
+    text-align:center;
+  }
+
+  /* marcar y free */
   td.free{ background:var(--free-bg); color:#000; cursor:default; }
   td.marcado1{ background:var(--marcado); color:#fff; }
 
   .invisibleNumero{ color:transparent; transition:color .18s ease; }
+
+  /* inner span for absolute centering if needed */
+  .td-inner{ display:flex; align-items:center; justify-content:center; width:100%; height:100%; }
 
   #status{ margin-top:8px; font-size:.9em; color:#ccc; min-height:1.2em; }
 
   footer{ margin-top:28px; padding:16px; text-align:center; font-size:.9rem; color:#aaa; background:#191d34; }
 
   @media (max-width:880px){
-    :root{ --tamanoCelda:44px; --tamanoFuente:22px; --tamanoFuenteHeader:20px; }
     header img{ height:44px; }
   }
   @media (max-width:520px){
-    :root{ --tamanoCelda:40px; --tamanoFuente:22px; --tamanoFuenteHeader:20px; }
     header img{ height:40px; }
-  }
 
-  /* 📱 Móvil: grid dinámico según zoom */
-  @media (max-width:520px){
     #cartonesContainer{
       display:grid;
       gap:8px;
@@ -146,10 +170,14 @@
     #cartonesContainer.cols-1{ grid-template-columns: 1fr; }
     #cartonesContainer.cols-2{ grid-template-columns: repeat(2,1fr); }
     #cartonesContainer.cols-3{ grid-template-columns: repeat(3,1fr); }
-    .carton{ width:100%; min-width:auto; margin:0; padding:6px; }
-    .carton h3{ font-size:0.8rem; }
-    th,td{ font-size:0.7rem; }
+    .carton{ width:100%; max-width:100%; padding:6px; margin:0; }
+    .carton h3{ font-size:0.9rem; }
+    .carton td { font-size: clamp(14px, 3.6vw, 20px); }
   }
+
+  /* optional: square cell approach, kept safe (won't break without inner spans) */
+  .carton td { min-height: 0; }
+  .carton td .td-inner{ width:100%; height:100%; }
 </style>
 </head>
 <body>
@@ -203,6 +231,10 @@ const statusEl = document.getElementById('status');
 const zoomInBtn = document.getElementById('zoomIn');
 const zoomOutBtn = document.getElementById('zoomOut');
 const cartonesContainer = document.getElementById('cartonesContainer');
+const cartonInput = document.getElementById('cartonInput');
+
+/* util: strip accents for robust CSV header detection */
+function stripAccents(s){ return s.normalize && s.normalize('NFD').replace(/[\u0300-\u036f]/g,'') || s; }
 
 document.addEventListener('DOMContentLoaded', () => {
   const temaGuardado = localStorage.getItem("temaBingo");
@@ -219,7 +251,7 @@ document.addEventListener('DOMContentLoaded', () => {
     agregarBtn.disabled = false;
     restaurarEstado();
     aplicarGuiaBordes();
-    aplicarColumnasPorZoom(); // aplica columnas según zoom guardado
+    aplicarColumnasPorZoom();
   });
 
   agregarBtn.addEventListener('click', agregarCarton);
@@ -228,6 +260,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
   zoomInBtn.addEventListener('click', () => ajustarZoom(-0.1));
   zoomOutBtn.addEventListener('click', () => ajustarZoom(0.1));
+
+  cartonInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') agregarCarton();
+  });
 
   cartonesContainer.addEventListener('click', (e) => {
     const td = e.target.closest('td');
@@ -244,7 +280,6 @@ document.addEventListener('DOMContentLoaded', () => {
     cambiarColor(td);
   });
 
-  // Reaplicar columnas al cambiar tamaño de ventana
   window.addEventListener('resize', aplicarColumnasPorZoom);
 });
 
@@ -253,7 +288,7 @@ async function cargarCSV(){
   statusEl.textContent = 'Cargando cartones...';
   try {
     const res = await fetch('./csv/cartones.csv', { cache: "no-store" });
-    if (!res.ok) throw new Error('CSV no encontrado');
+    if (!res.ok) throw new Error(`CSV no encontrado: ${res.status}`);
     const text = await res.text();
     cartonesData = parseCSV(text);
     statusEl.textContent = `✅ ${cartonesData.length} cartones cargados.`;
@@ -268,8 +303,9 @@ function parseCSV(text){
   const cartones = [];
   let i = 0;
   while (i < lines.length) {
-    if (lines[i].toUpperCase().startsWith("CARTÓN")) { i++; continue; }
-    if (lines[i].toUpperCase() === "B,I,N,G,O") { i++; }
+    const header = stripAccents(lines[i].toUpperCase());
+    if (header.startsWith("CARTON") || header.startsWith("CARTÓN")) { i++; continue; }
+    if (lines[i].toUpperCase() === "B,I,N,G,O") { i++; continue; }
     const carton = [];
     for (let r = 0; r < 5 && i < lines.length; r++, i++) {
       const fila = lines[i].split(',').map(n => n.trim());
@@ -282,14 +318,14 @@ function parseCSV(text){
 
 /* Render y UI */
 function agregarCarton(){
-  const numero = parseInt(document.getElementById("cartonInput").value, 10);
+  const numero = parseInt(cartonInput.value, 10);
   if (isNaN(numero)) { alert("Ingresa un número."); return; }
   if (numero < 1 || numero > cartonesData.length) { alert("Número inválido."); return; }
   if (cartonesMostrados.includes(numero)) { alert("Ese cartón ya está en pantalla."); return; }
 
   renderCarton(numero);
   guardarEstado();
-  document.getElementById("cartonInput").value = '';
+  cartonInput.value = '';
 }
 function renderCarton(numero){
   const carton = cartonesData[numero - 1];
@@ -298,7 +334,18 @@ function renderCarton(numero){
   div.className = "carton";
   div.dataset.numero = numero;
 
-  div.innerHTML = `<h3>Cartón ${numero}</h3><div class="tabla-wrapper"><table>${crearTabla(carton, numero)}</table></div>`;
+  // crear tabla usando DOM para evitar doble parsing de listeners
+  const title = document.createElement('h3');
+  title.textContent = `Cartón ${numero}`;
+  div.appendChild(title);
+
+  const wrapper = document.createElement('div');
+  wrapper.className = 'tabla-wrapper';
+  const table = document.createElement('table');
+  table.setAttribute('role','grid');
+  table.innerHTML = crearTablaHTML(carton, numero); // retorna innerHTML seguro con spans
+  wrapper.appendChild(table);
+  div.appendChild(wrapper);
 
   const closeBtn = document.createElement('button');
   closeBtn.className = 'close-btn';
@@ -311,6 +358,7 @@ function renderCarton(numero){
     div.remove();
     const idx = cartonesMostrados.indexOf(numero);
     if (idx > -1) cartonesMostrados.splice(idx, 1);
+    // limpiar estado.marcados de referencias a cartones que ya no existen
     const estadoStr = localStorage.getItem('estadoCartones');
     if (estadoStr) {
       try {
@@ -331,8 +379,12 @@ function renderCarton(numero){
   cartonesMostrados.push(numero);
   aplicarGuiaBordes();
   attachCellListeners(div);
+
+  // focus al primer TD interactivo para accesibilidad teclado
+  const first = div.querySelector('td:not(.free)');
+  if (first) first.focus();
 }
-function crearTabla(carton, numero){
+function crearTablaHTML(carton, numero){
   let html = '';
   const letras = ['B','I','N','G','O'];
   html += '<tr>';
@@ -344,7 +396,11 @@ function crearTabla(carton, numero){
       const val = carton[r][c] ?? '';
       const isFree = (typeof val === 'string' && val.toUpperCase() === 'X');
       const classes = isFree ? 'free' : '';
-      html += `<td class="${classes}" data-carton="${numero}" data-pos="${r},${c}" tabindex="${isFree ? -1 : 0}" role="gridcell" aria-label="Cartón ${numero} fila ${r+1} columna ${c+1}">${val}</td>`;
+      if (isFree) {
+        html += `<td class="${classes}" data-carton="${numero}" data-pos="${r},${c}" tabindex="-1" role="gridcell" aria-label="Cartón ${numero} fila ${r+1} columna ${c+1}" aria-disabled="true"><span class="td-inner">${val}</span></td>`;
+      } else {
+        html += `<td class="${classes}" data-carton="${numero}" data-pos="${r},${c}" tabindex="0" role="gridcell" aria-label="Cartón ${numero} fila ${r+1} columna ${c+1}" aria-checked="false"><span class="td-inner">${val}</span></td>`;
+      }
     }
     html += '</tr>';
   }
@@ -366,13 +422,17 @@ function attachCellListeners(root){
 /* marcar celda */
 function cambiarColor(td){
   if (td.classList.contains('free')) return;
-  td.classList.toggle("marcado1");
+  const marcado = td.classList.toggle("marcado1");
+  td.setAttribute('aria-checked', marcado ? 'true' : 'false');
   guardarEstado();
 }
 
 /* limpiar, quitar */
 function limpiarMarcas(){
-  document.querySelectorAll('#cartonesContainer td.marcado1').forEach(td => td.classList.remove('marcado1'));
+  document.querySelectorAll('#cartonesContainer td.marcado1').forEach(td => {
+    td.classList.remove('marcado1');
+    td.setAttribute('aria-checked','false');
+  });
   guardarEstado();
   document.querySelectorAll('#cartonesContainer td.bordeGuia').forEach(td => td.classList.remove('bordeGuia'));
   localStorage.removeItem("guiaFigura");
@@ -399,13 +459,16 @@ function restaurarEstado(){
   const estadoStr = localStorage.getItem("estadoCartones");
   if (!estadoStr) return;
   let estado;
-  try { estado = JSON.parse(estadoStr); } catch { return; }
+  try { estado = JSON.parse(estadoStr); } catch { console.warn('estadoCartones corrupto, limpiando.'); localStorage.removeItem('estadoCartones'); return; }
   if (Array.isArray(estado.cartones)) estado.cartones.forEach(num => renderCarton(num));
   if (Array.isArray(estado.marcados)) {
     setTimeout(() => {
       estado.marcados.forEach(m => {
         const td = document.querySelector(`#cartonesContainer td[data-carton="${m.carton}"][data-pos="${m.pos}"]`);
-        if (td) td.classList.add('marcado1');
+        if (td) {
+          td.classList.add('marcado1');
+          td.setAttribute('aria-checked','true');
+        }
       });
     }, 120);
   }
@@ -413,29 +476,32 @@ function restaurarEstado(){
 
 /* zoom + columnas en móvil */
 function ajustarZoom(delta){
-  let escala = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--escalaCarton')) || 1;
+  let escala = parseFloat(String(getComputedStyle(document.documentElement).getPropertyValue('--escalaCarton')).replace(',', '.')) || 1;
   escala = Math.round((escala + delta) * 100) / 100;
   if (escala < 0.6) escala = 0.6;
   if (escala > 2) escala = 2;
   document.documentElement.style.setProperty('--escalaCarton', escala);
-  localStorage.setItem("zoomCarton", escala);
+  localStorage.setItem("zoomCarton", String(escala));
+
+  // ajustar max-width de tablas para que el contenido escale en bloque y no reduzca demasiado la fuente
+  const base = 320; // ancho de referencia
+  const max = Math.max(180, Math.round(base / escala));
+  document.querySelectorAll('.carton table').forEach(t => t.style.maxWidth = `${max}px`);
 
   aplicarColumnasPorZoom();
 }
 function aplicarColumnasPorZoom(){
-  // Solo ajusta columnas si estamos en móvil
   if (window.innerWidth <= 520) {
-    const escala = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--escalaCarton')) || 1;
+    const escala = parseFloat(String(getComputedStyle(document.documentElement).getPropertyValue('--escalaCarton')).replace(',', '.')) || 1;
     cartonesContainer.classList.remove("cols-1","cols-2","cols-3");
     if (escala > 1.3) {
-      cartonesContainer.classList.add("cols-1"); // grande → 1 por fila
+      cartonesContainer.classList.add("cols-1");
     } else if (escala > 0.9) {
-      cartonesContainer.classList.add("cols-2"); // mediano → 2 por fila
+      cartonesContainer.classList.add("cols-2");
     } else {
-      cartonesContainer.classList.add("cols-3"); // pequeño → 3 por fila
+      cartonesContainer.classList.add("cols-3");
     }
   } else {
-    // En pantallas mayores vuelve a flex-wrap por defecto
     cartonesContainer.classList.remove("cols-1","cols-2","cols-3");
   }
 }
@@ -527,4 +593,3 @@ observer.observe(document.getElementById('cartonesContainer'), { childList: true
 </script>
 </body>
 </html>
-
