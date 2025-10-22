@@ -29,6 +29,19 @@
 
   *,*::before,*::after{box-sizing:border-box;}
   html,body{height:100%;}
+  /* ---- Forzar vista de escritorio en móviles (igual que en PC) ---- */
+  html, body {
+    /* Ajusta este valor si tu diseño desktop es más ancho */
+    min-width: 1200px;
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  /* Evitar que el contenedor reordene automáticamente */
+  #cartonesContainer { flex-wrap: nowrap; }
+  table { table-layout: fixed; }
+
   body{
     margin:0;
     font-family:'Segoe UI',Arial,sans-serif;
@@ -37,9 +50,10 @@
     text-align:center;
     -webkit-font-smoothing:antialiased;
     -moz-osx-font-smoothing:grayscale;
+    /* Importante: SIN padding-top porque header/toolbar no son fijos */
   }
 
-  /* Header */
+  /* Header normal (no fijo) */
   header{
     position: static;
     height: var(--alto-header);
@@ -53,7 +67,7 @@
   header img{ height:48px; width:auto; object-fit:contain; }
   header h1{ margin:0; font-size:1.2rem; color:#ffeb3b; line-height:1; }
 
-  /* Toolbar */
+  /* Toolbar normal (no fija) y siempre horizontal */
   .toolbar{
     position: static;
     min-height: var(--alto-toolbar);
