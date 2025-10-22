@@ -7,6 +7,7 @@
 <link rel="icon" href="logo.png">
 <style>
   :root{
+    --desktop-width: 1200; /* ajusta si tu ancho desktop es distinto */
     --fondo:#3A29BA;
     --texto:#ffffff;
     --carton:#1b1b1b;
@@ -27,20 +28,34 @@
     --titulo-carton: #00d4ff;
   }
 
-  *,*::before,*::after{box-sizing:border-box;}
-  html,body{height:100%;}
-
-  /* Opción A: permitir vista completa y scroll horizontal sin min-width forzado */
-  html, body {
-    -webkit-text-size-adjust: 100%;
-    text-size-adjust: 100%;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-    min-width: 0;
+  /* Wrapper + scale technique (reproduces desktop layout on mobile) */
+  html,body {
+    height:100%;
+    margin:0;
+    -webkit-text-size-adjust:100%;
+    text-size-adjust:100%;
+    overflow:hidden; /* body height will be adjusted by script */
   }
 
+  .site-wrapper {
+    width: calc(var(--desktop-width) * 1px);
+    margin: 0 auto;
+    transform-origin: top left;
+    will-change: transform;
+    background: transparent;
+    min-height: 100vh;
+  }
+
+  .page-size-proxy {
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Base styles */
+  *,*::before,*::after{box-sizing:border-box;}
   body{
-    margin:0;
     font-family:'Segoe UI',Arial,sans-serif;
     background:var(--fondo);
     color:var(--texto);
@@ -49,9 +64,7 @@
     -moz-osx-font-smoothing:grayscale;
   }
 
-  /* Header */
   header{
-    position: static;
     height: var(--alto-header);
     background:#191d34;
     padding:8px 20px;
@@ -63,9 +76,7 @@
   header img{ height:48px; width:auto; object-fit:contain; }
   header h1{ margin:0; font-size:1.2rem; color:#ffeb3b; line-height:1; }
 
-  /* Toolbar */
   .toolbar{
-    position: static;
     min-height: var(--alto-toolbar);
     background:#121528;
     color:#fff;
@@ -102,7 +113,6 @@
   #tablaGuia td.relleno{ background:#ff9800; color:#fff; }
   #tablaGuia td.centro{ font-weight:bold; cursor:default; background:#eaeaea; color:#000; }
 
-  /* CARTON / TABLA: same on all devices */
   #cartonesContainer{
     display:flex;
     flex-wrap:wrap;
@@ -163,51 +173,84 @@
   #status{ margin-top:8px; font-size:.9em; color:#ccc; min-height:1.2em; }
 
   footer{ margin-top:28px; padding:16px; text-align:center; font-size:.9rem; color:#aaa; background:#191d34; }
-
-  /* Keep any small-screen media rules removed so mobile shows like desktop */
 </style>
 </head>
 <body>
+  <div class="site-wrapper" id="siteWrapper">
+    <div class="page-size-proxy">
+      <header role="banner">
+        <img src="logo.png" alt="Logo Bingo 8pm">
+        <h1>🎉 Bingo Magic 8:00pm</h1>
+      </header>
 
-<header role="banner">
-  <img src="logo.png" alt="Logo Bingo 8pm">
-  <h1>🎉 Bingo Magic 8:00pm</h1>
-</header>
+      <div class="toolbar" role="region" aria-label="Barra de herramientas">
+        <input type="number" id="cartonInput" placeholder="Número de cartón" aria-label="Número de cartón">
+        <button id="agregarBtn" disabled aria-label="Agregar cartón">Agregar</button>
+        <button id="limpiarBtn" aria-label="Limpiar marcas">Limpiar</button>
+        <button id="quitarBtn" aria-label="Quitar cartones">Quitar</button>
+        <button id="zoomIn" aria-label="Achicar (más cartones)">+</button>
+        <button id="zoomOut" aria-label="Agrandar (menos cartones)">-</button>
 
-<div class="toolbar" role="region" aria-label="Barra de herramientas">
-  <input type="number" id="cartonInput" placeholder="Número de cartón" aria-label="Número de cartón">
-  <button id="agregarBtn" disabled aria-label="Agregar cartón">Agregar</button>
-  <button id="limpiarBtn" aria-label="Limpiar marcas">Limpiar</button>
-  <button id="quitarBtn" aria-label="Quitar cartones">Quitar</button>
-  <button id="zoomIn" aria-label="Achicar (más cartones)">+</button>
-  <button id="zoomOut" aria-label="Agrandar (menos cartones)">-</button>
+        <div class="temas" role="toolbar" aria-label="Temas">
+          <div class="tema" style="background:#000000;" onclick="cambiarTema('azul')" title="Azul (oscuro)" role="button" tabindex="0"></div>
+          <div class="tema" style="background:#ffffff;" onclick="cambiarTema('verde')" title="Verde (claro)" role="button" tabindex="0"></div>
+          <div class="tema" style="background:#9c27b0;" onclick="cambiarTema('morado')" title="Morado (oscuro)" role="button" tabindex="0"></div>
+        </div>
 
-  <div class="temas" role="toolbar" aria-label="Temas">
-    <div class="tema" style="background:#000000;" onclick="cambiarTema('azul')" title="Azul (oscuro)" role="button" tabindex="0"></div>
-    <div class="tema" style="background:#ffffff;" onclick="cambiarTema('verde')" title="Verde (claro)" role="button" tabindex="0"></div>
-    <div class="tema" style="background:#9c27b0;" onclick="cambiarTema('morado')" title="Morado (oscuro)" role="button" tabindex="0"></div>
+        <div id="status" aria-live="polite"></div>
+      </div>
+
+      <main>
+        <h1>🎟️ Juega tu Cartón</h1>
+        <h2>👇Dibuja La Figura que estamos jugando👇</h2>
+
+        <div id="guiaFigura" aria-label="Guía de figura">
+          <table id="tablaGuia" role="grid" aria-label="Tabla guía 5 por 5"></table>
+        </div>
+
+        <div id="cartonesContainer" aria-live="polite" role="region" aria-label="Contenedor de cartones"></div>
+      </main>
+
+      <footer role="contentinfo">
+        &copy; 2025 BingoMagic.online — ¡Diversión mágica en cada partida!
+      </footer>
+    </div>
   </div>
-
-  <div id="status" aria-live="polite"></div>
-</div>
-
-<main>
-  <h1>🎟️ Juega tu Cartón</h1>
-  <h2>👇Dibuja La Figura que estamos jugando👇</h2>
-
-  <div id="guiaFigura" aria-label="Guía de figura">
-    <table id="tablaGuia" role="grid" aria-label="Tabla guía 5 por 5"></table>
-  </div>
-
-  <div id="cartonesContainer" aria-live="polite" role="region" aria-label="Contenedor de cartones"></div>
-</main>
-
-<footer role="contentinfo">
-  &copy; 2025 BingoMagic.online — ¡Diversión mágica en cada partida!
-</footer>
 
 <script>
-/* estado */
+/* Scale-to-fit script: scales .site-wrapper to fit viewport while preserving desktop layout.
+   Limits scale between minScale and 1. Adjust --desktop-width in :root if needed.
+*/
+(function desktopScale(){
+  const wrapper = document.getElementById('siteWrapper');
+  if (!wrapper) return;
+  const desktopWidth = Number(getComputedStyle(document.documentElement).getPropertyValue('--desktop-width')) || 1200;
+  const minScale = 0.6;
+  const maxScale = 1;
+
+  function update() {
+    const vw = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
+    let raw = vw / desktopWidth;
+    let scale = Math.min(maxScale, Math.max(minScale, raw));
+    if (raw >= 1) scale = 1;
+    wrapper.style.transform = `scale(${scale})`;
+
+    // Adjust heights so page scroll behaves naturally
+    const scaledHeight = Math.ceil(wrapper.getBoundingClientRect().height * scale);
+    document.documentElement.style.height = scaledHeight + 'px';
+    document.body.style.height = scaledHeight + 'px';
+    document.documentElement.style.overflowY = 'auto';
+    document.body.style.overflowY = 'auto';
+  }
+
+  let t;
+  window.addEventListener('resize', () => { clearTimeout(t); t = setTimeout(update, 80); });
+  update();
+})();
+</script>
+
+<script>
+/* Full app JS (integrated) */
 let cartonesData = [];
 let cartonesMostrados = [];
 
@@ -534,7 +577,6 @@ function restaurarGuia(){
 function attachAllCellListeners(){ document.querySelectorAll('#cartonesContainer .carton').forEach(div => attachCellListeners(div)); }
 const observer = new MutationObserver(()=>{ attachAllCellListeners(); aplicarGuiaBordes(); });
 observer.observe(document.getElementById('cartonesContainer'), { childList: true, subtree: true });
-
 </script>
 </body>
 </html>
