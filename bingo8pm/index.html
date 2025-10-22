@@ -37,10 +37,9 @@
     text-align:center;
     -webkit-font-smoothing:antialiased;
     -moz-osx-font-smoothing:grayscale;
-    /* Importante: SIN padding-top porque header/toolbar no son fijos */
   }
 
-  /* Header normal (no fijo) */
+  /* Header */
   header{
     position: static;
     height: var(--alto-header);
@@ -54,7 +53,7 @@
   header img{ height:48px; width:auto; object-fit:contain; }
   header h1{ margin:0; font-size:1.2rem; color:#ffeb3b; line-height:1; }
 
-  /* Toolbar normal (no fija) y siempre horizontal */
+  /* Toolbar */
   .toolbar{
     position: static;
     min-height: var(--alto-toolbar);
@@ -93,6 +92,7 @@
   #tablaGuia td.relleno{ background:#ff9800; color:#fff; }
   #tablaGuia td.centro{ font-weight:bold; cursor:default; background:#eaeaea; color:#000; }
 
+  /* CARTON / TABLA: same on all devices (no mobile-specific overrides) */
   #cartonesContainer{
     display:flex;
     flex-wrap:wrap;
@@ -108,7 +108,10 @@
     padding:10px;
     background:var(--carton);
     border-radius:8px;
-    min-width: calc(5 * var(--tamanoCelda) * 0.8);
+    /* remove rigid shrink blockers so behavior is identical to desktop */
+    min-width: 0;
+    width: auto;
+    max-width: 360px;
     box-shadow:0 6px 18px rgba(0,0,0,.25);
   }
   .carton h3{ margin:0 0 10px; color:var(--titulo-carton); font-size:1rem; }
@@ -117,8 +120,31 @@
   .carton .close-btn:hover{ background:rgba(255,0,0,.85); transform:translateY(-1px); }
 
   table{ border-collapse:collapse; margin:auto; }
-  th{ width:calc(var(--tamanoCelda) * var(--escalaCarton)); height:calc(40px * var(--escalaCarton)); border:1px solid var(--borde); font-size:calc(var(--tamanoFuenteHeader) * var(--escalaCarton)); color:#ffeb3b; text-align:center; padding:4px; box-sizing:border-box; }
-  td{ width:calc(var(--tamanoCelda) * var(--escalaCarton)); height:calc(var(--tamanoCelda) * var(--escalaCarton)); border:1px solid var(--borde); cursor:pointer; font-weight:bold; text-align:center; font-size:calc(var(--tamanoFuente) * var(--escalaCarton)); color:var(--texto); background:transparent; position:relative; padding:4px; box-sizing:border-box; user-select:none; }
+  th{
+    width:calc(var(--tamanoCelda) * var(--escalaCarton));
+    height:calc(40px * var(--escalaCarton));
+    border:1px solid var(--borde);
+    font-size:calc(var(--tamanoFuenteHeader) * var(--escalaCarton));
+    color:#ffeb3b;
+    text-align:center;
+    padding:4px;
+    box-sizing:border-box;
+  }
+  td{
+    width:calc(var(--tamanoCelda) * var(--escalaCarton));
+    height:calc(var(--tamanoCelda) * var(--escalaCarton));
+    border:1px solid var(--borde);
+    cursor:pointer;
+    font-weight:bold;
+    text-align:center;
+    font-size:calc(var(--tamanoFuente) * var(--escalaCarton));
+    color:var(--texto);
+    background:transparent;
+    position:relative;
+    padding:4px;
+    box-sizing:border-box;
+    user-select:none;
+  }
   td.free{ background:var(--free-bg); color:#000; cursor:default; }
   td.marcado1{ background:var(--marcado); color:#fff; }
 
@@ -128,28 +154,8 @@
 
   footer{ margin-top:28px; padding:16px; text-align:center; font-size:.9rem; color:#aaa; background:#191d34; }
 
-  @media (max-width:880px){
-    :root{ --tamanoCelda:44px; --tamanoFuente:22px; --tamanoFuenteHeader:20px; }
-    header img{ height:44px; }
-  }
-  @media (max-width:520px){
-    :root{ --tamanoCelda:40px; --tamanoFuente:22px; --tamanoFuenteHeader:20px; }
-    header img{ height:40px; }
-  }
-
-  /* 📱 Móvil: grid dinámico según zoom */
-  @media (max-width:520px){
-    #cartonesContainer{
-      display:grid;
-      gap:8px;
-    }
-    #cartonesContainer.cols-1{ grid-template-columns: 1fr; }
-    #cartonesContainer.cols-2{ grid-template-columns: repeat(2,1fr); }
-    #cartonesContainer.cols-3{ grid-template-columns: repeat(3,1fr); }
-    .carton{ width:100%; min-width:auto; margin:0; padding:6px; }
-    .carton h3{ font-size:0.8rem; }
-    th,td{ font-size:0.7rem; }
-  }
+  /* NOTE: no @media rules that change layout or font sizes remain.
+     This ensures mobile renders like desktop/laptop/tablet. */
 </style>
 </head>
 <body>
@@ -219,7 +225,7 @@ document.addEventListener('DOMContentLoaded', () => {
     agregarBtn.disabled = false;
     restaurarEstado();
     aplicarGuiaBordes();
-    aplicarColumnasPorZoom(); // aplica columnas según zoom guardado
+    aplicarColumnasPorZoom(); // mantiene comportamiento, but columns logic only toggles classes (no mobile-only CSS now)
   });
 
   agregarBtn.addEventListener('click', agregarCarton);
@@ -244,8 +250,13 @@ document.addEventListener('DOMContentLoaded', () => {
     cambiarColor(td);
   });
 
-  // Reaplicar columnas al cambiar tamaño de ventana
+  // Reaplicar columns logic on resize (safe to keep)
   window.addEventListener('resize', aplicarColumnasPorZoom);
+
+  // Enter in input
+  document.getElementById('cartonInput').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') agregarCarton();
+  });
 });
 
 /* CSV loader */
@@ -268,7 +279,7 @@ function parseCSV(text){
   const cartones = [];
   let i = 0;
   while (i < lines.length) {
-    if (lines[i].toUpperCase().startsWith("CARTÓN")) { i++; continue; }
+    if (lines[i].toUpperCase().startsWith("CARTÓN") || lines[i].toUpperCase().startsWith("CARTON")) { i++; continue; }
     if (lines[i].toUpperCase() === "B,I,N,G,O") { i++; }
     const carton = [];
     for (let r = 0; r < 5 && i < lines.length; r++, i++) {
@@ -331,6 +342,10 @@ function renderCarton(numero){
   cartonesMostrados.push(numero);
   aplicarGuiaBordes();
   attachCellListeners(div);
+
+  // focus first td for accessibility
+  const first = div.querySelector('td:not(.free)');
+  if (first) first.focus();
 }
 function crearTabla(carton, numero){
   let html = '';
@@ -411,7 +426,7 @@ function restaurarEstado(){
   }
 }
 
-/* zoom + columnas en móvil */
+/* zoom + columnas */
 function ajustarZoom(delta){
   let escala = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--escalaCarton')) || 1;
   escala = Math.round((escala + delta) * 100) / 100;
@@ -423,20 +438,16 @@ function ajustarZoom(delta){
   aplicarColumnasPorZoom();
 }
 function aplicarColumnasPorZoom(){
-  // Solo ajusta columnas si estamos en móvil
-  if (window.innerWidth <= 520) {
-    const escala = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--escalaCarton')) || 1;
-    cartonesContainer.classList.remove("cols-1","cols-2","cols-3");
-    if (escala > 1.3) {
-      cartonesContainer.classList.add("cols-1"); // grande → 1 por fila
-    } else if (escala > 0.9) {
-      cartonesContainer.classList.add("cols-2"); // mediano → 2 por fila
-    } else {
-      cartonesContainer.classList.add("cols-3"); // pequeño → 3 por fila
-    }
+  // This toggles classes but CSS no longer changes layout based on them,
+  // so behavior is consistent across devices.
+  const escala = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--escalaCarton')) || 1;
+  cartonesContainer.classList.remove("cols-1","cols-2","cols-3");
+  if (escala > 1.3) {
+    cartonesContainer.classList.add("cols-1");
+  } else if (escala > 0.9) {
+    cartonesContainer.classList.add("cols-2");
   } else {
-    // En pantallas mayores vuelve a flex-wrap por defecto
-    cartonesContainer.classList.remove("cols-1","cols-2","cols-3");
+    cartonesContainer.classList.add("cols-3");
   }
 }
 
@@ -519,7 +530,7 @@ function restaurarGuia(){
   });
 }
 
-/* observer para reaplicar listeners teclado si se necesita */
+/* observer for attaching listeners */
 function attachAllCellListeners(){ document.querySelectorAll('#cartonesContainer .carton').forEach(div => attachCellListeners(div)); }
 const observer = new MutationObserver(()=>{ attachAllCellListeners(); aplicarGuiaBordes(); });
 observer.observe(document.getElementById('cartonesContainer'), { childList: true, subtree: true });
