@@ -37,8 +37,10 @@
     text-align:center;
     -webkit-font-smoothing:antialiased;
     -moz-osx-font-smoothing:grayscale;
+    /* Importante: SIN padding-top porque header/toolbar no son fijos */
   }
 
+  /* Header normal (no fijo) */
   header{
     position: static;
     height: var(--alto-header);
@@ -52,6 +54,7 @@
   header img{ height:48px; width:auto; object-fit:contain; }
   header h1{ margin:0; font-size:1.2rem; color:#ffeb3b; line-height:1; }
 
+  /* Toolbar normal (no fija) y siempre horizontal */
   .toolbar{
     position: static;
     min-height: var(--alto-toolbar);
@@ -90,7 +93,6 @@
   #tablaGuia td.relleno{ background:#ff9800; color:#fff; }
   #tablaGuia td.centro{ font-weight:bold; cursor:default; background:#eaeaea; color:#000; }
 
-  /* ------------------ CARTON / TABLA RESPONSIVE (AJUSTES MÓVIL) ------------------ */
   #cartonesContainer{
     display:flex;
     flex-wrap:wrap;
@@ -106,9 +108,7 @@
     padding:10px;
     background:var(--carton);
     border-radius:8px;
-    min-width: 0;                /* allow shrinking on small screens */
-    width: auto;
-    max-width: 360px;           /* cap width so cards don't stretch on mobile */
+    min-width: calc(5 * var(--tamanoCelda) * 0.8);
     box-shadow:0 6px 18px rgba(0,0,0,.25);
   }
   .carton h3{ margin:0 0 10px; color:var(--titulo-carton); font-size:1rem; }
@@ -116,51 +116,18 @@
   .carton .close-btn{ position:absolute; top:6px; right:6px; width:28px; height:28px; border-radius:6px; border:none; background:rgba(0,0,0,.45); color:#fff; font-weight:bold; display:flex; align-items:center; justify-content:center; cursor:pointer; transition:background .12s, transform .08s; box-shadow:0 2px 6px rgba(0,0,0,.35); }
   .carton .close-btn:hover{ background:rgba(255,0,0,.85); transform:translateY(-1px); }
 
-  /* Responsive table: fixed layout so cells share available width */
-  .carton .tabla-wrapper { width:100%; overflow:hidden; display:flex; justify-content:center; }
-  .carton table { table-layout: fixed; width:100%; max-width:320px; border-collapse:collapse; margin:0; }
-
-  /* Use variables but make font sizes responsive with clamp to avoid tiny numbers */
-  .carton th {
-    width: calc(100% / 5);
-    height: calc(40px * var(--escalaCarton));
-    border:1px solid var(--borde);
-    font-size: clamp(12px, calc(var(--tamanoFuenteHeader) * 0.032 * var(--escalaCarton)), calc(var(--tamanoFuenteHeader) * var(--escalaCarton)));
-    color:#ffeb3b;
-    text-align:center;
-    padding:4px;
-    box-sizing:border-box;
-    line-height:1;
-  }
-
-  .carton td {
-    width: calc(100% / 5);
-    padding:4px;
-    box-sizing:border-box;
-    height: auto;
-    aspect-ratio: 1 / 1;
-    border:1px solid var(--borde);
-    cursor:pointer;
-    font-weight:bold;
-    text-align:center;
-    font-size: clamp(14px, calc(var(--tamanoFuente) * 0.035 * var(--escalaCarton)), calc(var(--tamanoFuente) * var(--escalaCarton)));
-    color:var(--texto);
-    background:transparent;
-    position:relative;
-    user-select:none;
-  }
-
+  table{ border-collapse:collapse; margin:auto; }
+  th{ width:calc(var(--tamanoCelda) * var(--escalaCarton)); height:calc(40px * var(--escalaCarton)); border:1px solid var(--borde); font-size:calc(var(--tamanoFuenteHeader) * var(--escalaCarton)); color:#ffeb3b; text-align:center; padding:4px; box-sizing:border-box; }
+  td{ width:calc(var(--tamanoCelda) * var(--escalaCarton)); height:calc(var(--tamanoCelda) * var(--escalaCarton)); border:1px solid var(--borde); cursor:pointer; font-weight:bold; text-align:center; font-size:calc(var(--tamanoFuente) * var(--escalaCarton)); color:var(--texto); background:transparent; position:relative; padding:4px; box-sizing:border-box; user-select:none; }
   td.free{ background:var(--free-bg); color:#000; cursor:default; }
   td.marcado1{ background:var(--marcado); color:#fff; }
 
-  /* Hide numbers outside guide */
   .invisibleNumero{ color:transparent; transition:color .18s ease; }
 
   #status{ margin-top:8px; font-size:.9em; color:#ccc; min-height:1.2em; }
 
   footer{ margin-top:28px; padding:16px; text-align:center; font-size:.9rem; color:#aaa; background:#191d34; }
 
-  /* Mobile adjustments */
   @media (max-width:880px){
     :root{ --tamanoCelda:44px; --tamanoFuente:22px; --tamanoFuenteHeader:20px; }
     header img{ height:44px; }
@@ -168,8 +135,10 @@
   @media (max-width:520px){
     :root{ --tamanoCelda:40px; --tamanoFuente:22px; --tamanoFuenteHeader:20px; }
     header img{ height:40px; }
+  }
 
-    /* Use grid to layout cards on mobile and make each card full width */
+  /* 📱 Móvil: grid dinámico según zoom */
+  @media (max-width:520px){
     #cartonesContainer{
       display:grid;
       gap:8px;
@@ -177,9 +146,9 @@
     #cartonesContainer.cols-1{ grid-template-columns: 1fr; }
     #cartonesContainer.cols-2{ grid-template-columns: repeat(2,1fr); }
     #cartonesContainer.cols-3{ grid-template-columns: repeat(3,1fr); }
-    .carton{ width:100%; min-width:auto; margin:0; padding:6px; max-width:100%; }
-    .carton h3{ font-size:0.9rem; }
-    /* Let clamp handle the size; avoid forcing tiny rem overrides here */
+    .carton{ width:100%; min-width:auto; margin:0; padding:6px; }
+    .carton h3{ font-size:0.8rem; }
+    th,td{ font-size:0.7rem; }
   }
 </style>
 </head>
@@ -257,8 +226,8 @@ document.addEventListener('DOMContentLoaded', () => {
   limpiarBtn.addEventListener('click', limpiarMarcas);
   quitarBtn.addEventListener('click', quitarCartones);
 
-  zoomInBtn.addEventListener('click', () => ajustarZoom(0.1));
-  zoomOutBtn.addEventListener('click', () => ajustarZoom(-0.1));
+  zoomInBtn.addEventListener('click', () => ajustarZoom(-0.1));
+  zoomOutBtn.addEventListener('click', () => ajustarZoom(0.1));
 
   cartonesContainer.addEventListener('click', (e) => {
     const td = e.target.closest('td');
@@ -277,11 +246,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Reaplicar columnas al cambiar tamaño de ventana
   window.addEventListener('resize', aplicarColumnasPorZoom);
-
-  // Enter en input para agregar
-  document.getElementById('cartonInput').addEventListener('keydown', (e) => {
-    if (e.key === 'Enter') agregarCarton();
-  });
 });
 
 /* CSV loader */
@@ -304,7 +268,7 @@ function parseCSV(text){
   const cartones = [];
   let i = 0;
   while (i < lines.length) {
-    if (lines[i].toUpperCase().startsWith("CARTÓN") || lines[i].toUpperCase().startsWith("CARTON")) { i++; continue; }
+    if (lines[i].toUpperCase().startsWith("CARTÓN")) { i++; continue; }
     if (lines[i].toUpperCase() === "B,I,N,G,O") { i++; }
     const carton = [];
     for (let r = 0; r < 5 && i < lines.length; r++, i++) {
@@ -449,32 +413,29 @@ function restaurarEstado(){
 
 /* zoom + columnas en móvil */
 function ajustarZoom(delta){
-  let escala = parseFloat(String(getComputedStyle(document.documentElement).getPropertyValue('--escalaCarton')).replace(',', '.')) || 1;
+  let escala = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--escalaCarton')) || 1;
   escala = Math.round((escala + delta) * 100) / 100;
   if (escala < 0.6) escala = 0.6;
   if (escala > 2) escala = 2;
   document.documentElement.style.setProperty('--escalaCarton', escala);
   localStorage.setItem("zoomCarton", escala);
 
-  // ensure table max-width changes so font stays readable
-  const base = 320;
-  const max = Math.max(180, Math.round(base / escala));
-  document.querySelectorAll('.carton table').forEach(t => t.style.maxWidth = `${max}px`);
-
   aplicarColumnasPorZoom();
 }
 function aplicarColumnasPorZoom(){
+  // Solo ajusta columnas si estamos en móvil
   if (window.innerWidth <= 520) {
     const escala = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--escalaCarton')) || 1;
     cartonesContainer.classList.remove("cols-1","cols-2","cols-3");
     if (escala > 1.3) {
-      cartonesContainer.classList.add("cols-1");
+      cartonesContainer.classList.add("cols-1"); // grande → 1 por fila
     } else if (escala > 0.9) {
-      cartonesContainer.classList.add("cols-2");
+      cartonesContainer.classList.add("cols-2"); // mediano → 2 por fila
     } else {
-      cartonesContainer.classList.add("cols-3");
+      cartonesContainer.classList.add("cols-3"); // pequeño → 3 por fila
     }
   } else {
+    // En pantallas mayores vuelve a flex-wrap por defecto
     cartonesContainer.classList.remove("cols-1","cols-2","cols-3");
   }
 }
