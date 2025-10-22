@@ -2,196 +2,228 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<title>Bingo Magic - Juega tu Cartón</title>
+<title>BingoMagic 8:00pm — Juega tu Cartón</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="logo.png">
 <style>
-  :root {
-    --fondo: #121212;
-    --texto: #ffffff;
-    --carton: #1b1b1b;
-    --marcado: #2196f3;
-    --borde: #ffffff;
-    --free-bg: #444444;
+  :root{
+    --fondo:#3A29BA;
+    --texto:#ffffff;
+    --carton:#1b1b1b;
+    --marcado:#2196f3;
+    --borde:#ffffff;
+    --free-bg:#444444;
 
-    /* Zoom proporcional perfecto */
-    --escalaCarton: 1;          /* Escala inicial (se guarda en localStorage) */
-    --tamanoCelda: 50px;        /* Tamaño base de la celda */
-    --tamanoFuente: 28px;       /* Tamaño base de los números */
-    --tamanoFuenteHeader: 24px; /* Tamaño base de las letras BINGO */
+    --escalaCarton:1;
+    --tamanoCelda:50px;
+    --tamanoFuente:28px;
+    --tamanoFuenteHeader:24px;
+
+    --alto-header:64px;
+    --alto-toolbar:56px;
+    --altoTop: calc(var(--alto-header) + var(--alto-toolbar));
+
+    --gap:12px;
+    --titulo-carton: #00d4ff;
   }
 
- .toolbar {
-  position: static;
-  top: 0; left: 0; right: 0;
-  background: #333;
-  color: #fff;
-  padding: 16px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 12px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.3);
-  z-index: 1000;
-}
-
-.toolbar input,
-.toolbar button {
-  padding: 10px 14px;     /* 👈 botones e input más grandes */
-  font-size: 16px;
-}
-
-.temas {
-  display: flex;
-  gap: 8px;
-  margin-left: 10px; /* separa un poco de los botones */
-}
-
-.tema {
-  width: 24px; height: 24px;
-  border-radius: 50%;
-  cursor: pointer;
-  border: 2px solid #fff;
-}
-
-  body {
-    background: var(--fondo);
-    color: var(--texto);
-    font-family: Arial, sans-serif;
-    text-align: center;
-    margin: 0;
-    padding: 20px;
+  *,*::before,*::after{box-sizing:border-box;}
+  html,body{height:100%;}
+  body{
+    margin:0;
+    font-family:'Segoe UI',Arial,sans-serif;
+    background:var(--fondo);
+    color:var(--texto);
+    text-align:center;
+    -webkit-font-smoothing:antialiased;
+    -moz-osx-font-smoothing:grayscale;
   }
-  .controls { margin:20px; }
-  .controls button { margin: 0 4px; }
 
-  .carton {
+  header{
+    position: static;
+    height: var(--alto-header);
+    background:#191d34;
+    padding:8px 20px;
+    display:flex;
+    align-items:center;
+    gap:16px;
+    box-shadow:0 2px 6px rgba(0,0,0,0.4);
+  }
+  header img{ height:48px; width:auto; object-fit:contain; }
+  header h1{ margin:0; font-size:1.2rem; color:#ffeb3b; line-height:1; }
+
+  .toolbar{
+    position: static;
+    min-height: var(--alto-toolbar);
+    background:#121528;
+    color:#fff;
+    padding:8px 12px;
+    display:flex;
+    flex-direction: row;
+    justify-content:center;
+    align-items:center;
+    gap:var(--gap);
+    flex-wrap:wrap;
+    box-shadow:0 2px 6px rgba(0,0,0,0.25);
+    border-bottom:1px solid rgba(255,255,255,0.08);
+  }
+  .toolbar input, .toolbar button {
+    padding:8px 12px;
+    font-size:14px;
+    border-radius:8px;
+    border:none;
+  }
+  .toolbar button{ background:linear-gradient(135deg,#00d4ff,#6c5ce7); color:#fff; cursor:pointer; transition: transform .12s, box-shadow .12s; }
+  .toolbar button:hover{ transform: translateY(-2px); box-shadow:0 4px 10px rgba(0,0,0,.22); }
+
+  .temas{ display:flex; gap:8px; margin-left:6px; }
+  .tema{ width:22px; height:22px; border-radius:50%; cursor:pointer; border:2px solid #fff; }
+
+  main{ padding:16px; max-width:1200px; margin:0 auto; }
+
+  h1{ margin:18px 0 10px; font-size:1.2rem; }
+  h2{ margin:8px 0 16px; color:#ffeb3b; font-size:1rem; }
+
+  #guiaFigura{ margin:8px auto 18px; display:inline-block; background:#f5f5f5; padding:10px; border-radius:10px; border:1px solid #ddd; box-shadow:0 4px 10px rgba(0,0,0,.12); color:#000; }
+  #tablaGuia{ border-collapse:collapse; }
+  #tablaGuia td{ width:28px; height:28px; border:1px solid #bbb; text-align:center; font-size:14px; cursor:pointer; transition:all .12s ease; font-weight:bold; background:#fff; }
+  #tablaGuia td.relleno{ background:#ff9800; color:#fff; }
+  #tablaGuia td.centro{ font-weight:bold; cursor:default; background:#eaeaea; color:#000; }
+
+  /* ------------------ CARTON / TABLA RESPONSIVE (AJUSTES MÓVIL) ------------------ */
+  #cartonesContainer{
+    display:flex;
+    flex-wrap:wrap;
+    justify-content:center;
+    gap:12px;
+    padding:8px 12px 32px;
+  }
+
+  .carton{
+    position:relative;
     display:inline-block;
-    margin:15px;
+    margin:8px;
     padding:10px;
     background:var(--carton);
     border-radius:8px;
-    min-width: 0;
+    min-width: 0;                /* allow shrinking on small screens */
     width: auto;
-    max-width: 360px;
+    max-width: 360px;           /* cap width so cards don't stretch on mobile */
+    box-shadow:0 6px 18px rgba(0,0,0,.25);
   }
-  .carton h3 { margin:5px 0; }
+  .carton h3{ margin:0 0 10px; color:var(--titulo-carton); font-size:1rem; }
 
-  table { border-collapse:collapse; margin:auto; }
+  .carton .close-btn{ position:absolute; top:6px; right:6px; width:28px; height:28px; border-radius:6px; border:none; background:rgba(0,0,0,.45); color:#fff; font-weight:bold; display:flex; align-items:center; justify-content:center; cursor:pointer; transition:background .12s, transform .08s; box-shadow:0 2px 6px rgba(0,0,0,.35); }
+  .carton .close-btn:hover{ background:rgba(255,0,0,.85); transform:translateY(-1px); }
 
-  /* --------- Reglas aplicadas con los tamaños solicitados ---------- */
-  .carton table { table-layout: fixed; width: 100%; max-width: 320px; }
-  .carton td, .carton th { box-sizing: border-box; }
+  /* Responsive table: fixed layout so cells share available width */
+  .carton .tabla-wrapper { width:100%; overflow:hidden; display:flex; justify-content:center; }
+  .carton table { table-layout: fixed; width:100%; max-width:320px; border-collapse:collapse; margin:0; }
 
-  /* Encabezados B I N G O (usa la variable --tamanoFuenteHeader y --escalaCarton) */
+  /* Use variables but make font sizes responsive with clamp to avoid tiny numbers */
   .carton th {
-    width: calc(var(--tamanoCelda) * var(--escalaCarton));
+    width: calc(100% / 5);
     height: calc(40px * var(--escalaCarton));
     border:1px solid var(--borde);
-    font-size: calc(var(--tamanoFuenteHeader) * var(--escalaCarton));
+    font-size: clamp(12px, calc(var(--tamanoFuenteHeader) * 0.032 * var(--escalaCarton)), calc(var(--tamanoFuenteHeader) * var(--escalaCarton)));
     color:#ffeb3b;
     text-align:center;
-    line-height: 1;
-    padding: 4px;
+    padding:4px;
+    box-sizing:border-box;
+    line-height:1;
   }
 
-  /* Celdas de números (usa la variable --tamanoFuente y --escalaCarton) */
   .carton td {
-    width: calc(var(--tamanoCelda) * var(--escalaCarton));
-    height: calc(var(--tamanoCelda) * var(--escalaCarton));
+    width: calc(100% / 5);
+    padding:4px;
+    box-sizing:border-box;
+    height: auto;
+    aspect-ratio: 1 / 1;
     border:1px solid var(--borde);
     cursor:pointer;
     font-weight:bold;
     text-align:center;
-    font-size: calc(var(--tamanoFuente) * var(--escalaCarton));
-    color: var(--texto);
-    background: transparent;
-    position: relative;
-    padding: 4px;
-    box-sizing: border-box;
-    line-height: 1;
-  }
-  /* ---------------------------------------------------------------- */
-
-  td.free { background: var(--free-bg); color:#000; cursor:default; }
-  td.marcado1 { background:var(--marcado); color:#fff; }
-
-  /* Borde guía: solo borde resaltado en cartones activos */
-  td.bordeGuia {
-    outline: 3px solid #0542b4;
-    outline-offset: -3px; /* para que quede al ras del borde */
+    font-size: clamp(14px, calc(var(--tamanoFuente) * 0.035 * var(--escalaCarton)), calc(var(--tamanoFuente) * var(--escalaCarton)));
+    color:var(--texto);
+    background:transparent;
+    position:relative;
+    user-select:none;
   }
 
-  #status { margin-top:10px; font-size:0.9em; color:#ccc; }
+  td.free{ background:var(--free-bg); color:#000; cursor:default; }
+  td.marcado1{ background:var(--marcado); color:#fff; }
 
-  /* Guía de figura */
-  #guiaFigura {
-    margin: 10px auto 20px;
-    display: inline-block;
-    background: #f5f5f5;
-    padding: 10px;
-    border-radius: 8px;
-    border: 1px solid #ddd;
+  /* Hide numbers outside guide */
+  .invisibleNumero{ color:transparent; transition:color .18s ease; }
+
+  #status{ margin-top:8px; font-size:.9em; color:#ccc; min-height:1.2em; }
+
+  footer{ margin-top:28px; padding:16px; text-align:center; font-size:.9rem; color:#aaa; background:#191d34; }
+
+  /* Mobile adjustments */
+  @media (max-width:880px){
+    :root{ --tamanoCelda:44px; --tamanoFuente:22px; --tamanoFuenteHeader:20px; }
+    header img{ height:44px; }
   }
-
-  #tablaGuia td {
-    width: 40px;
-    height: 40px;
-    border: 1px solid #bbb;
-    text-align: center;
-    font-size: 20px;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    color: #000;
-  }
-
-  #tablaGuia td.relleno {
-    background: #e0dd13;
-    color: #fff;
-  }
-
-  #tablaGuia td.centro {
-    font-weight: bold;
-    cursor: default;
-    background: #eaeaeac5;
-  }
-
   @media (max-width:520px){
-    .carton { max-width: 100%; padding:8px; margin:8px 0; }
-    .carton th { font-size: calc(var(--tamanoFuenteHeader) * var(--escalaCarton)); }
-    .carton td { font-size: calc(var(--tamanoFuente) * var(--escalaCarton)); }
+    :root{ --tamanoCelda:40px; --tamanoFuente:22px; --tamanoFuenteHeader:20px; }
+    header img{ height:40px; }
+
+    /* Use grid to layout cards on mobile and make each card full width */
+    #cartonesContainer{
+      display:grid;
+      gap:8px;
+    }
+    #cartonesContainer.cols-1{ grid-template-columns: 1fr; }
+    #cartonesContainer.cols-2{ grid-template-columns: repeat(2,1fr); }
+    #cartonesContainer.cols-3{ grid-template-columns: repeat(3,1fr); }
+    .carton{ width:100%; min-width:auto; margin:0; padding:6px; max-width:100%; }
+    .carton h3{ font-size:0.9rem; }
+    /* Let clamp handle the size; avoid forcing tiny rem overrides here */
   }
 </style>
 </head>
 <body>
 
-<div class="toolbar">
-  <input type="number" id="cartonInput" placeholder="Número de cartón">
-  <button id="agregarBtn" disabled>Agregar</button>
-  <button id="limpiarBtn">Limpiar</button>
-  <button id="quitarBtn">Quitar</button>
-  <button onclick="ajustarZoom(0.1)">+</button>
-  <button onclick="ajustarZoom(-0.1)">-</button>
+<header role="banner">
+  <img src="logo.png" alt="Logo Bingo 8pm">
+  <h1>🎉 Bingo Magic 8:00pm</h1>
+</header>
 
-  <!-- 👇 ahora los temas van aquí -->
-  <div class="temas">
-    <div class="tema" style="background:#2196f3;" onclick="cambiarTema('azul')" title="Azul (oscuro)"></div>
-    <div class="tema" style="background:#4caf50;" onclick="cambiarTema('verde')" title="Verde (claro)"></div>
-    <div class="tema" style="background:#9c27b0;" onclick="cambiarTema('morado')" title="Morado (oscuro)"></div>
+<div class="toolbar" role="region" aria-label="Barra de herramientas">
+  <input type="number" id="cartonInput" placeholder="Número de cartón" aria-label="Número de cartón">
+  <button id="agregarBtn" disabled aria-label="Agregar cartón">Agregar</button>
+  <button id="limpiarBtn" aria-label="Limpiar marcas">Limpiar</button>
+  <button id="quitarBtn" aria-label="Quitar cartones">Quitar</button>
+  <button id="zoomIn" aria-label="Achicar (más cartones)">+</button>
+  <button id="zoomOut" aria-label="Agrandar (menos cartones)">-</button>
+
+  <div class="temas" role="toolbar" aria-label="Temas">
+    <div class="tema" style="background:#000000;" onclick="cambiarTema('azul')" title="Azul (oscuro)" role="button" tabindex="0"></div>
+    <div class="tema" style="background:#ffffff;" onclick="cambiarTema('verde')" title="Verde (claro)" role="button" tabindex="0"></div>
+    <div class="tema" style="background:#9c27b0;" onclick="cambiarTema('morado')" title="Morado (oscuro)" role="button" tabindex="0"></div>
   </div>
 
-  <div id="status"></div>
+  <div id="status" aria-live="polite"></div>
 </div>
 
-<h1>🎟️ Juega tu Cartón</h1>
+<main>
+  <h1>🎟️ Juega tu Cartón</h1>
+  <h2>👇Dibuja La Figura que estamos jugando👇</h2>
 
-<!-- Guía de figura 5x5 -->
-<h2>🧭 Figura que estamos jugando</h2>
-<div id="guiaFigura">
-  <table id="tablaGuia"></table>
-</div>
+  <div id="guiaFigura" aria-label="Guía de figura">
+    <table id="tablaGuia" role="grid" aria-label="Tabla guía 5 por 5"></table>
+  </div>
 
-<div id="cartonesContainer"></div>
+  <div id="cartonesContainer" aria-live="polite" role="region" aria-label="Contenedor de cartones"></div>
+</main>
+
+<footer role="contentinfo">
+  &copy; 2025 BingoMagic.online — ¡Diversión mágica en cada partida!
+</footer>
 
 <script>
+/* estado */
 let cartonesData = [];
 let cartonesMostrados = [];
 
@@ -199,48 +231,74 @@ const agregarBtn = document.getElementById('agregarBtn');
 const limpiarBtn = document.getElementById('limpiarBtn');
 const quitarBtn = document.getElementById('quitarBtn');
 const statusEl = document.getElementById('status');
+const zoomInBtn = document.getElementById('zoomIn');
+const zoomOutBtn = document.getElementById('zoomOut');
+const cartonesContainer = document.getElementById('cartonesContainer');
 
 document.addEventListener('DOMContentLoaded', () => {
-  // Restaurar tema guardado
   const temaGuardado = localStorage.getItem("temaBingo");
   if (temaGuardado) cambiarTema(temaGuardado);
+  else document.documentElement.style.setProperty('--titulo-carton', '#00d4ff');
 
-  // Restaurar zoom guardado
   const zoomGuardado = localStorage.getItem("zoomCarton");
-  if (zoomGuardado) {
-    document.documentElement.style.setProperty('--escalaCarton', zoomGuardado);
-  }
+  if (zoomGuardado) document.documentElement.style.setProperty('--escalaCarton', zoomGuardado);
 
-  // Crear guía y restaurar su estado
   crearGuia();
   restaurarGuia();
 
-  // Cargar CSV y luego restaurar estado de cartones
   cargarCSV().then(() => {
     agregarBtn.disabled = false;
     restaurarEstado();
-    // Aplicar guías a cartones ya renderizados
     aplicarGuiaBordes();
+    aplicarColumnasPorZoom(); // aplica columnas según zoom guardado
   });
 
   agregarBtn.addEventListener('click', agregarCarton);
   limpiarBtn.addEventListener('click', limpiarMarcas);
   quitarBtn.addEventListener('click', quitarCartones);
+
+  zoomInBtn.addEventListener('click', () => ajustarZoom(0.1));
+  zoomOutBtn.addEventListener('click', () => ajustarZoom(-0.1));
+
+  cartonesContainer.addEventListener('click', (e) => {
+    const td = e.target.closest('td');
+    if (!td || !cartonesContainer.contains(td)) return;
+    if (td.classList.contains('free')) return;
+    cambiarColor(td);
+  });
+  cartonesContainer.addEventListener('keydown', (e) => {
+    if (e.key !== 'Enter' && e.key !== ' ') return;
+    const td = e.target.closest('td');
+    if (!td || !cartonesContainer.contains(td)) return;
+    if (td.classList.contains('free')) return;
+    e.preventDefault();
+    cambiarColor(td);
+  });
+
+  // Reaplicar columnas al cambiar tamaño de ventana
+  window.addEventListener('resize', aplicarColumnasPorZoom);
+
+  // Enter en input para agregar
+  document.getElementById('cartonInput').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') agregarCarton();
+  });
 });
 
+/* CSV loader */
 async function cargarCSV(){
   statusEl.textContent = 'Cargando cartones...';
   try {
-    const res = await fetch('cartones.csv');
+    const res = await fetch('./csv/cartones.csv', { cache: "no-store" });
+    if (!res.ok) throw new Error('CSV no encontrado');
     const text = await res.text();
     cartonesData = parseCSV(text);
     statusEl.textContent = `✅ ${cartonesData.length} cartones cargados.`;
   } catch (e) {
-    statusEl.textContent = 'Error cargando CSV. Verifica la ruta o que esté publicado.';
+    console.error(e);
+    statusEl.textContent = 'Error cargando CSV. Verifica la ruta /csv/cartones.csv y que el archivo esté publicado.';
     agregarBtn.disabled = true;
   }
 }
-
 function parseCSV(text){
   const lines = text.split(/\r?\n/).map(l => l.trim()).filter(l => l !== '');
   const cartones = [];
@@ -258,6 +316,7 @@ function parseCSV(text){
   return cartones;
 }
 
+/* Render y UI */
 function agregarCarton(){
   const numero = parseInt(document.getElementById("cartonInput").value, 10);
   if (isNaN(numero)) { alert("Ingresa un número."); return; }
@@ -266,209 +325,243 @@ function agregarCarton(){
 
   renderCarton(numero);
   guardarEstado();
-  aplicarGuiaBordes(); // aplicar bordes guía al nuevo cartón
+  document.getElementById("cartonInput").value = '';
 }
-
 function renderCarton(numero){
   const carton = cartonesData[numero - 1];
   if (!carton) return;
   const div = document.createElement("div");
   div.className = "carton";
   div.dataset.numero = numero;
-  div.innerHTML = `<h3>Cartón ${numero}</h3><table>${crearTabla(carton, numero)}</table>`;
-  document.getElementById("cartonesContainer").appendChild(div);
-  cartonesMostrados.push(numero);
-}
 
+  div.innerHTML = `<h3>Cartón ${numero}</h3><div class="tabla-wrapper"><table>${crearTabla(carton, numero)}</table></div>`;
+
+  const closeBtn = document.createElement('button');
+  closeBtn.className = 'close-btn';
+  closeBtn.type = 'button';
+  closeBtn.setAttribute('aria-label', `Cerrar cartón ${numero}`);
+  closeBtn.innerHTML = '✕';
+  closeBtn.addEventListener('click', () => {
+    const ok = confirm(`¿Quitar el cartón ${numero}?`);
+    if (!ok) return;
+    div.remove();
+    const idx = cartonesMostrados.indexOf(numero);
+    if (idx > -1) cartonesMostrados.splice(idx, 1);
+    const estadoStr = localStorage.getItem('estadoCartones');
+    if (estadoStr) {
+      try {
+        const estado = JSON.parse(estadoStr);
+        if (Array.isArray(estado.marcados)) {
+          estado.marcados = estado.marcados.filter(m => cartonesMostrados.includes(parseInt(m.carton,10)));
+        }
+        estado.cartones = cartonesMostrados.slice();
+        localStorage.setItem('estadoCartones', JSON.stringify(estado));
+      } catch (e) { guardarEstado(); }
+    } else { guardarEstado(); }
+    aplicarGuiaBordes();
+    statusEl.textContent = `Cartón ${numero} eliminado.`;
+  });
+
+  div.appendChild(closeBtn);
+  cartonesContainer.appendChild(div);
+  cartonesMostrados.push(numero);
+  aplicarGuiaBordes();
+  attachCellListeners(div);
+}
 function crearTabla(carton, numero){
   let html = '';
-  // Encabezado BINGO
   const letras = ['B','I','N','G','O'];
   html += '<tr>';
-  for (let c = 0; c < 5; c++) {
-    html += `<th>${letras[c]}</th>`;
-  }
+  for (let c = 0; c < 5; c++) html += `<th scope="col">${letras[c]}</th>`;
   html += '</tr>';
-
-  // Filas con números
   for (let r = 0; r < 5; r++) {
     html += '<tr>';
     for (let c = 0; c < 5; c++) {
       const val = carton[r][c] ?? '';
-      const classes = (typeof val === 'string' && val.toUpperCase() === 'X') ? 'free' : '';
-      html += `<td class="${classes}" data-carton="${numero}" data-pos="${r},${c}" onclick="cambiarColor(this)">${val}</td>`;
+      const isFree = (typeof val === 'string' && val.toUpperCase() === 'X');
+      const classes = isFree ? 'free' : '';
+      html += `<td class="${classes}" data-carton="${numero}" data-pos="${r},${c}" tabindex="${isFree ? -1 : 0}" role="gridcell" aria-label="Cartón ${numero} fila ${r+1} columna ${c+1}">${val}</td>`;
     }
     html += '</tr>';
   }
   return html;
 }
 
+/* accesibilidad teclado en celdas nuevas */
+function attachCellListeners(root){
+  root.querySelectorAll('td').forEach(td => {
+    if (!td.classList.contains('free')) {
+      td.setAttribute('tabindex', td.getAttribute('tabindex') ?? 0);
+      td.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); cambiarColor(td); }
+      });
+    }
+  });
+}
+
+/* marcar celda */
 function cambiarColor(td){
   if (td.classList.contains('free')) return;
   td.classList.toggle("marcado1");
   guardarEstado();
 }
 
+/* limpiar, quitar */
 function limpiarMarcas(){
-  // Quitar marcas de los cartones
-  document.querySelectorAll('#cartonesContainer td.marcado1').forEach(td=>{
-    td.classList.remove('marcado1');
-  });
+  document.querySelectorAll('#cartonesContainer td.marcado1').forEach(td => td.classList.remove('marcado1'));
   guardarEstado();
-
-  // 👇 Quitar también los bordes guía
-  document.querySelectorAll('#cartonesContainer td.bordeGuia').forEach(td=>{
-    td.classList.remove('bordeGuia');
-  });
-
-  // 👇 Reiniciar la guía de dinámicas
+  document.querySelectorAll('#cartonesContainer td.bordeGuia').forEach(td => td.classList.remove('bordeGuia'));
+  localStorage.removeItem("guiaFigura");
+  crearGuia();
+}
+function quitarCartones(){
+  cartonesContainer.innerHTML = '';
+  cartonesMostrados = [];
+  localStorage.removeItem("estadoCartones");
+  statusEl.textContent = 'Se quitaron los cartones y se limpió tu almacenamiento.';
   localStorage.removeItem("guiaFigura");
   crearGuia();
 }
 
-
-function quitarCartones(){
-  document.getElementById("cartonesContainer").innerHTML = '';
-  cartonesMostrados = [];
-  localStorage.removeItem("estadoCartones");
-  statusEl.textContent = 'Se quitaron los cartones y se limpió tu almacenamiento.';
-  // 👇 Reiniciar también la guía de dinámicas
-  localStorage.removeItem("guiaFigura"); // borrar guardado
-  crearGuia();                           // volver a dibujar la tabla vacía
-}
-
-/* Persistencia de cartones y marcas */
+/* persistencia */
 function guardarEstado(){
-  const estado = {
-    cartones: cartonesMostrados.slice(),
-    marcados: []
-  };
-  document.querySelectorAll('#cartonesContainer td.marcado1').forEach(td=>{
-    const carton = td.dataset.carton;
-    const pos = td.dataset.pos;
-    estado.marcados.push({carton, pos});
+  const estado = { cartones: cartonesMostrados.slice(), marcados: [] };
+  document.querySelectorAll('#cartonesContainer td.marcado1').forEach(td => {
+    estado.marcados.push({ carton: td.dataset.carton, pos: td.dataset.pos });
   });
-  localStorage.setItem("estadoCartones", JSON.stringify(estado));
+  localStorage.setItem('estadoCartones', JSON.stringify(estado));
 }
-
 function restaurarEstado(){
   const estadoStr = localStorage.getItem("estadoCartones");
   if (!estadoStr) return;
   let estado;
   try { estado = JSON.parse(estadoStr); } catch { return; }
-
-  if (Array.isArray(estado.cartones)) {
-    estado.cartones.forEach(num => renderCarton(num));
-  }
+  if (Array.isArray(estado.cartones)) estado.cartones.forEach(num => renderCarton(num));
   if (Array.isArray(estado.marcados)) {
-    estado.marcados.forEach(m => {
-      const td = document.querySelector(`#cartonesContainer td[data-carton="${m.carton}"][data-pos="${m.pos}"]`);
-      if (td) td.classList.add('marcado1');
-    });
+    setTimeout(() => {
+      estado.marcados.forEach(m => {
+        const td = document.querySelector(`#cartonesContainer td[data-carton="${m.carton}"][data-pos="${m.pos}"]`);
+        if (td) td.classList.add('marcado1');
+      });
+    }, 120);
   }
 }
 
-/* Zoom proporcional perfecto (+ y -) */
+/* zoom + columnas en móvil */
 function ajustarZoom(delta){
-  let escala = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--escalaCarton')) || 1;
-  escala += delta;
-  if (escala < 0.5) escala = 0.5; // mínimo
-  if (escala > 2) escala = 2;     // máximo
+  let escala = parseFloat(String(getComputedStyle(document.documentElement).getPropertyValue('--escalaCarton')).replace(',', '.')) || 1;
+  escala = Math.round((escala + delta) * 100) / 100;
+  if (escala < 0.6) escala = 0.6;
+  if (escala > 2) escala = 2;
   document.documentElement.style.setProperty('--escalaCarton', escala);
   localStorage.setItem("zoomCarton", escala);
+
+  // ensure table max-width changes so font stays readable
+  const base = 320;
+  const max = Math.max(180, Math.round(base / escala));
+  document.querySelectorAll('.carton table').forEach(t => t.style.maxWidth = `${max}px`);
+
+  aplicarColumnasPorZoom();
+}
+function aplicarColumnasPorZoom(){
+  if (window.innerWidth <= 520) {
+    const escala = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--escalaCarton')) || 1;
+    cartonesContainer.classList.remove("cols-1","cols-2","cols-3");
+    if (escala > 1.3) {
+      cartonesContainer.classList.add("cols-1");
+    } else if (escala > 0.9) {
+      cartonesContainer.classList.add("cols-2");
+    } else {
+      cartonesContainer.classList.add("cols-3");
+    }
+  } else {
+    cartonesContainer.classList.remove("cols-1","cols-2","cols-3");
+  }
 }
 
-/* Temas */
+/* temas */
 function cambiarTema(color){
   if (color === 'azul'){
-    document.documentElement.style.setProperty('--fondo', '#121212');
-    document.documentElement.style.setProperty('--carton', '#1b1b1b');
-    document.documentElement.style.setProperty('--texto', '#ffffff');
-    document.documentElement.style.setProperty('--marcado', '#2196f3');
-    document.documentElement.style.setProperty('--borde', '##ada8a8');
-    document.documentElement.style.setProperty('--free-bg', '#444444');
+    document.documentElement.style.setProperty('--carton','#1b1b1b');
+    document.documentElement.style.setProperty('--texto','#ffffff');
+    document.documentElement.style.setProperty('--marcado','#2196f3');
+    document.documentElement.style.setProperty('--borde','#ada8a8');
+    document.documentElement.style.setProperty('--free-bg','#444444');
+    document.documentElement.style.setProperty('--titulo-carton','#00d4ff');
   } else if (color === 'verde'){
-    // Tema claro como pediste
-    document.documentElement.style.setProperty('--fondo', '#ffffff');   // fondo página blanco
-    document.documentElement.style.setProperty('--carton', '#f5f5f5');  // cartón gris clarito
-    document.documentElement.style.setProperty('--texto', '#000000');   // números en negro
-    document.documentElement.style.setProperty('--marcado', '#4caf50'); // marcado verde
-    document.documentElement.style.setProperty('--borde', '#333333');   // bordes visibles sobre blanco
-    document.documentElement.style.setProperty('--free-bg', '#e0e0e0'); // free más suave
+    document.documentElement.style.setProperty('--carton','#f5f5f5');
+    document.documentElement.style.setProperty('--texto','#000000');
+    document.documentElement.style.setProperty('--marcado','#4caf50');
+    document.documentElement.style.setProperty('--borde','#333333');
+    document.documentElement.style.setProperty('--free-bg','#e0e0e0');
+    document.documentElement.style.setProperty('--titulo-carton','#2e7d32');
   } else if (color === 'morado'){
-    document.documentElement.style.setProperty('--fondo', '#6a1b9a');   // fondo morado
-    document.documentElement.style.setProperty('--carton', '#f8bbd0');  // cartones rosados
-    document.documentElement.style.setProperty('--texto', '#000000');   // números en negro
-    document.documentElement.style.setProperty('--cuadro', '#ffffff');  // cuadros blancos
-    document.documentElement.style.setProperty('--marcado', '#e91e63'); // casillas marcadas fucsia
+    document.documentElement.style.setProperty('--carton','#f8bbd0');
+    document.documentElement.style.setProperty('--texto','#000000');
+    document.documentElement.style.setProperty('--marcado','#e91e63');
+    document.documentElement.style.setProperty('--borde','#ffffff');
+    document.documentElement.style.setProperty('--titulo-carton','#6a1b9a');
   }
   localStorage.setItem("temaBingo", color);
 }
 
-/* =========================
-   Guía de figura 5x5
-   ========================= */
+/* guía 5x5 */
 function crearGuia(){
   const tabla = document.getElementById("tablaGuia");
   tabla.innerHTML = '';
-  for(let r=0; r<5; r++){
+  for(let r=0;r<5;r++){
     const fila = document.createElement("tr");
-    for(let c=0; c<5; c++){
+    for(let c=0;c<5;c++){
       const celda = document.createElement("td");
       celda.dataset.pos = `${r},${c}`;
-      if(r === 2 && c === 2){
-        celda.textContent = 'X';
+      if(r===2 && c===2){
+        celda.textContent='X';
         celda.classList.add('centro');
+        celda.setAttribute('aria-hidden','true');
       } else {
+        celda.tabIndex = 0;
         celda.addEventListener('click', () => {
-          celda.classList.toggle('relleno');  // guía se rellena
+          celda.classList.toggle('relleno');
           guardarGuia();
-          aplicarGuiaBordes();                 // cartones solo borde
+          aplicarGuiaBordes();
         });
+        celda.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); celda.click(); }});
       }
       fila.appendChild(celda);
     }
     tabla.appendChild(fila);
   }
 }
-
-/* Aplica bordes guía en todos los cartones mostrados según la guía rellena */
 function aplicarGuiaBordes(){
-  // Limpiar bordes anteriores
-  document.querySelectorAll('#cartonesContainer td.bordeGuia').forEach(td => {
-    td.classList.remove('bordeGuia');
-  });
-
-  // Agregar bordes según guía
-  document.querySelectorAll('#tablaGuia td.relleno').forEach(celda => {
-    const pos = celda.dataset.pos;
-    document.querySelectorAll(`#cartonesContainer td[data-pos="${pos}"]`).forEach(td => {
-      td.classList.add('bordeGuia');
-    });
+  document.querySelectorAll('#cartonesContainer td').forEach(td => td.classList.remove('invisibleNumero'));
+  const posicionesGuia = Array.from(document.querySelectorAll('#tablaGuia td.relleno')).map(c=>c.dataset.pos);
+  if(posicionesGuia.length===0) return;
+  document.querySelectorAll('#cartonesContainer td').forEach(td=>{
+    const pos = td.dataset.pos;
+    if(!posicionesGuia.includes(pos)) td.classList.add('invisibleNumero');
+    else td.classList.remove('invisibleNumero');
   });
 }
-
-/* Persistencia de la figura guía */
 function guardarGuia(){
-  const rellenos = [];
-  document.querySelectorAll('#tablaGuia td.relleno').forEach(celda => {
-    rellenos.push(celda.dataset.pos);
-  });
+  const rellenos=[];
+  document.querySelectorAll('#tablaGuia td.relleno').forEach(celda=> rellenos.push(celda.dataset.pos));
   localStorage.setItem('guiaFigura', JSON.stringify(rellenos));
 }
-
 function restaurarGuia(){
   const data = localStorage.getItem('guiaFigura');
-  if (!data) return;
+  if(!data) return;
   let rellenos;
-  try { rellenos = JSON.parse(data); } catch { return; }
-  rellenos.forEach(pos => {
+  try{ rellenos = JSON.parse(data); } catch { return; }
+  rellenos.forEach(pos=>{
     const celda = document.querySelector(`#tablaGuia td[data-pos="${pos}"]`);
-    if (celda) celda.classList.add('relleno');
+    if(celda) celda.classList.add('relleno');
   });
 }
 
-/* Reaplicar guía cuando se agregan nuevos cartones (ya se llama en agregarCarton) */
+/* observer para reaplicar listeners teclado si se necesita */
+function attachAllCellListeners(){ document.querySelectorAll('#cartonesContainer .carton').forEach(div => attachCellListeners(div)); }
+const observer = new MutationObserver(()=>{ attachAllCellListeners(); aplicarGuiaBordes(); });
+observer.observe(document.getElementById('cartonesContainer'), { childList: true, subtree: true });
 
 </script>
 </body>
